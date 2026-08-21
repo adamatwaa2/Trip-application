@@ -58,7 +58,7 @@ Only Adam can change these rules.
 | Ink | `#0F1E28` | Body text and headings |
 | Infinity Orange | `#F27127` | **Primary buttons only** |
 | Ember | `#DC5E15` | Accents, eyebrows, error text, tertiary underlines |
-| Hairline | `#E4EBF0` | Borders, rules, dividers |
+| Hairline (`--pi-line`) | `#DCE6EC` | Borders, rules, dividers |
 
 ### Typography
 - **Clash Display** — headlines, weights 600 / 700. Never below 20px. Never for paragraphs. Never for Arabic.
@@ -69,8 +69,17 @@ Only Adam can change these rules.
 ### Visual direction
 - **Light and spacious.** Minimal colour, generous whitespace.
 - **No heavy gradient fills.**
-- **No dark sections.**
 - Orange is reserved for the primary action. It is never decoration.
+
+### Dark / Deep Ink / Night Field sections
+Allowed, but sparingly — for cinematic contrast only.
+
+- **At most one** intentional dark section per page, **plus the footer**.
+- **Never** two dark sections directly next to each other.
+- **Never** let the site read as predominantly dark. Light is the default state
+  of every page; a dark section is a deliberate exception, chosen by us.
+- A dark section is a designed choice, not a dark mode — visitors cannot toggle it.
+- Inside a dark section: ivory text, orange for decisions, gold for accents.
 
 ---
 
