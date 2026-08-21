@@ -2,7 +2,7 @@ import Link from "next/link";
 import { BrandLockup } from "./BrandLockup";
 import { Container } from "./Container";
 import { Placeholder } from "./Placeholder";
-import { PLAN_LINKS, POLICY_LINKS, WORLDS, type NavItem } from "@/content/nav";
+import { PLAN_LINKS, POLICY_LINKS, PRIMARY_NAV, type NavItem } from "@/content/nav";
 
 function FooterLink({ item }: { item: NavItem }) {
   if (!item.ready) {
@@ -52,7 +52,7 @@ export function SiteFooter() {
             <div>
               <h2 className="pi-footer__heading">Explore</h2>
               <ul className="pi-footer__list">
-                {WORLDS.map((item) => (
+                {PRIMARY_NAV.map((item) => (
                   <FooterLink key={item.href} item={item} />
                 ))}
               </ul>

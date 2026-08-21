@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { BrandLockup } from "./BrandLockup";
-import { HEADER_CTA, WORLDS, type NavItem } from "@/content/nav";
+import { HEADER_CTA, PRIMARY_NAV, type NavItem } from "@/content/nav";
 
 type SiteHeaderProps = {
   /**
@@ -79,7 +79,7 @@ export function SiteHeader({ overHero = false }: SiteHeaderProps) {
 
           {/* Five items, no mega-menu. */}
           <nav className="pi-nav" aria-label="Primary">
-            {WORLDS.map((item) => (
+            {PRIMARY_NAV.map((item) => (
               <NavLink key={item.href} item={item} />
             ))}
           </nav>
@@ -120,7 +120,7 @@ export function SiteHeader({ overHero = false }: SiteHeaderProps) {
         aria-label="Primary"
       >
         <nav className="pi-mobile__nav">
-          {WORLDS.map((item) =>
+          {PRIMARY_NAV.map((item) =>
             item.ready ? (
               <Link
                 key={item.href}

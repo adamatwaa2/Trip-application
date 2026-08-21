@@ -75,34 +75,6 @@
   color: var(--pi-ivory);
 }
 
-/* ---------- buttons (shell scope) ----------
-   Phase 3 turns this into the shared Button component. */
-.pi-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: var(--pi-r-pill);
-  font-family: var(--pi-body);
-  font-size: var(--pi-ui);
-  font-weight: 800;
-  text-decoration: none;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: transform var(--pi-t-micro) var(--pi-e-ui);
-}
-.pi-btn--primary {
-  background: var(--pi-g-cta);
-  background-size: 180% 100%;
-  background-position: 72% 0; /* gold stop pushed off the label */
-  color: var(--pi-ivory);
-  min-height: 44px;
-  padding-inline: var(--pi-s3);
-}
-.pi-btn:hover {
-  transform: translateY(-2px);
-}
-
 /* ---------- header ----------
    Over a hero: transparent, ivory links, no background.
    After 80px of scroll: ivory bar, 92% opacity, blur 16, hairline bottom. */
@@ -236,8 +208,10 @@
     padding: 12px var(--pi-s3);
     gap: var(--pi-s2);
   }
-  .pi-nav,
-  .pi-header__cta {
+  /* Specificity matters here: components.css loads after this file and sets
+     .pi-btn { display: inline-flex }, which beats a single-class rule. */
+  .pi-header__inner .pi-nav,
+  .pi-header__inner .pi-header__cta {
     display: none;
   }
   .pi-burger {
