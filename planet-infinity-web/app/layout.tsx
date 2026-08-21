@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { SiteFooter } from "@/components/SiteFooter";
+import { SiteHeader } from "@/components/SiteHeader";
 import { fontVariables } from "./fonts";
 import "./globals.css";
 
@@ -27,7 +29,11 @@ export default function RootLayout({
     /* English-first. Arabic + RTL later: this becomes lang="ar" dir="rtl" and
        the layout flips with it — no component rewrites needed. */
     <html lang="en" dir="ltr" className={fontVariables}>
-      <body>{children}</body>
+      <body>
+        <SiteHeader />
+        <main id="main">{children}</main>
+        <SiteFooter />
+      </body>
     </html>
   );
 }

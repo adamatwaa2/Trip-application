@@ -13,55 +13,11 @@
 
 @import "./tokens.css";
 @import "./base.css";
+@import "./shell.css";
 
-body {
-  padding-bottom: var(--pi-s6);
-}
-
-/* ---------- header ----------
-   Deep Ink section. Flat ink, not a gradient: the previous --g-ink used
-   #16283A, which is not a PI-BB-001 value. Under CLAUDE.md this counts as
-   the page's one permitted dark section. */
-.site-header {
-  background: var(--pi-ink);
-  color: var(--pi-ivory);
-  padding: var(--pi-s4) var(--pi-s3) var(--pi-s3);
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-.site-header::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-.site-header.warm::after {
-  background: radial-gradient(
-    circle at 85% -10%,
-    rgba(242, 180, 65, 0.35),
-    transparent 55%
-  );
-}
-/* PHASE 6: Event Violet is used outside the Events world on /apply. That is a
-   PI-WB-002 governance violation and is removed when /apply is rebuilt. */
-.site-header.nova::after {
-  background:
-    radial-gradient(circle at 15% -10%, rgba(139, 92, 246, 0.35), transparent 55%),
-    radial-gradient(circle at 90% 110%, rgba(242, 180, 65, 0.25), transparent 55%);
-}
-.site-header h1 {
-  margin: 0 0 var(--pi-s1);
-  font-size: var(--pi-h2);
-  font-weight: 700;
-  position: relative;
-}
-.site-header .tagline {
-  margin: 0;
-  font-size: var(--pi-ui);
-  opacity: 0.85;
-  position: relative;
-}
+/* ---------- page intro ----------
+   The old per-page Deep Ink banners were replaced by the shell header in
+   Phase 2. Only the mono eyebrow survives from that block. */
 .kicker {
   display: inline-block;
   font-family: var(--pi-mono);

@@ -68,7 +68,7 @@ export default function BookPage() {
 
   if (submitted) {
     return (
-      <main className="thanks-screen">
+      <div className="thanks-screen">
         <div className="thanks-card">
           <div className="thanks-mark" aria-hidden="true">
             ✓
@@ -102,13 +102,13 @@ export default function BookPage() {
             Preview only — nothing was sent or saved anywhere.
           </p>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main>
-      <header className="site-header warm">
+    <>
+      <header className="pi-page-intro">
         <span className="kicker">Planet Infinity · Good vibes, good times</span>
         <h1>Reserve Your Seat — [Trip Name]</h1>
         <p className="tagline">
@@ -250,6 +250,6 @@ export default function BookPage() {
           </Link>
         </div>
       </div>
-    </main>
+    </>
   );
 }

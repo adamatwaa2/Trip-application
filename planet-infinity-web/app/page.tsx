@@ -2,8 +2,8 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main>
-      <header className="site-header warm">
+    <>
+      <header className="pi-page-intro">
         <span className="kicker">Planet Infinity · Good vibes, good times</span>
         <h1>Planet Infinity — Web Preview</h1>
         <p className="tagline">
@@ -42,6 +42,6 @@ export default function Home() {
           Planet Infinity Entertainment · Dahab · South Sinai
         </div>
       </div>
-    </main>
+    </>
   );
 }

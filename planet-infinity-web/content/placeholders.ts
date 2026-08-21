@@ -50,6 +50,13 @@ export const PLACEHOLDERS = {
     note: "Confirmed — appears in PI-WB-002 footer",
   },
 
+  // --- brand assets ------------------------------------------------------
+  brandMark: {
+    label: "Brand mark",
+    value: null,
+    note: "3D master mark — used as supplied, never re-rendered or redrawn (PI-WB-002)",
+  },
+
   // --- trip --------------------------------------------------------------
   tripName: { label: "Trip name", value: null },
   tripDestination: { label: "Destination", value: null },
