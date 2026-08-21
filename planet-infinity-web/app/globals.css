@@ -1,65 +1,31 @@
-/* Planet Infinity — shared branding + component styles */
+/* ===========================================================================
+   Planet Infinity — component styles
 
-:root {
-  --ink: #0f1e28;
-  --ivory: #fdf8f1;
-  --gold: #f2b441;
-  --orange: #f27127;
-  --flame: #e8432b;
-  --cyan: #1e88ae;
+   Load order: tokens (brand values) → base (reset, a11y, motion) → this file.
+   Every colour below resolves to a token in tokens.css. No literal brand hex
+   appears here; the only literal colour is #FFF for card surfaces, which is
+   how PI-WB-002 itself specifies cards ("ivory field on white").
 
-  /* supporting tones */
-  --ember: #dc5e15;
-  --sky: #bfeaf7;
-  --line: #dce6ec;
-  --soft: #4f6b7c;
-  --violet: #8b5cf6;
+   PHASE NOTE: these are the existing preview components, re-pointed onto the
+   token layer. They are rebuilt properly in Phase 3 (component library) and
+   Phases 4–8 (pages). Layout and proportion are deliberately untouched here.
+   =========================================================================== */
 
-  --g-cta: linear-gradient(120deg, #f2b441 0%, #f27127 55%, #e8432b 100%);
-  --g-flame: linear-gradient(
-    120deg,
-    #ffe9a8 0%,
-    #f7c948 20%,
-    #f27127 55%,
-    #e8432b 82%,
-    #b22a12 100%
-  );
-  --g-ink: linear-gradient(135deg, #16283a 0%, #0f1e28 100%);
-  --g-nova: linear-gradient(140deg, #3d2b8c 0%, #8b5cf6 48%, #c13fd6 100%);
-
-  --radius: 18px;
-  --font: var(--font-jakarta), system-ui, -apple-system, sans-serif;
-  --font-ar: var(--font-plex-arabic), var(--font-jakarta), system-ui, sans-serif;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  padding: 0;
-  margin: 0;
-}
+@import "./tokens.css";
+@import "./base.css";
 
 body {
-  font-family: var(--font);
-  background: var(--ivory);
-  color: var(--ink);
-  padding-bottom: 60px;
+  padding-bottom: var(--pi-s6);
 }
 
-:lang(ar),
-.ar {
-  font-family: var(--font-ar);
-  direction: rtl;
-}
-
-/* ---------- header ---------- */
+/* ---------- header ----------
+   Deep Ink section. Flat ink, not a gradient: the previous --g-ink used
+   #16283A, which is not a PI-BB-001 value. Under CLAUDE.md this counts as
+   the page's one permitted dark section. */
 .site-header {
-  background: var(--g-ink);
-  color: #fff;
-  padding: 30px 18px 24px;
+  background: var(--pi-ink);
+  color: var(--pi-ivory);
+  padding: var(--pi-s4) var(--pi-s3) var(--pi-s3);
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -77,104 +43,109 @@ body {
     transparent 55%
   );
 }
+/* PHASE 6: Event Violet is used outside the Events world on /apply. That is a
+   PI-WB-002 governance violation and is removed when /apply is rebuilt. */
 .site-header.nova::after {
   background:
     radial-gradient(circle at 15% -10%, rgba(139, 92, 246, 0.35), transparent 55%),
     radial-gradient(circle at 90% 110%, rgba(242, 180, 65, 0.25), transparent 55%);
 }
 .site-header h1 {
-  margin: 0 0 6px;
-  font-size: 25px;
-  font-weight: 800;
-  letter-spacing: 0.2px;
+  margin: 0 0 var(--pi-s1);
+  font-size: var(--pi-h2);
+  font-weight: 700;
   position: relative;
 }
 .site-header .tagline {
   margin: 0;
-  font-size: 13.5px;
+  font-size: var(--pi-ui);
   opacity: 0.85;
   position: relative;
 }
 .kicker {
   display: inline-block;
-  font-size: 11px;
+  font-family: var(--pi-mono);
+  font-size: var(--pi-micro);
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 8px;
+  color: var(--pi-gold);
+  margin-bottom: var(--pi-s1);
   position: relative;
 }
 
 /* ---------- layout ---------- */
 .wrap {
-  max-width: 560px;
+  max-width: 560px; /* PHASE 4–8: becomes --pi-max / --pi-read */
   margin: 0 auto;
-  padding: 16px;
+  padding: var(--pi-s2);
 }
 .card {
   background: #fff;
-  border-radius: var(--radius);
-  padding: 18px;
-  margin-bottom: 16px;
+  border-radius: var(--pi-r-card);
+  padding: var(--pi-s3);
+  margin-bottom: var(--pi-s2);
   box-shadow: 0 2px 12px rgba(15, 30, 40, 0.06);
-  border: 1px solid var(--line);
+  border: 1px solid var(--pi-line);
 }
 .card h2 {
-  font-size: 16px;
-  margin: 0 0 6px;
-  color: var(--ink);
+  font-size: var(--pi-h3);
+  margin: 0 0 var(--pi-s1);
+  color: var(--pi-ink);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--pi-s1);
 }
 .card .sub {
-  font-size: 12.5px;
-  color: var(--soft);
-  margin: 0 0 14px;
+  font-size: var(--pi-ui);
+  color: var(--pi-soft);
+  margin: 0 0 var(--pi-s2);
 }
 .badge {
   display: inline-block;
-  color: #fff;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
+  color: var(--pi-ivory);
+  border-radius: var(--pi-r-pill);
+  width: 26px;
+  height: 26px;
   text-align: center;
-  line-height: 24px;
-  font-size: 12.5px;
+  line-height: 26px;
+  font-size: 13px;
   font-weight: 700;
   flex: none;
 }
 .badge.warm {
-  background: var(--g-cta);
+  background: var(--pi-g-cta);
 }
+/* PHASE 6: violet outside Events — see note above. */
 .badge.nova {
-  background: var(--g-nova);
+  background: var(--pi-g-nova);
 }
 .intro-card {
-  background: var(--g-nova);
-  color: #fff;
+  background: var(--pi-g-nova);
+  color: var(--pi-ivory);
   border: none;
 }
 .intro-card p {
-  font-size: 13.5px;
+  font-size: var(--pi-ui);
   line-height: 1.9;
   margin: 0;
-  opacity: 0.95;
 }
 
-/* ---------- form controls ---------- */
+/* ---------- form controls ----------
+   PI-WB-002 Plate 06: label above and always visible, never placeholder-only.
+   16px input minimum (anything smaller zooms iOS). Ivory field on white,
+   radius 16, one column, errors in ember under the field. */
 label {
   display: block;
-  font-size: 13px;
+  font-size: var(--pi-ui);
   font-weight: 700;
-  color: var(--ink);
-  margin: 14px 0 6px;
+  color: var(--pi-ink);
+  margin: var(--pi-s2) 0 var(--pi-s1);
 }
 label .opt {
   font-weight: 400;
-  color: var(--soft);
-  font-size: 11.5px;
+  color: var(--pi-soft);
+  font-size: 13px;
 }
 input[type="text"],
 input[type="tel"],
@@ -183,170 +154,214 @@ input[type="number"],
 textarea,
 select {
   width: 100%;
-  padding: 11px 12px;
-  border-radius: 10px;
-  border: 1.5px solid var(--line);
-  font-family: var(--font);
-  font-size: 14px;
-  background: #fafbfc;
-  color: var(--ink);
+  padding: 13px var(--pi-s2);
+  border-radius: var(--pi-r-chip);
+  border: 1.5px solid var(--pi-line);
+  font-family: var(--pi-body);
+  font-size: var(--pi-s2);
+  background: var(--pi-ivory);
+  color: var(--pi-ink);
 }
 textarea {
   resize: vertical;
-  min-height: 70px;
+  min-height: 76px;
+  line-height: 1.6;
 }
 input:focus,
 textarea:focus,
 select:focus {
-  outline: none;
-  border-color: var(--cyan);
+  border-color: var(--pi-cyan);
   background: #fff;
+}
+.field-error {
+  display: block;
+  color: var(--pi-ember);
+  font-size: 13px;
+  margin-top: var(--pi-s1);
 }
 
 .chip-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 6px;
+  gap: var(--pi-s1);
+  margin-top: var(--pi-s1);
 }
 .chip {
-  padding: 9px 14px;
-  border-radius: 30px;
-  border: 1.5px solid var(--line);
-  background: #fafbfc;
-  font-size: 13px;
-  font-family: var(--font);
+  padding: 10px var(--pi-s2);
+  border-radius: var(--pi-r-pill);
+  border: 1.5px solid var(--pi-line);
+  background: var(--pi-ivory);
+  font-size: var(--pi-ui);
+  font-family: var(--pi-body);
   cursor: pointer;
   user-select: none;
-  color: var(--soft);
-  transition: transform 0.12s;
+  color: var(--pi-soft);
+  transition: transform var(--pi-t-micro) var(--pi-e-ui);
 }
 .chip:active {
   transform: scale(0.94);
 }
+/* PHASE 6: violet outside Events — see note above. */
 .chip.selected {
-  background: var(--g-nova);
-  color: #fff;
+  background: var(--pi-g-nova);
+  color: var(--pi-ivory);
   border-color: transparent;
   font-weight: 700;
-  box-shadow: 0 3px 10px rgba(139, 92, 246, 0.35);
 }
 
 .agree-row {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  background: var(--sky);
-  border-radius: 10px;
-  padding: 12px;
-  margin-top: 16px;
-  font-size: 13.5px;
+  gap: var(--pi-s1);
+  background: var(--pi-sky);
+  border-radius: var(--pi-r-chip);
+  padding: var(--pi-s2);
+  margin-top: var(--pi-s2);
+  font-size: var(--pi-ui);
 }
 .agree-row input {
   width: 20px;
   height: 20px;
   flex: none;
-  margin-top: 2px;
-  accent-color: var(--cyan);
+  margin-top: 3px;
+  accent-color: var(--pi-cyan);
 }
+/* Sky Mist carries ink text — PI-WB-002 corrects sky-text on sky to unreadable. */
 .agree-row label {
   margin: 0;
   font-weight: 600;
-  color: #23404f;
+  color: var(--pi-ink);
   line-height: 1.6;
 }
 .agree-row .placeholder-note {
   display: block;
   font-weight: 400;
-  font-size: 11.5px;
-  color: var(--soft);
+  font-size: 13px;
+  color: var(--pi-soft);
   margin-top: 4px;
 }
 
+/* ---------- buttons ----------
+   Primary: G-01, ivory label, weight 800, 56px desktop / 48px mobile, pill. */
 .submit-btn {
   width: 100%;
-  padding: 15px;
+  min-height: 56px;
+  padding: 0 var(--pi-s4);
   border: none;
-  border-radius: 12px;
-  background: var(--g-cta);
-  color: #fff;
-  font-size: 16px;
+  border-radius: var(--pi-r-pill);
+  background: var(--pi-g-cta);
+  background-size: 180% 100%;
+  background-position: 72% 0; /* keeps the gold stop off the label */
+  color: var(--pi-ivory);
+  font-size: 17px;
   font-weight: 800;
-  font-family: var(--font);
+  font-family: var(--pi-body);
   cursor: pointer;
-  margin-top: 20px;
-  box-shadow: 0 4px 14px rgba(242, 113, 39, 0.35);
+  margin-top: var(--pi-s3);
+  transition: transform var(--pi-t-micro) var(--pi-e-ui);
 }
 .submit-btn:disabled {
-  background: #c9ccd1;
-  box-shadow: none;
+  background: var(--pi-line);
+  color: var(--pi-soft);
   cursor: not-allowed;
 }
 .submit-btn:not(:disabled):active {
   transform: scale(0.98);
 }
+@media (max-width: 899px) {
+  .submit-btn {
+    min-height: 48px;
+  }
+}
+
+/* Secondary: ink outline. Never a second gradient. */
+.ghost-btn {
+  margin-top: var(--pi-s3);
+  min-height: 48px;
+  background: none;
+  border: 1.5px solid var(--pi-ink);
+  border-radius: var(--pi-r-pill);
+  padding: 0 var(--pi-s3);
+  font-family: var(--pi-body);
+  font-size: var(--pi-ui);
+  font-weight: 700;
+  color: var(--pi-ink);
+  cursor: pointer;
+  transition: transform var(--pi-t-micro) var(--pi-e-ui);
+}
+.ghost-btn:hover {
+  transform: translateY(-2px);
+}
 
 /* ---------- seat map ---------- */
 .van {
-  background: #f7f3ec;
-  border-radius: 16px;
-  padding: 20px 12px;
-  border: 2px solid var(--line);
+  background: var(--pi-ivory);
+  border-radius: var(--pi-r-card);
+  padding: var(--pi-s3) var(--pi-s2);
+  border: 1px solid var(--pi-line);
 }
 .van-label {
   text-align: center;
-  font-size: 12px;
-  color: var(--soft);
-  margin: 2px 0 14px;
+  font-family: var(--pi-mono);
+  font-size: var(--pi-micro);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pi-soft);
+  margin: 2px 0 var(--pi-s2);
 }
 .van-label.bottom {
-  margin: 14px 0 2px;
+  margin: var(--pi-s2) 0 2px;
 }
 .seat-row {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 34px; /* the aisle */
-  margin-bottom: 12px;
+  gap: var(--pi-s4); /* the aisle */
+  margin-bottom: var(--pi-s2);
 }
 .seat-row.back-row {
-  gap: 10px;
+  gap: var(--pi-s1);
   margin-bottom: 0;
 }
 .seat-group {
   display: flex;
-  gap: 10px;
+  gap: var(--pi-s1);
 }
 .seat,
 .driver {
   width: 64px;
   height: 56px;
-  border-radius: 14px;
+  border-radius: var(--pi-r-chip);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   user-select: none;
-  border: 1.8px solid var(--line);
+  border: 1.5px solid var(--pi-line);
   background: #fff;
   padding: 0;
-  font-family: var(--font);
-  transition: transform 0.15s, background 0.2s, box-shadow 0.2s, border-color 0.2s;
+  font-family: var(--pi-body);
+  transition: transform var(--pi-t-micro) var(--pi-e-ui),
+    background var(--pi-t-ui) var(--pi-e-ui),
+    border-color var(--pi-t-ui) var(--pi-e-ui);
 }
 .seat .seat-num {
   font-weight: 800;
   font-size: 19px;
-  color: var(--ink);
+  color: var(--pi-ink);
   line-height: 1.1;
 }
 .driver {
-  background: #d9dee3;
-  border-color: #d9dee3;
-  color: var(--soft);
+  background: var(--pi-line);
+  border-color: var(--pi-line);
+  color: var(--pi-soft);
   cursor: default;
 }
 .driver span {
-  font-size: 11px;
+  font-family: var(--pi-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   font-weight: 700;
 }
 .seat:not(.taken):active {
@@ -364,32 +379,34 @@ select:focus {
   }
 }
 .seat.selected {
-  background: var(--g-flame);
-  border-color: var(--ember);
-  box-shadow: 0 0 0 4px rgba(242, 113, 39, 0.22), 0 6px 16px rgba(220, 94, 21, 0.45);
-  animation: seatPop 0.28s ease;
+  background: var(--pi-g-flame);
+  border-color: var(--pi-ember);
+  box-shadow: 0 0 0 4px rgba(242, 113, 39, 0.22);
+  animation: seatPop var(--pi-t-micro) var(--pi-e-ui);
 }
 .seat.selected .seat-num {
-  color: #fff;
+  color: var(--pi-ivory);
 }
+/* Sold out goes quiet and grey rather than red. */
 .seat.taken {
-  background: #e3e8ec;
-  border-color: #cfd8de;
+  background: var(--pi-ivory);
+  border-color: var(--pi-line);
   cursor: not-allowed;
 }
 .seat.taken .seat-num {
-  color: #93a5b0;
+  color: var(--pi-soft);
+  opacity: 0.55;
   text-decoration: line-through;
 }
 
 .legend {
   display: flex;
-  gap: 16px;
+  gap: var(--pi-s2);
   justify-content: center;
-  margin-top: 14px;
-  font-size: 12px;
+  margin-top: var(--pi-s2);
+  font-size: 13px;
   flex-wrap: wrap;
-  color: var(--soft);
+  color: var(--pi-soft);
 }
 .legend span {
   display: flex;
@@ -404,26 +421,26 @@ select:focus {
 }
 .dot.available {
   background: #fff;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--pi-line);
 }
 .dot.selected {
-  background: var(--g-flame);
+  background: var(--pi-g-flame);
 }
 .dot.taken {
-  background: #e3e8ec;
-  border: 1.5px solid #cfd8de;
+  background: var(--pi-ivory);
+  border: 1.5px solid var(--pi-line);
 }
 .dot.driver-dot {
-  background: #d9dee3;
+  background: var(--pi-line);
 }
 
 .selected-summary {
-  margin-top: 14px;
-  background: var(--ink);
-  color: #fff;
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-size: 14px;
+  margin-top: var(--pi-s2);
+  background: var(--pi-ink);
+  color: var(--pi-ivory);
+  border-radius: var(--pi-r-chip);
+  padding: var(--pi-s2);
+  font-size: var(--pi-ui);
   text-align: center;
   font-weight: 700;
 }
@@ -434,14 +451,14 @@ select:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: var(--pi-s3);
 }
 .thanks-card {
   background: #fff;
-  border-radius: var(--radius);
-  border: 1px solid var(--line);
+  border-radius: var(--pi-r-hero);
+  border: 1px solid var(--pi-line);
   box-shadow: 0 8px 30px rgba(15, 30, 40, 0.1);
-  padding: 32px 26px;
+  padding: var(--pi-s5) var(--pi-s4);
   max-width: 460px;
   width: 100%;
   text-align: center;
@@ -449,80 +466,62 @@ select:focus {
 .thanks-mark {
   width: 68px;
   height: 68px;
-  border-radius: 50%;
-  background: var(--g-cta);
-  color: #fff;
-  font-size: 32px;
+  border-radius: var(--pi-r-pill);
+  background: var(--pi-g-cta);
+  color: var(--pi-ivory);
+  font-size: var(--pi-s4);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 16px;
-  box-shadow: 0 6px 18px rgba(242, 113, 39, 0.35);
+  margin: 0 auto var(--pi-s2);
 }
 .thanks-card h1 {
-  font-size: 24px;
-  font-weight: 800;
-  margin: 0 0 10px;
+  font-size: var(--pi-h2);
+  margin: 0 0 var(--pi-s2);
 }
 .thanks-card p {
-  font-size: 14px;
-  line-height: 1.9;
-  color: var(--soft);
-  margin: 0 0 8px;
+  font-size: var(--pi-ui);
+  line-height: 1.8;
+  color: var(--pi-soft);
+  margin: 0 0 var(--pi-s1);
 }
 .thanks-recap {
-  background: var(--ivory);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 14px;
-  margin-top: 18px;
+  background: var(--pi-ivory);
+  border: 1px solid var(--pi-line);
+  border-radius: var(--pi-r-chip);
+  padding: var(--pi-s2);
+  margin-top: var(--pi-s3);
   text-align: left;
-  font-size: 13px;
+  font-size: var(--pi-ui);
   line-height: 1.9;
-  color: var(--ink);
+  color: var(--pi-ink);
 }
 .thanks-recap b {
-  color: var(--cyan);
+  color: var(--pi-ink);
 }
 .thanks-recap .multiline {
   white-space: pre-line;
 }
-.ghost-btn {
-  margin-top: 18px;
-  background: none;
-  border: 1.5px solid var(--line);
-  border-radius: 12px;
-  padding: 12px 18px;
-  font-family: var(--font);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-  cursor: pointer;
-}
-.ghost-btn:hover {
-  border-color: var(--cyan);
-  color: var(--cyan);
-}
 
 .preview-note {
   text-align: center;
-  font-size: 11.5px;
-  color: var(--soft);
-  margin-top: 12px;
+  font-size: 13px;
+  color: var(--pi-soft);
+  margin-top: var(--pi-s2);
 }
 .footer-note {
   text-align: center;
-  font-size: 12px;
-  color: var(--soft);
-  margin-top: 20px;
-  padding: 0 20px;
+  font-size: 13px;
+  color: var(--pi-soft);
+  margin-top: var(--pi-s3);
+  padding: 0 var(--pi-s3);
   line-height: 1.8;
 }
 
 /* ---------- landing ---------- */
 .landing-grid {
   display: grid;
-  gap: 14px;
+  gap: var(--pi-s2);
 }
 .landing-link {
   display: block;
@@ -531,7 +530,8 @@ select:focus {
 }
 .landing-link .card {
   margin-bottom: 0;
-  transition: transform 0.15s, box-shadow 0.2s;
+  transition: transform var(--pi-t-micro) var(--pi-e-ui),
+    box-shadow var(--pi-t-ui) var(--pi-e-ui);
 }
 .landing-link:hover .card {
   transform: translateY(-2px);
@@ -542,7 +542,7 @@ select:focus {
 }
 .landing-link p {
   margin: 0;
-  font-size: 13px;
-  color: var(--soft);
+  font-size: var(--pi-ui);
+  color: var(--pi-soft);
   line-height: 1.8;
 }

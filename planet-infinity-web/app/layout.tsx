@@ -1,24 +1,21 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, IBM_Plex_Sans_Arabic } from "next/font/google";
+import { fontVariables } from "./fonts";
 import "./globals.css";
 
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
-  subsets: ["latin"],
-  weight: ["400", "600", "700", "800"],
-  display: "swap",
-});
-
-const plexArabic = IBM_Plex_Sans_Arabic({
-  variable: "--font-plex-arabic",
-  subsets: ["arabic", "latin"],
-  weight: ["400", "600", "700"],
-  display: "swap",
-});
-
 export const metadata: Metadata = {
-  title: "Planet Infinity",
-  description: "Good vibes, good times — trip applications and seat booking.",
+  metadataBase: new URL("https://planetinfinity.online"),
+  title: {
+    default: "Planet Infinity",
+    template: "%s — Planet Infinity",
+  },
+  description:
+    "Planet Infinity Entertainment — travel, events and themes from Dahab, South Sinai.",
+  openGraph: {
+    siteName: "Planet Infinity",
+    locale: "en",
+    type: "website",
+    url: "https://planetinfinity.online",
+  },
 };
 
 export default function RootLayout({
@@ -27,11 +24,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      dir="ltr"
-      className={`${jakarta.variable} ${plexArabic.variable}`}
-    >
+    /* English-first. Arabic + RTL later: this becomes lang="ar" dir="rtl" and
+       the layout flips with it — no component rewrites needed. */
+    <html lang="en" dir="ltr" className={fontVariables}>
       <body>{children}</body>
     </html>
   );
