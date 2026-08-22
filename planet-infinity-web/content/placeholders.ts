@@ -95,6 +95,16 @@ export const PLACEHOLDERS = {
     value: null,
     note: "Must be one of the four locked states in content/cta.ts",
   },
+  bookingStatus: {
+    label: "Booking status",
+    value: null,
+    note: "Booking Confirmation PDF — e.g. CONFIRMED. Set by the real booking system.",
+  },
+  paymentStatus: {
+    label: "Payment status",
+    value: null,
+    note: "Booking Confirmation PDF — DEPOSIT PAID / FULLY PAID. No payment exists yet.",
+  },
   seatsTaken: {
     label: "Seats already booked",
     value: null,
