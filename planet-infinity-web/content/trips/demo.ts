@@ -5,9 +5,11 @@
  * genuinely independent. Every one is marked `isDemo: true`, renders with a
  * DEMO badge, and is listed only when there are no real trips.
  *
- * Prices, dates and meeting points here are invented FOR THE DEMO ONLY and
- * must never be presented as real. Real trips go in ./index.ts, which is
- * empty until Adam supplies them.
+ * These carry NO price and NO date. Nothing operational is invented here:
+ * price, dates, meeting point and departure time all render through the
+ * placeholder system, exactly as they will for a real trip whose details are
+ * not set yet. Real trips go in ./index.ts, which is empty until Adam
+ * supplies them.
  *
  *   A  selection off · seats off
  *   B  selection on  · seats off
@@ -104,7 +106,6 @@ export const DEMO_TRIPS: Trip[] = [
     ],
     destination: "Demo destination",
     duration: "3 days / 2 nights",
-    priceEgp: 4500,
     availability: "available",
     bookingMode: "request",
     tripSelectionEnabled: false,
@@ -122,7 +123,6 @@ export const DEMO_TRIPS: Trip[] = [
     ],
     destination: "Demo destination",
     duration: "4 days / 3 nights",
-    priceEgp: 6200,
     availability: "fewSpotsLeft",
     bookingMode: "request",
     tripSelectionEnabled: true,
@@ -132,12 +132,17 @@ export const DEMO_TRIPS: Trip[] = [
         id: "date",
         kind: "date",
         label: "Choose a departure",
-        hint: "Demo dates. Real departures are confirmed before they are listed.",
+        hint: "Departure dates are not set. These unlabelled options exist only to exercise the selection step.",
         required: true,
         choices: [
-          { id: "d1", label: "Demo departure 1" },
-          { id: "d2", label: "Demo departure 2" },
-          { id: "d3", label: "Demo departure 3", soldOut: true },
+          { id: "d1", label: "Departure option 1", detail: "Date not set" },
+          { id: "d2", label: "Departure option 2", detail: "Date not set" },
+          {
+            id: "d3",
+            label: "Departure option 3",
+            detail: "Date not set",
+            soldOut: true,
+          },
         ],
       },
       {
@@ -147,12 +152,7 @@ export const DEMO_TRIPS: Trip[] = [
         required: true,
         choices: [
           { id: "standard", label: "Standard", detail: "Shared room" },
-          {
-            id: "premium",
-            label: "Premium",
-            detail: "Private room",
-            priceDeltaEgp: 1800,
-          },
+          { id: "premium", label: "Premium", detail: "Private room" },
         ],
       },
     ],
@@ -170,7 +170,6 @@ export const DEMO_TRIPS: Trip[] = [
     ],
     destination: "Demo destination",
     duration: "1 day",
-    priceEgp: 1450,
     availability: "almostFull",
     bookingMode: "booking",
     tripSelectionEnabled: false,
@@ -193,7 +192,6 @@ export const DEMO_TRIPS: Trip[] = [
     ],
     destination: "Demo destination",
     duration: "2 days / 1 night",
-    priceEgp: 3100,
     availability: "available",
     bookingMode: "booking",
     tripSelectionEnabled: true,
@@ -206,7 +204,7 @@ export const DEMO_TRIPS: Trip[] = [
         required: true,
         choices: [
           { id: "sunrise", label: "Sunrise run" },
-          { id: "sunset", label: "Sunset run", priceDeltaEgp: 250 },
+          { id: "sunset", label: "Sunset run" },
         ],
       },
     ],

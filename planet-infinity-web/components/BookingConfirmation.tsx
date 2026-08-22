@@ -81,9 +81,11 @@ export function BookingConfirmation({ details }: { details: ConfirmationDetails 
         <div>
           <dt>Total</dt>
           <dd>
-            {details.totalEgp !== undefined
-              ? `${details.totalEgp.toLocaleString("en-US")} EGP`
-              : "—"}
+            {details.totalEgp !== undefined ? (
+              `${details.totalEgp.toLocaleString("en-US")} EGP`
+            ) : (
+              <Placeholder id="pricePerSeat" label="Price not set" />
+            )}
           </dd>
         </div>
         <div>

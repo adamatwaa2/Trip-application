@@ -83,7 +83,8 @@ export default async function TripPage({ params }: Params) {
           {trip.isDemo ? (
             <p className="pi-trip-hero__demo">
               <DemoBadge /> This is an architecture test case, not a real
-              Planet Infinity trip. Its prices and details are not real.
+              Planet Infinity trip. It carries no price and no dates —
+              everything operational shows as a placeholder.
             </p>
           ) : null}
 
