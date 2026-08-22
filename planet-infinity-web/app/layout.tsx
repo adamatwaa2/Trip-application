@@ -20,11 +20,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     /* English-first. Arabic + RTL later: this becomes lang="ar" dir="rtl" and
        the layout flips with it — no component rewrites needed. */

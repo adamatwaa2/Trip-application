@@ -4,17 +4,17 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Container } from "@/components/Container";
 import { EventBookingFlow } from "@/components/EventBookingFlow";
 import { Section } from "@/components/Section";
-import { allEvents, findEvent } from "@/content/events";
+import { getEventBySlug, getEventSlugs } from "@/content/source";
 
 type Params = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
-  return allEvents().map((event) => ({ slug: event.slug }));
+  return getEventSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const event = findEvent(slug);
+  const event = getEventBySlug(slug);
   return { title: event ? `Book — ${event.title}` : "Booking" };
 }
 
@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  */
 export default async function EventBookingPage({ params }: Params) {
   const { slug } = await params;
-  const event = findEvent(slug);
+  const event = getEventBySlug(slug);
   if (!event) notFound();
 
   return (

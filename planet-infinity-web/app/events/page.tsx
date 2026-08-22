@@ -8,7 +8,7 @@ import { Eyebrow } from "@/components/Eyebrow";
 import { Grid } from "@/components/Grid";
 import { Section } from "@/components/Section";
 import { CTA } from "@/content/cta";
-import { listedEvents } from "@/content/events";
+import { getListedEvents } from "@/content/source";
 
 export const metadata: Metadata = {
   title: "Events",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 export default function EventsPage() {
-  const { events, usingDemoData } = listedEvents();
+  const { events, usingDemoData } = getListedEvents();
 
   return (
     <div className="pi-world-events">

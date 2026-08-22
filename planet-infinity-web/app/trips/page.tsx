@@ -8,7 +8,7 @@ import { Grid } from "@/components/Grid";
 import { Section } from "@/components/Section";
 import { TripCard } from "@/components/TripCard";
 import { CTA } from "@/content/cta";
-import { listedTrips } from "@/content/trips";
+import { getListedTrips } from "@/content/source";
 
 export const metadata: Metadata = {
   title: "Travel",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 export default function TripsPage() {
-  const { trips, usingDemoData } = listedTrips();
+  const { trips, usingDemoData } = getListedTrips();
 
   return (
     <>

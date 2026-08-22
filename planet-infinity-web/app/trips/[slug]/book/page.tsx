@@ -4,17 +4,17 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
 import { TripBookingFlow } from "@/components/TripBookingFlow";
-import { allTrips, findTrip } from "@/content/trips";
+import { getTripBySlug, getTripSlugs } from "@/content/source";
 
 type Params = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
-  return allTrips().map((trip) => ({ slug: trip.slug }));
+  return getTripSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const trip = findTrip(slug);
+  const trip = getTripBySlug(slug);
   return { title: trip ? `Book — ${trip.title}` : "Booking" };
 }
 
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  */
 export default async function TripBookingPage({ params }: Params) {
   const { slug } = await params;
-  const trip = findTrip(slug);
+  const trip = getTripBySlug(slug);
   if (!trip) notFound();
 
   return (

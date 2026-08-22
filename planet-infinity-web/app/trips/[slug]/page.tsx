@@ -9,17 +9,17 @@ import { Section } from "@/components/Section";
 import { TripBookingModule } from "@/components/TripBookingModule";
 import { AvailabilityPill } from "@/components/AvailabilityPill";
 import { Placeholder } from "@/components/Placeholder";
-import { allTrips, findTrip } from "@/content/trips";
+import { getTripBySlug, getTripSlugs } from "@/content/source";
 
 type Params = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
-  return allTrips().map((trip) => ({ slug: trip.slug }));
+  return getTripSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const trip = findTrip(slug);
+  const trip = getTripBySlug(slug);
   if (!trip) return { title: "Trip not found" };
   return { title: trip.title, description: trip.shortDescription };
 }
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  */
 export default async function TripPage({ params }: Params) {
   const { slug } = await params;
-  const trip = findTrip(slug);
+  const trip = getTripBySlug(slug);
   if (!trip) notFound();
 
   return (

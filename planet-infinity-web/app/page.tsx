@@ -12,8 +12,7 @@ import { SectionHeading } from "@/components/SectionHeading";
 import { TripCard } from "@/components/TripCard";
 import { EventCard } from "@/components/EventCard";
 import { CTA } from "@/content/cta";
-import { FEATURED_EVENTS } from "@/content/events";
-import { FEATURED_TRIPS } from "@/content/trips";
+import { getFeaturedEvents, getFeaturedTrips } from "@/content/source";
 
 export const metadata: Metadata = {
   title: "Trips and events out of Dahab",
@@ -34,6 +33,9 @@ export const metadata: Metadata = {
  * sections show the shape the content will take and say so plainly.
  */
 export default function HomePage() {
+  const featuredTrips = getFeaturedTrips();
+  const featuredEvents = getFeaturedEvents();
+
   return (
     <>
       {/* 2 — Hero */}
@@ -100,9 +102,9 @@ export default function HomePage() {
             }
           />
 
-          {FEATURED_TRIPS.length > 0 ? (
+          {featuredTrips.length > 0 ? (
             <Grid columns={3}>
-              {FEATURED_TRIPS.map((trip) => (
+              {featuredTrips.map((trip) => (
                 <TripCard key={trip.slug} trip={trip} />
               ))}
             </Grid>
@@ -137,9 +139,9 @@ export default function HomePage() {
             }
           />
 
-          {FEATURED_EVENTS.length > 0 ? (
+          {featuredEvents.length > 0 ? (
             <Grid columns={3}>
-              {FEATURED_EVENTS.map((event) => (
+              {featuredEvents.map((event) => (
                 <EventCard key={event.slug} event={event} />
               ))}
             </Grid>

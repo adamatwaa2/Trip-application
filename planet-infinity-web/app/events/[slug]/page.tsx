@@ -9,17 +9,17 @@ import { Eyebrow } from "@/components/Eyebrow";
 import { MediaBlock } from "@/components/MediaBlock";
 import { Placeholder } from "@/components/Placeholder";
 import { Section } from "@/components/Section";
-import { allEvents, findEvent } from "@/content/events";
+import { getEventBySlug, getEventSlugs } from "@/content/source";
 
 type Params = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
-  return allEvents().map((event) => ({ slug: event.slug }));
+  return getEventSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const event = findEvent(slug);
+  const event = getEventBySlug(slug);
   if (!event) return { title: "Event not found" };
   return { title: event.title, description: event.shortDescription };
 }
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  */
 export default async function EventPage({ params }: Params) {
   const { slug } = await params;
-  const event = findEvent(slug);
+  const event = getEventBySlug(slug);
   if (!event) notFound();
 
   return (
