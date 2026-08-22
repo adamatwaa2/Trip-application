@@ -1,0 +1,53 @@
+{%- comment -%}
+  Merch and Themes. Deliberately empty of product: no fake items, no fake
+  prices, no catalogue behind it. When merch launches, point the block at a
+  real Shopify collection and swap this for a Featured collection section.
+{%- endcomment -%}
+<section class="pi-section pi-section--{{ section.settings.tone }}">
+  <div class="pi-container pi-container--default">
+    <div class="pi-heading">
+      <div class="pi-heading__text">
+        <p class="pi-eyebrow">{{ section.settings.eyebrow }}</p>
+        <h2 class="pi-heading__title pi-heading__title--d2">{{ section.settings.title }}</h2>
+        {%- if section.settings.lede != blank -%}<p class="pi-heading__lede">{{ section.settings.lede }}</p>{%- endif -%}
+      </div>
+    </div>
+
+    <div class="pi-grid pi-grid--2">
+      {%- for block in section.blocks -%}
+        <article class="pi-soon" {{ block.shopify_attributes }}>
+          <p class="pi-soon__eyebrow">{{ block.settings.eyebrow }}<span class="pi-nav__chip">Soon</span></p>
+          <h3 class="pi-soon__title">{{ block.settings.title }}</h3>
+          <p class="pi-soon__body">{{ block.settings.body }}</p>
+        </article>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Coming soon",
+  "settings": [
+    { "type": "select", "id": "tone", "label": "Background", "options": [
+      { "value": "ivory", "label": "Ivory" }, { "value": "white", "label": "White" }
+    ], "default": "white" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Coming soon" },
+    { "type": "text", "id": "title", "label": "Title", "default": "The rest of the universe" },
+    { "type": "textarea", "id": "lede", "label": "Lede" }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Merch" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Planet Infinity merch" },
+        { "type": "textarea", "id": "body", "label": "Body" }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [{ "name": "Coming soon" }]
+}
+{% endschema %}

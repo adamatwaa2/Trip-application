@@ -46,7 +46,7 @@ export default function HomePage() {
       <Section tone="ivory" className="pi-hero">
         <Container>
           <div className="pi-hero__mark">
-            <BrandLogo world="general" size={96} />
+            <BrandLogo world="general" height={96} priority />
           </div>
           <Eyebrow>Travel · Experiences · Events</Eyebrow>
           <h1 className="pi-hero__title">Escape the ordinary</h1>

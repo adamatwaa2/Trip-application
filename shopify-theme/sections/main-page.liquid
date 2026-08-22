@@ -1,0 +1,21 @@
+<section class="pi-section pi-section--ivory pi-listing-hero">
+  <div class="pi-container pi-container--read">
+    <nav class="pi-crumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span></li>
+        <li><span aria-current="page">{{ page.title }}</span></li>
+      </ol>
+    </nav>
+    <h1 class="pi-listing-hero__title">{{ page.title }}</h1>
+  </div>
+</section>
+
+<section class="pi-section pi-section--white">
+  <div class="pi-container pi-container--read">
+    <div class="pi-intro">{{ page.content }}</div>
+  </div>
+</section>
+
+{% schema %}
+{ "name": "Page" }
+{% endschema %}

@@ -1,0 +1,22 @@
+{
+  "type": "footer",
+  "name": "Footer",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "worlds": { "type": "column", "settings": { "title": "Worlds" } },
+        "company": { "type": "column", "settings": { "title": "Company" } },
+        "soon": { "type": "column", "settings": { "title": "Coming soon", "soon_items": "Themes, Merch" } }
+      },
+      "block_order": ["worlds", "company", "soon"],
+      "settings": {
+        "wordmark": "Planet Infinity",
+        "tagline": "Travel, experiences and events. One brand, more than one world.",
+        "legal_line": "Planet Infinity Entertainment",
+        "social_line": "@planetinfinity.ent"
+      }
+    }
+  },
+  "order": ["footer"]
+}

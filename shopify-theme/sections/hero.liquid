@@ -1,0 +1,60 @@
+<section class="pi-section pi-section--ivory pi-hero">
+  <div class="pi-container pi-container--default">
+    {%- liquid
+      assign hero_logo = 'planet-infinity-orange.png' | asset_url
+      if section.settings.logo != blank
+        assign hero_logo = section.settings.logo | image_url: height: 192
+      endif
+    -%}
+    <div class="pi-hero__mark">
+      <img src="{{ hero_logo }}" alt="{{ shop.name }}" class="pi-logo" loading="eager">
+    </div>
+
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="pi-eyebrow">{{ section.settings.eyebrow }}</p>
+    {%- endif -%}
+
+    <h1 class="pi-hero__title">{{ section.settings.title }}</h1>
+
+    {%- if section.settings.lede != blank -%}
+      <p class="pi-hero__lede">{{ section.settings.lede }}</p>
+    {%- endif -%}
+
+    <div class="pi-hero__actions">
+      {%- if section.settings.cta_one_label != blank -%}
+        <a href="{{ section.settings.cta_one_url }}" class="pi-btn pi-btn--primary pi-btn--large">{{ section.settings.cta_one_label }}</a>
+      {%- endif -%}
+      {%- if section.settings.cta_two_label != blank -%}
+        <a href="{{ section.settings.cta_two_url }}" class="pi-btn pi-btn--secondary pi-btn--large">{{ section.settings.cta_two_label }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- if section.settings.image != blank -%}
+    <div class="pi-container pi-container--default pi-hero__media">
+      <div class="pi-media pi-media--21-9 pi-media--radius-hero">
+        <img src="{{ section.settings.image | image_url: width: 2560 }}"
+             alt="{{ section.settings.image.alt | escape }}" class="pi-media__img" loading="eager">
+      </div>
+    </div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Hero",
+  "settings": [
+    { "type": "image_picker", "id": "logo", "label": "Logo (orange)" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Travel · Experiences · Events" },
+    { "type": "text", "id": "title", "label": "Headline", "default": "Escape the ordinary" },
+    { "type": "textarea", "id": "lede", "label": "Sub-headline", "default": "Planet Infinity runs the whole adventure — the roads, the nights and everything in between — so you only carry the memories." },
+    { "type": "image_picker", "id": "image", "label": "Hero image (optional)" },
+    { "type": "header", "content": "Actions" },
+    { "type": "text", "id": "cta_one_label", "label": "Primary CTA label", "default": "Explore travel" },
+    { "type": "url", "id": "cta_one_url", "label": "Primary CTA link" },
+    { "type": "text", "id": "cta_two_label", "label": "Secondary CTA label", "default": "Explore events" },
+    { "type": "url", "id": "cta_two_url", "label": "Secondary CTA link" }
+  ],
+  "presets": [{ "name": "Hero" }]
+}
+{% endschema %}

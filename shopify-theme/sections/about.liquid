@@ -1,0 +1,24 @@
+<section class="pi-section pi-section--{{ section.settings.tone }}">
+  <div class="pi-container pi-container--read">
+    <div class="pi-intro">
+      {%- if section.settings.eyebrow != blank -%}<p class="pi-eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
+      {%- if section.settings.lead != blank -%}<p class="pi-intro__lead">{{ section.settings.lead }}</p>{%- endif -%}
+      <div class="pi-intro__body">{{ section.settings.body }}</div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "About",
+  "settings": [
+    { "type": "select", "id": "tone", "label": "Background", "options": [
+      { "value": "ivory", "label": "Ivory" }, { "value": "white", "label": "White" }
+    ], "default": "ivory" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Who we are" },
+    { "type": "textarea", "id": "lead", "label": "Lead line", "default": "Planet Infinity is a travel company and an events company, run by the same people to the same standard." },
+    { "type": "richtext", "id": "body", "label": "Body" }
+  ],
+  "presets": [{ "name": "About" }]
+}
+{% endschema %}

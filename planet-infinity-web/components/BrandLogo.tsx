@@ -1,43 +1,40 @@
 import Image from "next/image";
-import {
-  BRAND_LOGOS_INSTALLED,
-  LOGO_FILES,
-  type BrandWorld,
-} from "@/content/brand";
+import { LOGOS, type BrandWorld } from "@/content/brand";
 
 type BrandLogoProps = {
   /** `events` uses the violet mark; everything else uses the orange one. */
   world?: BrandWorld;
-  size?: number;
+  /** Rendered height in pixels. Width follows the artwork's own ratio. */
+  height?: number;
+  priority?: boolean;
   className?: string;
 };
 
 /**
- * The Planet Infinity mark.
+ * The Planet Infinity mark — the supplied artwork, rendered as-is.
  *
- * Renders the supplied artwork as-is: no recolouring, no redrawing, no filter
- * or effect over it, and the square aspect ratio is preserved so it cannot be
- * distorted at any breakpoint.
- *
- * While the files are missing it renders NOTHING rather than a stand-in — no
- * circle, no letter, no generated substitute. The wordmark beside it carries
- * the brand until the real mark arrives. See content/brand.ts to install.
+ * No recolouring, no redrawing, no filters over it. Each file carries its own
+ * intrinsic dimensions, so the two marks keep their own aspect ratios and
+ * neither is stretched to match the other.
  */
 export function BrandLogo({
   world = "general",
-  size = 34,
+  height = 34,
+  priority = false,
   className,
 }: BrandLogoProps) {
-  if (!BRAND_LOGOS_INSTALLED) return null;
+  const logo = LOGOS[world];
+  const width = Math.round((logo.width / logo.height) * height);
 
   return (
     <Image
-      src={LOGO_FILES[world]}
+      src={logo.src}
       alt="Planet Infinity"
-      width={size}
-      height={size}
-      priority
+      width={width}
+      height={height}
+      priority={priority}
       className={["pi-logo", className].filter(Boolean).join(" ")}
+      style={{ height, width: "auto" }}
     />
   );
 }

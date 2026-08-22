@@ -1,0 +1,36 @@
+<section class="pi-section pi-section--ivory pi-listing-hero">
+  <div class="pi-container pi-container--default">
+    <p class="pi-eyebrow">Explore</p>
+    <h1 class="pi-listing-hero__title">Everything we run</h1>
+    <p class="pi-listing-hero__lede">Two worlds are open today and more of the universe is on the way.</p>
+  </div>
+</section>
+
+<section class="pi-section pi-section--white">
+  <div class="pi-container pi-container--default">
+    {%- if collections.size > 0 -%}
+      <div class="pi-grid pi-grid--3">
+        {%- for collection in collections -%}
+          <a href="{{ collection.url }}" class="pi-card pi-card--link">
+            <div class="pi-media pi-media--3-2 pi-media--radius-card{% unless collection.image %} pi-media--empty{% endunless %}">
+              {%- if collection.image -%}
+                <img src="{{ collection.image | image_url: width: 900 }}" alt="{{ collection.image.alt | escape }}" class="pi-media__img" loading="lazy">
+              {%- else -%}
+                <span class="pi-media__note">Photography pending</span>
+              {%- endif -%}
+            </div>
+            <div class="pi-card__body">
+              <h2 class="pi-card__title">{{ collection.title }}</h2>
+              <p class="pi-card__summary">{{ collection.products_count }} {{ collection.products_count | pluralize: 'item', 'items' }}</p>
+            </div>
+          </a>
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <div class="pi-empty">
+        <h2 class="pi-empty__title">Nothing to explore yet</h2>
+        <p class="pi-empty__body">Collections created in Shopify appear here automatically.</p>
+      </div>
+    {%- endif -%}
+  </div>
+</section>

@@ -7,26 +7,26 @@ type BrandLockupProps = {
   tone?: "ink" | "ivory";
   /** `events` swaps the orange mark for the violet one. */
   world?: BrandWorld;
-  size?: number;
+  /** Rendered logo height. */
+  height?: number;
   asLink?: boolean;
 };
 
 /**
  * Mark + wordmark, the lockup PI-WB-002 uses for itself.
  *
- * The mark comes from the supplied artwork (see components/BrandLogo). Until
- * those files are installed the lockup is the wordmark alone — deliberately
- * no placeholder circle, no generic glyph, no substitute.
+ * The mark is the supplied artwork (see components/BrandLogo), paired with
+ * the wordmark — the same lockup PI-WB-002 uses for itself.
  */
 export function BrandLockup({
   tone = "ink",
   world = "general",
-  size = 34,
+  height = 34,
   asLink = true,
 }: BrandLockupProps) {
   const content = (
     <>
-      <BrandLogo world={world} size={size} />
+      <BrandLogo world={world} height={height} priority />
       <span className="pi-brand__word">Planet Infinity</span>
     </>
   );
