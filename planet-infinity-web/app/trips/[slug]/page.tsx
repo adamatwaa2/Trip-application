@@ -58,7 +58,7 @@ export default async function TripPage({ params }: Params) {
             </div>
             <div>
               <dt>Duration</dt>
-              <dd>{trip.duration ?? <Placeholder id="tripDuration" />}</dd>
+              <dd>{trip.duration ?? <Placeholder id="tripDuration" label="Not set" />}</dd>
             </div>
             <div>
               <dt>Meeting point</dt>

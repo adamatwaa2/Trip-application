@@ -2,6 +2,7 @@ import { bookingSteps, STEP_LABELS, type Trip } from "@/content/trips";
 import { CTA } from "@/content/cta";
 import { AvailabilityPill } from "./AvailabilityPill";
 import { ButtonLink } from "./Button";
+import { Placeholder } from "./Placeholder";
 import { Price } from "./Price";
 
 /**
@@ -48,9 +49,9 @@ export function TripBookingModule({ trip }: { trip: Trip }) {
         <AvailabilityPill state={trip.availability} />
       </div>
 
-      {trip.duration ? (
-        <p className="pi-booking__meta">{trip.duration}</p>
-      ) : null}
+      <p className="pi-booking__meta">
+        {trip.duration ?? <Placeholder id="tripDuration" label="Duration not set" />}
+      </p>
 
       {/* What this particular trip's flow actually involves. */}
       <ol className="pi-booking__steps">

@@ -3,6 +3,7 @@ import { AvailabilityPill } from "./AvailabilityPill";
 import { Card } from "./Card";
 import { DemoBadge } from "./DemoBadge";
 import { MediaBlock } from "./MediaBlock";
+import { Placeholder } from "./Placeholder";
 import { Price } from "./Price";
 
 /**
@@ -16,19 +17,14 @@ import { Price } from "./Price";
  * are booked the same way. The detail page decides.
  */
 export function TripCard({ trip }: { trip: Trip }) {
-  const meta = [trip.destination, trip.duration].filter(Boolean);
-
   return (
     <Card href={`/trips/${trip.slug}`} className="pi-tripcard">
       <MediaBlock src={trip.media.hero} alt={trip.media.heroAlt ?? ""} ratio="3-2" />
       <div className="pi-card__body">
         <p className="pi-card__meta">
-          {meta.map((item, index) => (
-            <span key={item}>
-              {index > 0 ? <span aria-hidden="true"> · </span> : null}
-              {item}
-            </span>
-          ))}
+          {trip.destination}
+          <span aria-hidden="true"> · </span>
+          {trip.duration ?? <Placeholder id="tripDuration" label="Duration not set" />}
         </p>
 
         <h3 className="pi-card__title">{trip.title}</h3>

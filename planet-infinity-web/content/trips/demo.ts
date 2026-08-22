@@ -5,7 +5,7 @@
  * genuinely independent. Every one is marked `isDemo: true`, renders with a
  * DEMO badge, and is listed only when there are no real trips.
  *
- * These carry NO price and NO date. Nothing operational is invented here:
+ * These carry NO price, NO date and NO duration. Nothing operational is invented here:
  * price, dates, meeting point and departure time all render through the
  * placeholder system, exactly as they will for a real trip whose details are
  * not set yet. Real trips go in ./index.ts, which is empty until Adam
@@ -105,7 +105,6 @@ export const DEMO_TRIPS: Trip[] = [
       "Most Planet Infinity trips behave exactly like this one.",
     ],
     destination: "Demo destination",
-    duration: "3 days / 2 nights",
     availability: "available",
     bookingMode: "request",
     tripSelectionEnabled: false,
@@ -122,7 +121,6 @@ export const DEMO_TRIPS: Trip[] = [
       "This is an architecture test case, not a real trip. It proves that a trip can offer a selection step — a date, a package, an edition — without any seat map being involved.",
     ],
     destination: "Demo destination",
-    duration: "4 days / 3 nights",
     availability: "fewSpotsLeft",
     bookingMode: "request",
     tripSelectionEnabled: true,
@@ -169,7 +167,6 @@ export const DEMO_TRIPS: Trip[] = [
       "Seat booking is the exception, not the rule.",
     ],
     destination: "Demo destination",
-    duration: "1 day",
     availability: "almostFull",
     bookingMode: "booking",
     tripSelectionEnabled: false,
@@ -191,7 +188,6 @@ export const DEMO_TRIPS: Trip[] = [
       "This is an architecture test case, not a real trip. It proves the two capabilities compose: the guest chooses an option, then chooses a seat, and both carry through to the review step.",
     ],
     destination: "Demo destination",
-    duration: "2 days / 1 night",
     availability: "available",
     bookingMode: "booking",
     tripSelectionEnabled: true,
