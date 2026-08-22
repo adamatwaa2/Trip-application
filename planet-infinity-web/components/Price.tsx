@@ -6,19 +6,27 @@
  * number. It never shows 0, "TBA", "from", or a guess.
  */
 import { Placeholder } from "./Placeholder";
+import type { PlaceholderId } from "@/content/placeholders";
 
 type PriceProps = {
   egp?: number;
   /** e.g. "per person", "per seat", "per ticket". */
   unit?: string;
   size?: "default" | "large";
+  /** Which unknown this price belongs to, when no value is set. */
+  placeholderId?: PlaceholderId;
 };
 
-export function Price({ egp, unit, size = "default" }: PriceProps) {
+export function Price({
+  egp,
+  unit,
+  size = "default",
+  placeholderId = "pricePerSeat",
+}: PriceProps) {
   if (egp === undefined) {
     return (
       <span className={`pi-price pi-price--${size}`}>
-        <Placeholder id="pricePerSeat" label="Price not set" />
+        <Placeholder id={placeholderId} label="Price not set" />
       </span>
     );
   }

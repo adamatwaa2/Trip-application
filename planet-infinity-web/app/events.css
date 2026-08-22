@@ -1,0 +1,113 @@
+/* ===========================================================================
+   Planet Infinity — events system
+   Ticket selection and quantity. Shared page chrome (listing hero, detail
+   layout, booking module, flow, confirmation) is reused from trips.css so the
+   two products look like one website; the components behind them are separate.
+   Every value resolves to a token in tokens.css.
+   =========================================================================== */
+
+/* ---------- ticket / option selection ---------- */
+.pi-tickets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pi-s1);
+}
+.pi-ticket {
+  display: flex;
+  align-items: center;
+  gap: var(--pi-s2);
+  min-height: 64px;
+  padding: var(--pi-s2);
+  border: 1.5px solid var(--pi-line);
+  border-radius: var(--pi-r-chip);
+  background: #fff;
+  cursor: pointer;
+}
+.pi-ticket--checked {
+  border-color: var(--pi-ember);
+  background: rgba(242, 113, 39, 0.05);
+}
+.pi-ticket--soldout {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.pi-ticket input {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  accent-color: var(--pi-orange);
+}
+.pi-ticket__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+.pi-ticket__label {
+  font-weight: 700;
+  font-size: var(--pi-ui);
+}
+.pi-ticket__detail {
+  font-size: 13px;
+  color: var(--pi-soft);
+}
+.pi-ticket__remaining {
+  margin-top: 2px;
+  font-family: var(--pi-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pi-soft);
+}
+.pi-ticket__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex: none;
+}
+
+/* ---------- quantity ---------- */
+.pi-qty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pi-s2);
+  align-items: flex-start;
+}
+.pi-qty__control {
+  display: flex;
+  align-items: center;
+  gap: var(--pi-s1);
+  border: 1.5px solid var(--pi-line);
+  border-radius: var(--pi-r-pill);
+  padding: 4px;
+}
+.pi-qty__btn {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--pi-r-pill);
+  border: none;
+  background: var(--pi-ivory);
+  color: var(--pi-ink);
+  font-size: 20px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.pi-qty__btn:disabled {
+  color: var(--pi-soft);
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.pi-qty__value {
+  min-width: 56px;
+  text-align: center;
+  font-family: var(--pi-display);
+  font-weight: 700;
+  font-size: 21px;
+  font-variant-numeric: tabular-nums;
+}
+.pi-qty__limits {
+  margin: 0;
+  font-size: 13px;
+  color: var(--pi-soft);
+}

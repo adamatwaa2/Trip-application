@@ -4,11 +4,11 @@ import { ButtonLink } from "@/components/Button";
 import { Container } from "@/components/Container";
 import { EmptyState } from "@/components/EmptyState";
 import { EventCard } from "@/components/EventCard";
+import { Eyebrow } from "@/components/Eyebrow";
 import { Grid } from "@/components/Grid";
 import { Section } from "@/components/Section";
-import { SectionHeading } from "@/components/SectionHeading";
 import { CTA } from "@/content/cta";
-import { EVENTS } from "@/content/events";
+import { listedEvents } from "@/content/events";
 
 export const metadata: Metadata = {
   title: "Events",
@@ -16,44 +16,56 @@ export const metadata: Metadata = {
     "Beach sessions, movie nights and full-moon parties from Planet Infinity Entertainment.",
 };
 
-/**
- * Events listing.
- *
- * Minimal by design, same as /trips: it exists so navigation leads somewhere
- * real. Event detail pages at /events/[slug] and ticketing are designed
- * separately.
- */
 export default function EventsPage() {
-  return (
-    <Section tone="ivory">
-      <Container>
-        <Breadcrumbs trail={[{ label: "Home", href: "/" }, { label: "Events" }]} />
-        <SectionHeading
-          eyebrow="Events"
-          title="The nights we throw"
-          lede="Beach sessions, movie nights, full-moon parties. The other half of what we do."
-          level="h1"
-          as="h1"
-        />
+  const { events, usingDemoData } = listedEvents();
 
-        {EVENTS.length > 0 ? (
-          <Grid columns={3}>
-            {EVENTS.map((event) => (
-              <EventCard key={event.slug} event={event} />
-            ))}
-          </Grid>
-        ) : (
-          <EmptyState
-            title="The next dates are being locked in"
-            body="Line-ups, venues and ticket details are confirmed before an event is listed. Nothing is announced here before it is certain."
-            action={
-              <ButtonLink href="/trips" variant="secondary">
-                {CTA.exploreTravel}
-              </ButtonLink>
-            }
+  return (
+    <>
+      <Section tone="ivory" className="pi-listing-hero">
+        <Container>
+          <Breadcrumbs
+            trail={[{ label: "Home", href: "/" }, { label: "Events" }]}
           />
-        )}
-      </Container>
-    </Section>
+          <Eyebrow>Events</Eyebrow>
+          <h1 className="pi-listing-hero__title">The nights we throw</h1>
+          <p className="pi-listing-hero__lede">
+            Beach sessions, movie nights, full-moon parties. Run by the same
+            crew that runs the trips — and no two are ticketed the same way.
+          </p>
+        </Container>
+      </Section>
+
+      <Section tone="white">
+        <Container>
+          {usingDemoData ? (
+            <div className="pi-demo-banner" role="note">
+              <strong>These are architecture test cases, not real events.</strong>{" "}
+              The four demo configurations below exist to prove that ticket
+              selection, quantity and the request path work independently. Real
+              events replace them entirely — nothing here is a Planet Infinity
+              night, and no name, date, venue, price or ticket on them is real.
+            </div>
+          ) : null}
+
+          {events.length > 0 ? (
+            <Grid columns={3}>
+              {events.map((event) => (
+                <EventCard key={event.id} event={event} />
+              ))}
+            </Grid>
+          ) : (
+            <EmptyState
+              title="The next dates are being locked in"
+              body="Line-ups, venues and ticket details are confirmed before an event is listed. Nothing is announced here before it is certain."
+              action={
+                <ButtonLink href="/trips" variant="secondary">
+                  {CTA.exploreTravel}
+                </ButtonLink>
+              }
+            />
+          )}
+        </Container>
+      </Section>
+    </>
   );
 }

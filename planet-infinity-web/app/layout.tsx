@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     template: "%s — Planet Infinity",
   },
   description:
-    "Planet Infinity Entertainment — travel, events and themes from Dahab, South Sinai.",
+    "Planet Infinity Entertainment — trips and events out of Dahab, South Sinai.",
   openGraph: {
     siteName: "Planet Infinity",
     locale: "en",

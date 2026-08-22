@@ -16,6 +16,7 @@
 @import "./shell.css";
 @import "./components.css";
 @import "./trips.css";
+@import "./events.css";
 
 /* ---------- page intro ----------
    The old per-page Deep Ink banners were replaced by the shell header in

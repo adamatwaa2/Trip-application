@@ -77,6 +77,13 @@ export const PLACEHOLDERS = {
     note: "Terms PDF 3.1 states 50% of booking value — confirm before showing",
   },
 
+  // --- events ------------------------------------------------------------
+  eventDate: { label: "Event date", value: null },
+  eventTime: { label: "Event time", value: null },
+  eventVenue: { label: "Venue", value: null },
+  eventCapacity: { label: "Capacity", value: null },
+  ticketPrice: { label: "Ticket price", value: null, note: "EGP, tabular" },
+
   // --- stay & transport --------------------------------------------------
   hotelOrCamp: { label: "Hotel / camp", value: null },
   roomType: { label: "Room type", value: null },
