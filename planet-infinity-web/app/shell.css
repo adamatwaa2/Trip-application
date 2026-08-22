@@ -59,14 +59,20 @@
   letter-spacing: -0.01em;
   white-space: nowrap;
 }
-/* The 3D master mark is not supplied yet. Empty slot, never a stand-in. */
-.pi-brand__mark {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: 1.5px dashed currentColor;
-  opacity: 0.45;
+/* The supplied mark, rendered as-is: square, never stretched, no effects. */
+.pi-logo {
+  width: auto;
+  height: auto;
+  max-height: 34px;
   flex: none;
+}
+@media (max-width: 899px) {
+  .pi-logo {
+    max-height: 30px;
+  }
+  .pi-brand__word {
+    font-size: 18px;
+  }
 }
 .pi-brand--ink {
   color: var(--pi-ink);
@@ -111,9 +117,12 @@
   margin-inline-start: auto;
 }
 .pi-nav__link {
-  font-size: var(--pi-ui);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
   font-weight: 700;
-  padding: 8px 14px;
+  padding: 8px 12px;
   border-radius: var(--pi-r-pill);
   text-decoration: none;
   color: inherit;
@@ -122,13 +131,39 @@
 .pi-nav__link:hover {
   background: rgba(15, 30, 40, 0.06);
 }
-/* Routes that do not exist yet: quiet, not clickable, never a 404. */
-.pi-nav__link--pending {
-  opacity: 0.42;
+/* Not open yet: visible and intentional, not clickable, never a 404. */
+.pi-nav__link--soon {
+  opacity: 0.55;
   cursor: default;
 }
-.pi-nav__link--pending:hover {
+.pi-nav__link--soon:hover {
   background: none;
+}
+.pi-nav__link--current {
+  background: rgba(15, 30, 40, 0.06);
+}
+.pi-nav__chip {
+  font-family: var(--pi-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: var(--pi-r-pill);
+  border: 1px solid currentColor;
+  opacity: 0.8;
+}
+.pi-mobile__link--soon {
+  opacity: 0.5;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pi-s2);
+}
+.pi-footer__link--soon {
+  opacity: 0.5;
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pi-s1);
 }
 .pi-header__cta {
   flex: none;
@@ -235,7 +270,7 @@
 }
 .pi-footer__top {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: 1fr 2.2fr;
   gap: var(--pi-s6);
 }
 .pi-footer__line {
@@ -246,8 +281,8 @@
 }
 .pi-footer__cols {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--pi-s3);
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--pi-s4) var(--pi-s3);
 }
 .pi-footer__heading {
   font-family: var(--pi-mono);

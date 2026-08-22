@@ -629,3 +629,149 @@
 .pi-crumbs {
   margin-bottom: var(--pi-s3);
 }
+
+/* ---------- hero mark ---------- */
+.pi-hero__mark {
+  margin-bottom: var(--pi-s3);
+}
+.pi-hero__mark:empty {
+  display: none;
+}
+.pi-hero__mark .pi-logo {
+  max-height: 96px;
+}
+@media (max-width: 899px) {
+  .pi-hero__mark .pi-logo {
+    max-height: 68px;
+  }
+}
+
+/* ---------- coming soon ---------- */
+.pi-soon {
+  border: 1px solid var(--pi-line);
+  border-radius: var(--pi-r-card);
+  background: var(--pi-ivory);
+  padding: var(--pi-s4);
+}
+.pi-soon__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--pi-s2);
+  margin: 0 0 var(--pi-s2);
+  font-family: var(--pi-mono);
+  font-size: var(--pi-micro);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--pi-soft);
+}
+.pi-soon__title {
+  margin: 0 0 var(--pi-s2);
+  font-family: var(--pi-display);
+  font-weight: 700;
+  font-size: var(--pi-h2);
+  letter-spacing: -0.02em;
+}
+.pi-soon__body {
+  margin: 0;
+  max-width: 46ch;
+  font-size: var(--pi-ui);
+  line-height: 1.7;
+  color: var(--pi-soft);
+}
+
+/* A world that is not open yet reads quieter than the two that are. */
+.pi-world--locked {
+  opacity: 0.72;
+}
+.pi-world--locked .pi-world__number {
+  display: flex;
+  align-items: center;
+  gap: var(--pi-s2);
+}
+
+/* ---------- explore ---------- */
+.pi-explore-card {
+  border: 1px solid var(--pi-line);
+  border-radius: var(--pi-r-card);
+  background: #fff;
+  padding: var(--pi-s4);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--pi-s2);
+}
+.pi-explore-card__count {
+  margin: 0;
+  font-family: var(--pi-display);
+  font-weight: 700;
+  font-size: var(--pi-h2);
+  font-variant-numeric: tabular-nums;
+  color: var(--pi-line);
+  line-height: 1;
+}
+.pi-explore-card__title {
+  margin: 0;
+  font-family: var(--pi-display);
+  font-weight: 700;
+  font-size: var(--pi-h2);
+  letter-spacing: -0.02em;
+}
+.pi-explore-card__body {
+  margin: 0;
+  max-width: 46ch;
+  font-size: var(--pi-ui);
+  line-height: 1.7;
+  color: var(--pi-soft);
+}
+.pi-explore-card__note {
+  margin: 0 0 var(--pi-s2);
+  font-family: var(--pi-mono);
+  font-size: var(--pi-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pi-ember);
+}
+.pi-world-events .pi-explore-card__note {
+  color: var(--pi-soft);
+}
+
+/* ---------- contact ---------- */
+.pi-contact {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pi-s4);
+}
+.pi-contact dt {
+  font-family: var(--pi-mono);
+  font-size: var(--pi-micro);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pi-soft);
+}
+.pi-contact dd {
+  margin: var(--pi-s1) 0 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+.pi-contact__note {
+  margin: var(--pi-s5) 0 0;
+  max-width: 60ch;
+  line-height: 1.75;
+  color: var(--pi-soft);
+}
+.pi-contact__actions {
+  margin-top: var(--pi-s4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pi-s2);
+}
+@media (max-width: 599px) {
+  .pi-contact {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--pi-s3);
+  }
+  .pi-contact__actions .pi-btn {
+    flex: 1 1 100%;
+  }
+}

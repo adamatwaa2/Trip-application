@@ -2,18 +2,22 @@ import Link from "next/link";
 import { BrandLockup } from "./BrandLockup";
 import { Container } from "./Container";
 import { Placeholder } from "./Placeholder";
-import { PLAN_LINKS, POLICY_LINKS, PRIMARY_NAV, type NavItem } from "@/content/nav";
+import {
+  COMING_SOON_LINKS,
+  COMPANY_LINKS,
+  PLAN_LINKS,
+  POLICY_LINKS,
+  WORLD_NAV,
+  type NavItem,
+} from "@/content/nav";
 
 function FooterLink({ item }: { item: NavItem }) {
-  if (!item.ready) {
+  if (item.status === "soon") {
     return (
       <li>
-        <span
-          className="pi-footer__link pi-footer__link--pending"
-          aria-disabled="true"
-          title="This page is not built yet"
-        >
+        <span className="pi-footer__link pi-footer__link--soon" aria-disabled="true">
           {item.label}
+          <span className="pi-nav__chip">{item.note ?? "Soon"}</span>
         </span>
       </li>
     );
@@ -28,11 +32,25 @@ function FooterLink({ item }: { item: NavItem }) {
   );
 }
 
+function Column({ title, items }: { title: string; items: NavItem[] }) {
+  return (
+    <div>
+      <h2 className="pi-footer__heading">{title}</h2>
+      <ul className="pi-footer__list">
+        {items.map((item) => (
+          <FooterLink key={item.href} item={item} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 /**
- * The footer is the site's standing Deep Ink section. Under CLAUDE.md a page
- * may carry one further dark section beyond this one, never adjacent to it.
+ * The footer is the site's standing Deep Ink section — a page may carry one
+ * further dark section, never adjacent to this one.
  *
- * Every contact detail is a placeholder — none of it is invented.
+ * Contact details are placeholders. Nothing here is invented; the address
+ * line is the registered company location from PI-WB-002.
  */
 export function SiteFooter() {
   return (
@@ -42,39 +60,18 @@ export function SiteFooter() {
           <div className="pi-footer__brand">
             <BrandLockup tone="ivory" />
             <p className="pi-footer__line">
-              Planet Infinity Entertainment
+              Travel, experiences and events.
               <br />
-              Dahab · South Sinai · Egypt
+              One brand, more than one world.
             </p>
           </div>
 
           <div className="pi-footer__cols">
-            <div>
-              <h2 className="pi-footer__heading">Explore</h2>
-              <ul className="pi-footer__list">
-                {PRIMARY_NAV.map((item) => (
-                  <FooterLink key={item.href} item={item} />
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h2 className="pi-footer__heading">Plan</h2>
-              <ul className="pi-footer__list">
-                {PLAN_LINKS.map((item) => (
-                  <FooterLink key={item.href} item={item} />
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h2 className="pi-footer__heading">Policies</h2>
-              <ul className="pi-footer__list">
-                {POLICY_LINKS.map((item) => (
-                  <FooterLink key={item.href} item={item} />
-                ))}
-              </ul>
-            </div>
+            <Column title="Worlds" items={WORLD_NAV} />
+            <Column title="Plan" items={PLAN_LINKS} />
+            <Column title="Company" items={COMPANY_LINKS} />
+            <Column title="Coming soon" items={COMING_SOON_LINKS} />
+            <Column title="Policies" items={POLICY_LINKS} />
 
             <div>
               <h2 className="pi-footer__heading">Talk to us</h2>
@@ -85,22 +82,17 @@ export function SiteFooter() {
                 <li className="pi-footer__contact">
                   Email <Placeholder id="reservationsEmail" />
                 </li>
-                <li className="pi-footer__contact">
-                  Hours <Placeholder id="officeHours" />
-                </li>
               </ul>
             </div>
           </div>
         </div>
 
         <div className="pi-footer__bottom">
-          <span>planetinfinity.online</span>
+          <span>Planet Infinity Entertainment · Dahab · South Sinai · Egypt</span>
           <span>
             <Placeholder id="instagramHandle" />
           </span>
-          <span>
-            © {new Date().getFullYear()} Planet Infinity Entertainment
-          </span>
+          <span>© {new Date().getFullYear()} planetinfinity.online</span>
         </div>
       </Container>
     </footer>

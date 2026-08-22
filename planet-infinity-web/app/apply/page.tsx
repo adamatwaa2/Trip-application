@@ -244,7 +244,7 @@ export default function ApplyPage() {
           Getting your application doesn&apos;t mean you&apos;re auto-approved — we
           review every one and reply.
           <br />
-          Planet Infinity Entertainment · Dahab · South Sinai
+          Planet Infinity Entertainment
           <br />
           <Link href="/book" style={{ color: "var(--cyan)", fontWeight: 700 }}>
             Go to seat booking →

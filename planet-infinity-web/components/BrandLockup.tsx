@@ -1,44 +1,42 @@
 import Link from "next/link";
+import type { BrandWorld } from "@/content/brand";
+import { BrandLogo } from "./BrandLogo";
 
 type BrandLockupProps = {
-  /** `ivory` for use on Deep Ink, `ink` for use on light surfaces. */
+  /** Ivory on Deep Ink, ink on light surfaces. */
   tone?: "ink" | "ivory";
-  /** Render as a link home. Off inside the footer's own home link. */
+  /** `events` swaps the orange mark for the violet one. */
+  world?: BrandWorld;
+  size?: number;
   asLink?: boolean;
 };
 
 /**
  * Mark + wordmark, the lockup PI-WB-002 uses for itself.
  *
- * The 3D master mark is "used as supplied, never re-rendered or redrawn", and
- * Adam has not supplied the asset yet — so the mark sits as an empty slot with
- * a quiet dashed outline. It is tracked in content/placeholders.ts and shows up
- * in `npm run placeholders`. Nothing is drawn, generated or approximated.
- *
- * When the asset arrives, replace the slot with the supplied image. The
- * wordmark beside it is type, not artwork, and stays as it is.
+ * The mark comes from the supplied artwork (see components/BrandLogo). Until
+ * those files are installed the lockup is the wordmark alone — deliberately
+ * no placeholder circle, no generic glyph, no substitute.
  */
-export function BrandLockup({ tone = "ink", asLink = true }: BrandLockupProps) {
+export function BrandLockup({
+  tone = "ink",
+  world = "general",
+  size = 34,
+  asLink = true,
+}: BrandLockupProps) {
   const content = (
     <>
-      <span
-        className="pi-brand__mark"
-        role="img"
-        aria-label="Planet Infinity mark — asset not supplied yet"
-        title="3D master mark not supplied yet — used as supplied, never redrawn"
-      />
+      <BrandLogo world={world} size={size} />
       <span className="pi-brand__word">Planet Infinity</span>
     </>
   );
 
   const className = `pi-brand pi-brand--${tone}`;
 
-  if (!asLink) {
-    return <span className={className}>{content}</span>;
-  }
+  if (!asLink) return <span className={className}>{content}</span>;
 
   return (
-    <Link href="/" className={className}>
+    <Link href="/" className={className} aria-label="Planet Infinity — home">
       {content}
     </Link>
   );

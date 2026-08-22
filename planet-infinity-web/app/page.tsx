@@ -1,36 +1,40 @@
 import type { Metadata } from "next";
+import { BrandLogo } from "@/components/BrandLogo";
 import { ButtonLink } from "@/components/Button";
-import { CardPlaceholder } from "@/components/CardPlaceholder";
+import { ComingSoonCard } from "@/components/ComingSoonCard";
 import { Container } from "@/components/Container";
 import { CtaBlock } from "@/components/CtaBlock";
+import { EmptyState } from "@/components/EmptyState";
+import { EventCard } from "@/components/EventCard";
 import { Eyebrow } from "@/components/Eyebrow";
 import { Grid } from "@/components/Grid";
-import { MediaBlock } from "@/components/MediaBlock";
 import { NightField } from "@/components/NightField";
 import { Section } from "@/components/Section";
 import { SectionHeading } from "@/components/SectionHeading";
 import { TripCard } from "@/components/TripCard";
-import { EventCard } from "@/components/EventCard";
 import { CTA } from "@/content/cta";
 import { getFeaturedEvents, getFeaturedTrips } from "@/content/source";
 
 export const metadata: Metadata = {
-  title: "Trips and events out of Dahab",
+  title: "Travel, experiences and events",
   description:
-    "Planet Infinity Entertainment runs trips and events out of Dahab, South Sinai — planned end to end, so you only carry the memories.",
+    "Planet Infinity Entertainment — trips, experiences and events. One brand, more than one world.",
 };
 
 /**
  * The Planet Infinity homepage.
  *
- * Section rhythm alternates light and Deep Ink for pace, within the limits in
- * CLAUDE.md: exactly ONE night field on this page (The Two Worlds), plus the
- * footer, and the two are separated by How it works and the closing CTA so no
- * two dark sections ever touch.
+ * This is the top-level brand experience, not the travel catalogue. It
+ * introduces the universe — the worlds that are open, the ones that are
+ * coming — and surfaces whatever real content exists.
  *
- * Nothing here invents business information. Trips and events render from
- * content/*.ts, which is empty until Adam supplies real ones; until then the
- * sections show the shape the content will take and say so plainly.
+ * Featured trips and events come from the data source. They are EMPTY until
+ * real Shopify products exist, and the demo configurations never appear here:
+ * those exist only to exercise the booking architecture. Empty sections use
+ * written empty states rather than invented inventory.
+ *
+ * Exactly ONE Deep Ink section on this page (the worlds band), plus the
+ * footer, with light sections between them so no two dark sections touch.
  */
 export default function HomePage() {
   const featuredTrips = getFeaturedTrips();
@@ -38,46 +42,153 @@ export default function HomePage() {
 
   return (
     <>
-      {/* 2 — Hero */}
+      {/* 1 — Hero */}
       <Section tone="ivory" className="pi-hero">
         <Container>
-          <div className="pi-hero__text">
-            <Eyebrow>Planet Infinity · Dahab · South Sinai</Eyebrow>
-            <h1 className="pi-hero__title">Escape the ordinary</h1>
-            <p className="pi-hero__lede">
-              Trips into the desert and the sea, and the nights that happen
-              after them. We run the whole thing end to end — so you only carry
-              the memories.
-            </p>
-            <div className="pi-hero__actions">
-              <ButtonLink href="/trips" size="large">
-                {CTA.exploreTravel}
-              </ButtonLink>
-              <ButtonLink href="/events" variant="secondary" size="large">
-                {CTA.exploreEvents}
-              </ButtonLink>
-            </div>
+          <div className="pi-hero__mark">
+            <BrandLogo world="general" size={96} />
           </div>
-        </Container>
-        <Container className="pi-hero__media">
-          <MediaBlock ratio="21-9" radius="hero" />
+          <Eyebrow>Travel · Experiences · Events</Eyebrow>
+          <h1 className="pi-hero__title">Escape the ordinary</h1>
+          <p className="pi-hero__lede">
+            Planet Infinity runs the whole adventure — the roads, the nights
+            and everything in between — so you only carry the memories.
+          </p>
+          <div className="pi-hero__actions">
+            <ButtonLink href="/trips" size="large">
+              {CTA.exploreTravel}
+            </ButtonLink>
+            <ButtonLink href="/events" variant="secondary" size="large">
+              {CTA.exploreEvents}
+            </ButtonLink>
+          </div>
         </Container>
       </Section>
 
-      {/* 3 — Introduction / positioning */}
+      {/* 2 — The worlds. This page's single Deep Ink section. */}
+      <NightField>
+        <Container>
+          <SectionHeading
+            eyebrow="The universe"
+            title="More than one world"
+            lede="Each world has its own atmosphere and its own way of being booked. None of them is a side project."
+          />
+          <Grid columns={3}>
+            <article className="pi-world">
+              <p className="pi-world__number">01</p>
+              <h3 className="pi-world__title">Travel</h3>
+              <p className="pi-world__body">
+                Trips and experiences — desert and sea, camping and
+                stargazing, long roads and short escapes.
+              </p>
+              <ButtonLink href="/trips" variant="tertiary">
+                {CTA.exploreTravel}
+              </ButtonLink>
+            </article>
+            <article className="pi-world">
+              <p className="pi-world__number">02</p>
+              <h3 className="pi-world__title">Events</h3>
+              <p className="pi-world__body">
+                Beach sessions, movie nights, full-moon parties. After dark,
+                run by the same crew and the same standards.
+              </p>
+              <ButtonLink href="/events" variant="tertiary">
+                {CTA.exploreEvents}
+              </ButtonLink>
+            </article>
+            <article className="pi-world pi-world--locked">
+              <p className="pi-world__number">
+                03 <span className="pi-nav__chip">Soon</span>
+              </p>
+              <h3 className="pi-world__title">Themes</h3>
+              <p className="pi-world__body">
+                Curated concepts and seasonal capsules — the ideas Planet
+                Infinity invents rather than sells. Not open yet.
+              </p>
+            </article>
+          </Grid>
+        </Container>
+      </NightField>
+
+      {/* 3 — Featured trips */}
+      <Section tone="ivory">
+        <Container>
+          <SectionHeading
+            eyebrow="Travel"
+            title="Featured trips"
+            lede="A short list of what is worth booking right now."
+            action={
+              <ButtonLink href="/trips" variant="secondary">
+                All trips
+              </ButtonLink>
+            }
+          />
+          {featuredTrips.length > 0 ? (
+            <Grid columns={3}>
+              {featuredTrips.map((trip) => (
+                <TripCard key={trip.id} trip={trip} />
+              ))}
+            </Grid>
+          ) : (
+            <EmptyState
+              title="The next departures are being confirmed"
+              body="Trips appear here the moment they are real and bookable — never before. Nothing is listed until its dates, price and meeting point are set."
+              action={
+                <ButtonLink href="/trips" variant="secondary">
+                  {CTA.exploreTravel}
+                </ButtonLink>
+              }
+            />
+          )}
+        </Container>
+      </Section>
+
+      {/* 4 — Featured events */}
       <Section tone="white">
+        <Container>
+          <SectionHeading
+            eyebrow="Events"
+            title="Featured events"
+            lede="The nights worth clearing your calendar for."
+            action={
+              <ButtonLink href="/events" variant="secondary">
+                All events
+              </ButtonLink>
+            }
+          />
+          {featuredEvents.length > 0 ? (
+            <Grid columns={3}>
+              {featuredEvents.map((event) => (
+                <EventCard key={event.id} event={event} />
+              ))}
+            </Grid>
+          ) : (
+            <EmptyState
+              title="The next dates are being locked in"
+              body="Line-ups, venues and ticket details are confirmed before an event is announced here."
+              action={
+                <ButtonLink href="/events" variant="secondary">
+                  {CTA.exploreEvents}
+                </ButtonLink>
+              }
+            />
+          )}
+        </Container>
+      </Section>
+
+      {/* 5 — About */}
+      <Section tone="ivory">
         <Container size="read">
           <div className="pi-intro">
             <Eyebrow>Who we are</Eyebrow>
             <p className="pi-intro__lead">
-              Planet Infinity is two things at once: a travel company and an
-              events company, run by the same people, out of the same town.
+              Planet Infinity is a travel company and an events company, run by
+              the same people to the same standard.
             </p>
             <p>
               One week it is a road into the desert, a camp under the stars and
               a sunrise nobody photographs properly. The next it is a beach, a
-              sound system and a night that goes until the light comes back.
-              Same crew, same standards, same phone number.
+              sound system and a night that runs until the light comes back.
             </p>
             <p>
               We are not a booking form with a logo on it. Every trip and every
@@ -88,164 +199,30 @@ export default function HomePage() {
         </Container>
       </Section>
 
-      {/* 4 — Trips */}
-      <Section tone="ivory" id="trips">
+      {/* 6 + 7 — What is coming */}
+      <Section tone="white">
         <Container>
           <SectionHeading
-            eyebrow="Travel"
-            title="Where we're going"
-            lede="Desert and sea, camping and stargazing, long roads and short escapes."
-            action={
-              <ButtonLink href="/trips" variant="secondary">
-                {CTA.exploreTravel}
-              </ButtonLink>
-            }
-          />
-
-          {featuredTrips.length > 0 ? (
-            <Grid columns={3}>
-              {featuredTrips.map((trip) => (
-                <TripCard key={trip.slug} trip={trip} />
-              ))}
-            </Grid>
-          ) : (
-            <>
-              <Grid columns={3}>
-                <CardPlaceholder label="Trip awaiting content" />
-                <CardPlaceholder label="Trip awaiting content" />
-                <CardPlaceholder label="Trip awaiting content" />
-              </Grid>
-              <p className="pi-section-note">
-                The next departures are being confirmed. Trip names, dates and
-                prices go live here as soon as they are set — nothing is listed
-                before it is real.
-              </p>
-            </>
-          )}
-        </Container>
-      </Section>
-
-      {/* 5 — Events */}
-      <Section tone="white" id="events">
-        <Container>
-          <SectionHeading
-            eyebrow="Events"
-            title="And the nights after"
-            lede="Beach sessions, movie nights, full-moon parties. The other half of what we do."
-            action={
-              <ButtonLink href="/events" variant="secondary">
-                {CTA.exploreEvents}
-              </ButtonLink>
-            }
-          />
-
-          {featuredEvents.length > 0 ? (
-            <Grid columns={3}>
-              {featuredEvents.map((event) => (
-                <EventCard key={event.slug} event={event} />
-              ))}
-            </Grid>
-          ) : (
-            <>
-              <Grid columns={3}>
-                <CardPlaceholder label="Event awaiting content" />
-                <CardPlaceholder label="Event awaiting content" />
-                <CardPlaceholder label="Event awaiting content" />
-              </Grid>
-              <p className="pi-section-note">
-                The next dates are being locked in. Line-ups, venues and ticket
-                details appear here once they are confirmed.
-              </p>
-            </>
-          )}
-        </Container>
-      </Section>
-
-      {/* 6 — The two worlds. This page's single Deep Ink section. */}
-      <NightField>
-        <Container>
-          <SectionHeading
-            eyebrow="The experience"
-            title="Two worlds, one crew"
-            lede="Each world has its own atmosphere. Neither is a side project."
+            eyebrow="Coming soon"
+            title="The rest of the universe"
+            lede="Two more parts of Planet Infinity, not open yet."
           />
           <Grid columns={2}>
-            <article className="pi-world">
-              <p className="pi-world__number">01</p>
-              <h3 className="pi-world__title">Travel</h3>
-              <p className="pi-world__body">
-                Trips, experiences, camping, stargazing, desert and sea. The
-                Sinai catalogue and everything that moves through it — first
-                light, last light, and long shadows in between.
-              </p>
-              <ButtonLink href="/trips" variant="tertiary">
-                {CTA.exploreTravel}
-              </ButtonLink>
-            </article>
-            <article className="pi-world">
-              <p className="pi-world__number">02</p>
-              <h3 className="pi-world__title">Events</h3>
-              <p className="pi-world__body">
-                Raves, beach festivals, movie nights, match nights, full-moon
-                sessions. After dark, hard sources, colour spill and grain —
-                run with the same crew and the same standards.
-              </p>
-              <ButtonLink href="/events" variant="tertiary">
-                {CTA.exploreEvents}
-              </ButtonLink>
-            </article>
-          </Grid>
-        </Container>
-      </NightField>
-
-      {/* 7 — How it works */}
-      <Section tone="ivory">
-        <Container>
-          <SectionHeading
-            eyebrow="How it works"
-            title="From a message to a confirmation"
-            lede="No surprises, no small print you find out about later."
-            align="center"
-          />
-          <Grid columns={4}>
-            <div className="pi-step">
-              <p className="pi-step__number">01</p>
-              <h3 className="pi-step__title">Send a request</h3>
-              <p className="pi-step__body">
-                Tell us which trip or event, and who is coming with you. A
-                request is not a booking yet — nothing is charged.
-              </p>
-            </div>
-            <div className="pi-step">
-              <p className="pi-step__number">02</p>
-              <h3 className="pi-step__title">We confirm availability</h3>
-              <p className="pi-step__body">
-                We check every service on the trip against our suppliers and
-                come back to you with what is actually available.
-              </p>
-            </div>
-            <div className="pi-step">
-              <p className="pi-step__number">03</p>
-              <h3 className="pi-step__title">A deposit holds it</h3>
-              <p className="pi-step__body">
-                A deposit starts the booking. The balance is settled before the
-                trip, on the terms you agreed up front.
-              </p>
-            </div>
-            <div className="pi-step">
-              <p className="pi-step__number">04</p>
-              <h3 className="pi-step__title">Confirmation lands</h3>
-              <p className="pi-step__body">
-                Once everything is paid and confirmed you get a written Booking
-                Confirmation with every detail on it.
-              </p>
-            </div>
+            <ComingSoonCard
+              eyebrow="Merch"
+              title="Planet Infinity merch"
+              body="Something to wear home from the trip. Not on sale yet — no catalogue, no pre-orders, nothing to sign up to."
+            />
+            <ComingSoonCard
+              eyebrow="Themes"
+              title="Curated concepts"
+              body="Seasonal capsules and ideas Planet Infinity invents rather than sells. A future world, kept deliberately visible."
+            />
           </Grid>
         </Container>
       </Section>
 
-      {/* 8 — Closing CTA. Light on purpose: the footer below it is Deep Ink,
-          and two dark sections must never sit next to each other. */}
+      {/* 8 — Closing CTA. Light: the footer below it is Deep Ink. */}
       <CtaBlock
         eyebrow="Ready when you are"
         title="Come with us"

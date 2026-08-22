@@ -13,7 +13,7 @@ import { getListedTrips } from "@/content/source";
 export const metadata: Metadata = {
   title: "Travel",
   description:
-    "Trips out of Dahab and across South Sinai — desert and sea, camping and stargazing.",
+    "Planet Infinity trips and experiences — desert and sea, camping and stargazing, long roads and short escapes.",
 };
 
 export default function TripsPage() {
@@ -25,7 +25,7 @@ export default function TripsPage() {
         <Container>
           <Breadcrumbs trail={[{ label: "Home", href: "/" }, { label: "Travel" }]} />
           <Eyebrow>Travel</Eyebrow>
-          <h1 className="pi-listing-hero__title">Every road out of Dahab</h1>
+          <h1 className="pi-listing-hero__title">Every trip we run</h1>
           <p className="pi-listing-hero__lede">
             Desert and sea, camping and stargazing, long roads and short
             escapes. Every trip is planned, staffed and run by us — and no two

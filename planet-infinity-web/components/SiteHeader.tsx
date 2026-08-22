@@ -2,65 +2,51 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { BrandLockup } from "./BrandLockup";
 import { HEADER_CTA, PRIMARY_NAV, type NavItem } from "@/content/nav";
 
-type SiteHeaderProps = {
-  /**
-   * True on pages whose hero sits behind the bar. The bar then starts
-   * transparent with ivory links and solidifies after 80px of scroll
-   * (PI-WB-002, Plate 06). Phase 4 sets this on the homepage; until a hero
-   * exists, every page uses the solid ivory bar.
-   */
-  overHero?: boolean;
-};
-
-function NavLink({ item }: { item: NavItem }) {
-  if (!item.ready) {
+function NavLink({ item, current }: { item: NavItem; current: boolean }) {
+  if (item.status === "soon") {
     return (
-      <span
-        className="pi-nav__link pi-nav__link--pending"
-        aria-disabled="true"
-        title="This page is not built yet"
-      >
+      <span className="pi-nav__link pi-nav__link--soon" aria-disabled="true">
         {item.label}
+        <span className="pi-nav__chip">{item.note ?? "Soon"}</span>
       </span>
     );
   }
 
   return (
-    <Link href={item.href} className="pi-nav__link">
+    <Link
+      href={item.href}
+      className={`pi-nav__link${current ? " pi-nav__link--current" : ""}`}
+      aria-current={current ? "page" : undefined}
+    >
       {item.label}
     </Link>
   );
 }
 
-export function SiteHeader({ overHero = false }: SiteHeaderProps) {
-  const [solid, setSolid] = useState(!overHero);
+export function SiteHeader() {
+  const pathname = usePathname() ?? "/";
   const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    if (!overHero) return;
+  /** The Events world carries the violet mark; everywhere else is orange. */
+  const world = pathname.startsWith("/events") ? "events" : "general";
 
-    const onScroll = () => setSolid(window.scrollY > 80);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [overHero]);
+  const isCurrent = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
 
-  // Escape closes the panel, and the page behind it does not scroll.
   useEffect(() => {
     if (!menuOpen) return;
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
     };
-    const previousOverflow = document.body.style.overflow;
+    const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     document.addEventListener("keydown", onKeyDown);
-
     return () => {
-      document.body.style.overflow = previousOverflow;
+      document.body.style.overflow = previous;
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [menuOpen]);
@@ -68,19 +54,19 @@ export function SiteHeader({ overHero = false }: SiteHeaderProps) {
   return (
     <>
       <header
-        /* The solid bar is dropped while the panel is open: its blur is what
-           makes the bar a containing block, and over a flat night field the
-           blur buys nothing anyway. */
-        className={`pi-header${solid && !menuOpen ? " pi-header--solid" : ""}`}
+        className={`pi-header${menuOpen ? "" : " pi-header--solid"}`}
         data-menu-open={menuOpen ? "true" : undefined}
       >
         <div className="pi-header__inner">
-          <BrandLockup tone={solid && !menuOpen ? "ink" : "ivory"} />
+          <BrandLockup tone={menuOpen ? "ivory" : "ink"} world={world} />
 
-          {/* Five items, no mega-menu. */}
           <nav className="pi-nav" aria-label="Primary">
             {PRIMARY_NAV.map((item) => (
-              <NavLink key={item.href} item={item} />
+              <NavLink
+                key={item.href}
+                item={item}
+                current={isCurrent(item.href)}
+              />
             ))}
           </nav>
 
@@ -107,11 +93,9 @@ export function SiteHeader({ overHero = false }: SiteHeaderProps) {
       </header>
 
       {/*
-        Mobile panel: a full-height night field, links at display scale.
-        Rendered as a SIBLING of <header> on purpose. The bar carries
-        backdrop-filter, which makes it a containing block for position:fixed
-        descendants — nesting the panel inside pinned it to the bar's own box
-        instead of the viewport.
+        Rendered as a SIBLING of <header> on purpose: the bar carries
+        backdrop-filter, which becomes the containing block for position:fixed
+        descendants and would pin this panel to the bar's own box.
       */}
       <div
         id="pi-mobile-menu"
@@ -121,7 +105,7 @@ export function SiteHeader({ overHero = false }: SiteHeaderProps) {
       >
         <nav className="pi-mobile__nav">
           {PRIMARY_NAV.map((item) =>
-            item.ready ? (
+            item.status === "ready" ? (
               <Link
                 key={item.href}
                 href={item.href}
@@ -133,10 +117,11 @@ export function SiteHeader({ overHero = false }: SiteHeaderProps) {
             ) : (
               <span
                 key={item.href}
-                className="pi-mobile__link pi-mobile__link--pending"
+                className="pi-mobile__link pi-mobile__link--soon"
                 aria-disabled="true"
               >
                 {item.label}
+                <span className="pi-nav__chip">{item.note ?? "Soon"}</span>
               </span>
             )
           )}

@@ -17,6 +17,7 @@
  * through the adapter. The booking model survives that swap untouched, because
  * the flows read the trip's and event's own switches, not the data source.
  */
+import { isShopifyConfigured } from "./shopify/client";
 import {
   EVENTS,
   FEATURED_EVENTS,
@@ -34,8 +35,14 @@ import {
   type Trip,
 } from "./trips";
 
-/** Where the data currently comes from. Flips to "shopify" with the fetch. */
-export const DATA_SOURCE: "local" | "shopify" = "local";
+/**
+ * Where the data comes from. Resolved at runtime: the moment the Shopify
+ * environment variables are set, the site reads the store instead of the
+ * local files. Nothing else changes.
+ */
+export function dataSource(): "local" | "shopify" {
+  return isShopifyConfigured() ? "shopify" : "local";
+}
 
 /* ---------------------------------- trips --------------------------------- */
 
