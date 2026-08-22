@@ -17,7 +17,7 @@ import { Price } from "./Price";
  */
 export function EventCard({ event }: { event: PlanetEvent }) {
   return (
-    <Card href={`/events/${event.slug}`} className="pi-eventcard">
+    <Card href={`/events/${event.slug}`} className="pi-eventcard pi-world-events">
       <MediaBlock
         src={event.media.hero}
         alt={event.media.heroAlt ?? ""}
@@ -25,7 +25,7 @@ export function EventCard({ event }: { event: PlanetEvent }) {
       />
       <div className="pi-card__body">
         <p className="pi-card__meta">
-          {event.category}
+          <span className="pi-event-category">{event.category}</span>
           <span aria-hidden="true"> · </span>
           {event.eventDate ?? <Placeholder id="eventDate" label="Date not set" />}
         </p>

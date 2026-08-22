@@ -23,10 +23,6 @@
   background: #fff;
   cursor: pointer;
 }
-.pi-ticket--checked {
-  border-color: var(--pi-ember);
-  background: rgba(242, 113, 39, 0.05);
-}
 .pi-ticket--soldout {
   opacity: 0.55;
   cursor: not-allowed;
@@ -110,4 +106,86 @@
   margin: 0;
   font-size: 13px;
   color: var(--pi-soft);
+}
+
+/* ===========================================================================
+   Events world accent — Event Violet (--pi-violet: #8B5CF6)
+   ===========================================================================
+   Scoped to .pi-world-events. Travel and the rest of the site are untouched.
+
+   Event Violet is a SMALL ACCENT, never the page. No violet backgrounds, no
+   violet cards, no violet heroes, no violet sections — the Events world stays
+   ivory, white and light like the rest of the site.
+
+   It is used as fills, tints, thin borders and small decorative details
+   rather than as small text: PI-WB-002 rates Event Violet at 4.01 on ivory
+   and permits it for "large labels and fills only, never paragraph text", so
+   violet carries backgrounds and rules while the text on top stays Deep Ink.
+
+   Infinity Orange remains the universal primary action colour — Get tickets,
+   Request access, Continue, Book now, Request to book are all still orange.
+   Nothing below touches .pi-btn--primary.
+   =========================================================================== */
+
+/* A short Event Nova rule under the eyebrow — the restrained gradient. */
+.pi-world-events .pi-eyebrow::after {
+  content: "";
+  display: block;
+  width: 32px;
+  height: 2px;
+  margin-top: var(--pi-s1);
+  border-radius: var(--pi-r-pill);
+  background: var(--pi-g-nova);
+}
+
+/* Category reads as a small violet-tinted pill, with ink text on top. */
+.pi-event-category {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--pi-r-pill);
+  padding: 3px 9px;
+  background: rgba(139, 92, 246, 0.1);
+  color: var(--pi-ink);
+  font-family: var(--pi-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Availability keeps its own vocabulary; only the neutral state picks up the
+   world tint. Scarcity stays gold and sold out stays quiet grey. */
+.pi-world-events .pi-pill--neutral {
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--pi-ink);
+}
+
+/* A thin violet edge on the card and the booking module — a hairline, not a
+   fill. The surfaces themselves stay white. */
+.pi-world-events.pi-card,
+.pi-world-events .pi-booking {
+  border-top: 2px solid var(--pi-violet);
+}
+
+/* Small highlights inside the events flow. */
+.pi-world-events .pi-flow__step--current .pi-flow__step-num {
+  background: rgba(139, 92, 246, 0.14);
+  border-color: var(--pi-violet);
+  color: var(--pi-ink);
+}
+.pi-world-events .pi-booking__step-num {
+  border-color: rgba(139, 92, 246, 0.45);
+}
+.pi-world-events .pi-confirm__mark {
+  background: var(--pi-violet);
+}
+
+/* The chosen ticket is marked in violet rather than ember — this control is
+   Events-only, and the highlight is a tint plus a border, never text. */
+.pi-ticket--checked {
+  border-color: var(--pi-violet);
+  background: rgba(139, 92, 246, 0.06);
+}
+.pi-ticket input,
+.pi-world-events .pi-qty__btn {
+  accent-color: var(--pi-violet);
 }

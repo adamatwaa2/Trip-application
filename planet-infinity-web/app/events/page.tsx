@@ -20,7 +20,7 @@ export default function EventsPage() {
   const { events, usingDemoData } = listedEvents();
 
   return (
-    <>
+    <div className="pi-world-events">
       <Section tone="ivory" className="pi-listing-hero">
         <Container>
           <Breadcrumbs
@@ -66,6 +66,6 @@ export default function EventsPage() {
           )}
         </Container>
       </Section>
-    </>
+    </div>
   );
 }

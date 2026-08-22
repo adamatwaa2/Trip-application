@@ -123,7 +123,7 @@ export default function ApplyPage() {
           {/* 1 — basics */}
           <div className="card">
             <h2>
-              <span className="badge nova">1</span> Tell Us About You
+              <span className="badge warm">1</span> Tell Us About You
             </h2>
             <p className="sub">The basics, so we can actually reach you</p>
 
@@ -169,7 +169,7 @@ export default function ApplyPage() {
           {/* 2 — vibe */}
           <div className="card">
             <h2>
-              <span className="badge nova">2</span> What&apos;s Your Vibe?
+              <span className="badge warm">2</span> What&apos;s Your Vibe?
             </h2>
             <p className="sub">
               So we can match you with people on the same wavelength

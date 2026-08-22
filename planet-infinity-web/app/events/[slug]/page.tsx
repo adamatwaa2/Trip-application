@@ -37,7 +37,7 @@ export default async function EventPage({ params }: Params) {
   if (!event) notFound();
 
   return (
-    <>
+    <div className="pi-world-events">
       <Section tone="ivory" className="pi-trip-hero">
         <Container>
           <Breadcrumbs
@@ -199,6 +199,6 @@ export default async function EventPage({ params }: Params) {
           </div>
         </Container>
       </Section>
-    </>
+    </div>
   );
 }

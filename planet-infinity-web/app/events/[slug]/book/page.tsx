@@ -31,7 +31,7 @@ export default async function EventBookingPage({ params }: Params) {
   if (!event) notFound();
 
   return (
-    <Section tone="ivory">
+    <Section tone="ivory" className="pi-world-events">
       <Container size="read">
         <Breadcrumbs
           trail={[

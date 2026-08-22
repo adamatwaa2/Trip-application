@@ -75,19 +75,17 @@
 .badge.warm {
   background: var(--pi-g-cta);
 }
-/* PHASE 6: violet outside Events — see note above. */
-.badge.nova {
-  background: var(--pi-g-nova);
-}
+/* /apply is not the Events world, so it carries no Event Violet. A light card
+   on the ivory canvas, in keeping with the rest of the site. */
 .intro-card {
-  background: var(--pi-g-nova);
-  color: var(--pi-ivory);
-  border: none;
+  background: var(--pi-ivory);
+  border: 1px solid var(--pi-line);
 }
 .intro-card p {
   font-size: var(--pi-ui);
   line-height: 1.9;
   margin: 0;
+  color: var(--pi-ink);
 }
 
 /* ---------- form controls ----------
@@ -160,11 +158,12 @@ select:focus {
 .chip:active {
   transform: scale(0.94);
 }
-/* PHASE 6: violet outside Events — see note above. */
+/* Selected chip: an ember hairline and a light tint, matching the selection
+   controls elsewhere on the site. */
 .chip.selected {
-  background: var(--pi-g-nova);
-  color: var(--pi-ivory);
-  border-color: transparent;
+  background: rgba(242, 113, 39, 0.06);
+  color: var(--pi-ink);
+  border-color: var(--pi-ember);
   font-weight: 700;
 }
 
