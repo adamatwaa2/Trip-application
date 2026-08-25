@@ -506,6 +506,32 @@ h4 {
   align-self: stretch;
 }
 
+/* Narrow desktop: between the burger breakpoint and roughly 1100px the full
+   row — mark, wordmark, five nav items, cart and the primary action — is
+   wider than the page, and the button used to hang past the right edge. The
+   wordmark goes first (the mark still identifies the site) and the nav
+   tightens; nothing is dropped. */
+@media (min-width: 900px) and (max-width: 1100px) {
+  .pi-header__inner {
+    padding-inline: 20px;
+    gap: var(--pi-s2);
+  }
+  .pi-header .pi-brand__word {
+    display: none;
+  }
+  .pi-nav {
+    gap: 0;
+    min-width: 0;
+  }
+  .pi-nav__link {
+    padding: 8px 8px;
+    font-size: 13px;
+  }
+  .pi-header__cta {
+    padding-inline: 16px;
+  }
+}
+
 @media (max-width: 899px) {
   .pi-header__inner {
     padding: 12px var(--pi-s3);
@@ -514,6 +540,7 @@ h4 {
   /* Specificity matters here: components.css loads after this file and sets
      .pi-btn { display: inline-flex }, which beats a single-class rule. */
   .pi-header__inner .pi-nav,
+  .pi-header__inner .pi-header__cart,
   .pi-header__inner .pi-header__cta {
     display: none;
   }
@@ -1421,4 +1448,1203 @@ h4 {
   .pi-contact__actions .pi-btn {
     flex: 1 1 100%;
   }
+}
+
+/* ===== ported from app/trips.css ===== */
+/* ===========================================================================
+   Planet Infinity — trips system
+   Listing, detail page, booking module, selection, seat map, flow.
+   Every value resolves to a token in tokens.css.
+   =========================================================================== */
+
+/* ---------- demo markers ---------- */
+.pi-demo-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--pi-r-pill);
+  padding: 4px 10px;
+  background: rgba(220, 94, 21, 0.08);
+  border: 1px dashed var(--pi-ember);
+  color: var(--pi-ember);
+  font-family: var(--pi-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.pi-demo-banner {
+  border: 1px dashed var(--pi-ember);
+  background: rgba(220, 94, 21, 0.05);
+  border-radius: var(--pi-r-card);
+  padding: var(--pi-s3);
+  margin-bottom: var(--pi-s5);
+  font-size: var(--pi-ui);
+  line-height: 1.7;
+  color: var(--pi-ink);
+}
+.pi-card__flags {
+  margin: 0;
+}
+
+/* ---------- listing hero ---------- */
+.pi-listing-hero {
+  padding-block: var(--pi-s6) var(--pi-s5);
+}
+.pi-listing-hero__title {
+  margin: 0;
+  max-width: 14ch;
+  font-family: var(--pi-display);
+  font-weight: 700;
+  font-size: var(--pi-d2);
+  line-height: 0.96;
+  letter-spacing: -0.025em;
+}
+.pi-listing-hero__lede {
+  margin: var(--pi-s3) 0 0;
+  max-width: 640px;
+  font-size: var(--pi-lede);
+  line-height: 1.65;
+  color: var(--pi-soft);
+}
+
+/* ---------- trip detail ---------- */
+.pi-trip-hero {
+  padding-block: var(--pi-s6) var(--pi-s5);
+}
+.pi-trip-hero__title {
+  margin: 0;
+  max-width: 16ch;
+  font-family: var(--pi-display);
+  font-weight: 700;
+  font-size: var(--pi-h1);
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+}
+.pi-trip-hero__lede {
+  margin: var(--pi-s3) 0 0;
+  max-width: 640px;
+  font-size: var(--pi-lede);
+  line-height: 1.65;
+  color: var(--pi-soft);
+}
+.pi-trip-hero__demo {
+  margin: var(--pi-s4) 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pi-s2);
+  font-size: var(--pi-ui);
+  color: var(--pi-soft);
+}
+.pi-trip-hero__media {
+  margin-top: var(--pi-s5);
+}
+
+.pi-trip-facts {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--pi-s3);
+  margin-top: var(--pi-s5);
+  padding-top: var(--pi-s3);
+  border-top: 1px solid var(--pi-line);
+}
+.pi-trip-facts dt {
+  font-family: var(--pi-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pi-soft);
+}
+.pi-trip-facts dd {
+  margin: 6px 0 0;
+  font-size: var(--pi-ui);
+  font-weight: 700;
+}
+@media (max-width: 899px) {
+  .pi-trip-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* two-column: content left, booking module right */
+.pi-trip-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: var(--pi-s6);
+  align-items: start;
+}
+.pi-trip-aside {
+  position: sticky;
+  top: 96px;
+}
+@media (max-width: 1199px) {
+  .pi-trip-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--pi-s5);
+  }
+  .pi-trip-aside {
+    position: static;
+    order: -1; /* the decision stays reachable without scrolling the page */
+  }
+}
+
+.pi-trip-block {
+  padding-bottom: var(--pi-s5);
+  margin-bottom: var(--pi-s5);
+  border-bottom: 1px solid var(--pi-line);
+}
+.pi-trip-block:last-child {
+  border-bottom: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.pi-trip-block h2 {
+  margin: 0 0 var(--pi-s3);
+  font-family: var(--pi-display);
+  font-weight: 700;
+  font-size: var(--pi-h2);
+  letter-spacing: -0.02em;
+}
+.pi-trip-block p {
+  margin: 0 0 var(--pi-s2);
+  max-width: 68ch;
+  line-height: 1.75;
+  color: var(--pi-soft);
+}
+
+.pi-includes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pi-s4);
+}
+.pi-includes__subtitle {
+  margin: 0 0 var(--pi-s2);
+  font-family: var(--pi-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pi-soft);
+}
+.pi-includes__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--pi-s1);
+  font-size: var(--pi-ui);
+  line-height: 1.6;
+}
+.pi-includes__list li::before {
+  display: inline-block;
+  width: 1.4em;
+  font-weight: 800;
+}
+.pi-includes__list--in li::before {
+  content: "✓";
+  color: var(--pi-cyan);
+}
+.pi-includes__list--out li::before {
+  content: "✕";
+  color: var(--pi-ember);
+}
+@media (max-width: 899px) {
+  .pi-includes {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--pi-s3);
+  }
+}
+
+.pi-itinerary {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--pi-s3);
+}
+.pi-itinerary li {
+  border-inline-start: 2px solid var(--pi-line);
+  padding-inline-start: var(--pi-s3);
+}
+.pi-itinerary__label {
+  margin: 0 0 4px;
+  font-family: var(--pi-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pi-ember);
+}
+.pi-itinerary__title {
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 700;
+}
+.pi-itinerary__body {
+  margin: 0;
+}
+
+.pi-notes {
+  margin: 0;
+  padding-inline-start: var(--pi-s3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--pi-s1);
+  font-size: var(--pi-ui);
+  line-height: 1.7;
+  color: var(--pi-soft);
+}
+
+.pi-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--pi-s2);
+}
+@media (max-width: 899px) {
+  .pi-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.pi-faq details {
+  border-bottom: 1px solid var(--pi-line);
+  padding: var(--pi-s2) 0;
+}
+.pi-faq summary {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 17px;
+  list-style: none;
+  padding-inline-end: var(--pi-s3);
+  position: relative;
+}
+.pi-faq summary::-webkit-details-marker {
+  display: none;
+}
+.pi-faq summary::after {
+  content: "+";
+  position: absolute;
+  inset-inline-end: 0;
+  color: var(--pi-ember);
+  font-weight: 800;
+}
+.pi-faq details[open] summary::after {
+  content: "−";
+}
+.pi-faq p {
+  margin: var(--pi-s2) 0 0;
+  max-width: 68ch;
+  line-height: 1.75;
+  color: var(--pi-soft);
+}
+
+/* ---------- booking module ---------- */
+.pi-booking {
+  border: 1px solid var(--pi-line);
+  border-radius: var(--pi-r-card);
+  background: #fff;
+  padding: var(--pi-s3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--pi-s2);
+}
+.pi-booking__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pi-s2);
+  flex-wrap: wrap;
+}
+.pi-booking__meta {
+  margin: 0;
+  font-size: var(--pi-ui);
+  color: var(--pi-soft);
+}
+.pi-booking__steps {
+  list-style: none;
+  margin: 0;
+  padding: var(--pi-s2) 0;
+  border-top: 1px solid var(--pi-line);
+  border-bottom: 1px solid var(--pi-line);
+  display: flex;
+  flex-direction: column;
+  gap: var(--pi-s1);
+  font-size: var(--pi-ui);
+}
+.pi-booking__steps li {
+  display: flex;
+  align-items: center;
+  gap: var(--pi-s2);
+}
+.pi-booking__step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: var(--pi-r-pill);
+  background: var(--pi-ivory);
+  border: 1px solid var(--pi-line);
+  font-family: var(--pi-mono);
+  font-size: 10px;
+}
+.pi-booking__cta {
+  width: 100%;
+}
+.pi-booking__note {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--pi-soft);
+}
+
+/* ---------- selection ---------- */
+.pi-selection__group {
+  border: 0;
+  padding: 0;
+  margin: 0 0 var(--pi-s4);
+}
+.pi-selection__legend {
+  padding: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+.pi-selection__optional {
+  font-weight: 400;
+  color: var(--pi-soft);
+}
+.pi-selection__hint {
+  margin: 6px 0 var(--pi-s2);
+  font-size: 13px;
+  color: var(--pi-soft);
+}
+.pi-selection__choices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pi-s1);
+  margin-top: var(--pi-s2);
+}
+.pi-choice {
+  display: flex;
+  align-items: center;
+  gap: var(--pi-s2);
+  min-height: 56px;
+  padding: var(--pi-s2);
+  border: 1.5px solid var(--pi-line);
+  border-radius: var(--pi-r-chip);
+  background: #fff;
+  cursor: pointer;
+}
+.pi-choice--checked {
+  border-color: var(--pi-ember);
+  background: rgba(242, 113, 39, 0.05);
+}
+.pi-choice--soldout {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.pi-choice input {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  accent-color: var(--pi-orange);
+}
+.pi-choice__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.pi-choice__label {
+  font-weight: 700;
+  font-size: var(--pi-ui);
+}
+.pi-choice__detail {
+  font-size: 13px;
+  color: var(--pi-soft);
+}
+.pi-choice__meta {
+  font-family: var(--pi-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pi-soft);
+}
+.pi-choice__delta {
+  color: var(--pi-ember);
+}
+
+/* ---------- seat map ---------- */
+.pi-seatmap {
+  background: var(--pi-ivory);
+  border: 1px solid var(--pi-line);
+  border-radius: var(--pi-r-card);
+  padding: var(--pi-s3) var(--pi-s2);
+}
+.pi-seatmap__label {
+  margin: 0 0 var(--pi-s2);
+  text-align: center;
+  font-family: var(--pi-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pi-soft);
+}
+.pi-seatmap__label--bottom {
+  margin: var(--pi-s2) 0 0;
+}
+.pi-seatmap__row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--pi-s4); /* the aisle */
+  margin-bottom: var(--pi-s1);
+}
+.pi-seatmap__row--contiguous {
+  gap: var(--pi-s1);
+}
+.pi-seatmap__group {
+  display: flex;
+  gap: var(--pi-s1);
+}
+.pi-seat {
+  width: 60px;
+  height: 52px;
+  border-radius: var(--pi-r-chip);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--pi-line);
+  background: #fff;
+  padding: 0;
+  font-family: var(--pi-body);
+  cursor: pointer;
+  transition: transform var(--pi-t-micro) var(--pi-e-ui),
+    background var(--pi-t-ui) var(--pi-e-ui),
+    border-color var(--pi-t-ui) var(--pi-e-ui);
+}
+.pi-seat__num {
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--pi-ink);
+}
+.pi-seat--available:active {
+  transform: scale(0.94);
+}
+.pi-seat--selected {
+  background: var(--pi-g-flame);
+  border-color: var(--pi-ember);
+  box-shadow: 0 0 0 4px rgba(242, 113, 39, 0.22);
+}
+.pi-seat--selected .pi-seat__num {
+  color: var(--pi-ivory);
+}
+/* Taken and unavailable go quiet and grey — never red. */
+.pi-seat--taken,
+.pi-seat--unavailable {
+  background: var(--pi-ivory);
+  border-color: var(--pi-line);
+  cursor: not-allowed;
+}
+.pi-seat--taken .pi-seat__num {
+  color: var(--pi-soft);
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+.pi-seat--unavailable .pi-seat__num {
+  color: var(--pi-soft);
+  opacity: 0.35;
+}
+.pi-seat--driver {
+  background: var(--pi-line);
+  border-color: var(--pi-line);
+  color: var(--pi-soft);
+  cursor: default;
+}
+.pi-seat--driver span {
+  font-family: var(--pi-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.pi-seatmap__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pi-s2);
+  justify-content: center;
+  margin-top: var(--pi-s3);
+  font-size: 12px;
+  color: var(--pi-soft);
+}
+.pi-seatmap__legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pi-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  display: inline-block;
+}
+.pi-dot--available { background: #fff; border: 1.5px solid var(--pi-line); }
+.pi-dot--selected { background: var(--pi-g-flame); }
+.pi-dot--taken { background: var(--pi-ivory); border: 1.5px solid var(--pi-line); }
+.pi-dot--unavailable { background: var(--pi-line); opacity: 0.5; }
+.pi-dot--driver { background: var(--pi-line); }
+.pi-seatmap__vehicle {
+  margin: var(--pi-s2) 0 0;
+  text-align: center;
+  font-family: var(--pi-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pi-soft);
+}
+@media (max-width: 420px) {
+  .pi-seat {
+    width: 48px;
+    height: 46px;
+  }
+  .pi-seatmap__row {
+    gap: var(--pi-s3);
+  }
+}
+
+/* ---------- flow ---------- */
+.pi-flow__heading {
+  margin: 0 0 var(--pi-s4);
+  font-family: var(--pi-display);
+  font-weight: 700;
+  font-size: var(--pi-h1);
+  letter-spacing: -0.025em;
+}
+.pi-flow__steps {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pi-s2);
+  margin: 0 0 var(--pi-s4);
+  padding: 0;
+  font-family: var(--pi-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pi-soft);
+}
+.pi-flow__step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pi-flow__step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--pi-r-pill);
+  border: 1px solid var(--pi-line);
+}
+.pi-flow__step--current {
+  color: var(--pi-ink);
+}
+.pi-flow__step--current .pi-flow__step-num {
+  background: var(--pi-g-cta);
+  border-color: transparent;
+  color: var(--pi-ivory);
+}
+.pi-flow__step--done .pi-flow__step-num {
+  background: var(--pi-line);
+}
+.pi-flow__panel {
+  background: #fff;
+  border: 1px solid var(--pi-line);
+  border-radius: var(--pi-r-card);
+  padding: var(--pi-s4);
+}
+.pi-flow__title {
+  margin: 0 0 var(--pi-s3);
+  font-family: var(--pi-display);
+  font-weight: 700;
+  font-size: var(--pi-h2);
+  letter-spacing: -0.02em;
+}
+.pi-flow__hint {
+  margin: 0 0 var(--pi-s3);
+  font-size: var(--pi-ui);
+  line-height: 1.65;
+  color: var(--pi-soft);
+}
+.pi-flow__selected {
+  margin: var(--pi-s3) 0 0;
+  background: var(--pi-ink);
+  color: var(--pi-ivory);
+  border-radius: var(--pi-r-chip);
+  padding: var(--pi-s2);
+  text-align: center;
+  font-weight: 700;
+  font-size: var(--pi-ui);
+}
+.pi-flow__actions {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--pi-s2);
+  margin-top: var(--pi-s3);
+}
+@media (max-width: 899px) {
+  .pi-flow__actions {
+    flex-direction: column-reverse;
+  }
+  .pi-flow__actions > * {
+    width: 100%;
+  }
+  .pi-flow__panel {
+    padding: var(--pi-s3);
+  }
+}
+
+.pi-review,
+.pi-confirm__grid {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pi-s3);
+}
+.pi-review dt,
+.pi-confirm__grid dt {
+  font-family: var(--pi-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pi-soft);
+}
+.pi-review dd,
+.pi-confirm__grid dd {
+  margin: 6px 0 0;
+  font-size: var(--pi-ui);
+  font-weight: 700;
+}
+@media (max-width: 599px) {
+  .pi-review,
+  .pi-confirm__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--pi-s2);
+  }
+}
+
+/* ---------- confirmation ---------- */
+.pi-confirm {
+  background: #fff;
+  border: 1px solid var(--pi-line);
+  border-radius: var(--pi-r-card);
+  padding: var(--pi-s5);
+}
+.pi-confirm__mark {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--pi-r-pill);
+  background: var(--pi-g-cta);
+  color: var(--pi-ivory);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin-bottom: var(--pi-s3);
+}
+.pi-confirm__title {
+  margin: 0 0 var(--pi-s2);
+  font-family: var(--pi-display);
+  font-weight: 700;
+  font-size: var(--pi-h2);
+  letter-spacing: -0.02em;
+}
+.pi-confirm__lede {
+  margin: 0 0 var(--pi-s4);
+  max-width: 60ch;
+  line-height: 1.7;
+  color: var(--pi-soft);
+}
+.pi-confirm__next {
+  margin-top: var(--pi-s4);
+  padding-top: var(--pi-s3);
+  border-top: 1px solid var(--pi-line);
+}
+.pi-confirm__next h3 {
+  margin: 0 0 var(--pi-s2);
+  font-size: 17px;
+}
+.pi-confirm__next ol {
+  margin: 0;
+  padding-inline-start: var(--pi-s3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--pi-s1);
+  font-size: var(--pi-ui);
+  line-height: 1.7;
+  color: var(--pi-soft);
+}
+.pi-confirm__preview {
+  margin: var(--pi-s4) 0 0;
+  font-size: 13px;
+  color: var(--pi-soft);
+}
+
+/* ===== ported from app/events.css ===== */
+/* ===========================================================================
+   Planet Infinity — events system
+   Ticket selection and quantity. Shared page chrome (listing hero, detail
+   layout, booking module, flow, confirmation) is reused from trips.css so the
+   two products look like one website; the components behind them are separate.
+   Every value resolves to a token in tokens.css.
+   =========================================================================== */
+
+/* ---------- ticket / option selection ---------- */
+.pi-tickets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pi-s1);
+}
+.pi-ticket {
+  display: flex;
+  align-items: center;
+  gap: var(--pi-s2);
+  min-height: 64px;
+  padding: var(--pi-s2);
+  border: 1.5px solid var(--pi-line);
+  border-radius: var(--pi-r-chip);
+  background: #fff;
+  cursor: pointer;
+}
+.pi-ticket--soldout {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.pi-ticket input {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  accent-color: var(--pi-orange);
+}
+.pi-ticket__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+.pi-ticket__label {
+  font-weight: 700;
+  font-size: var(--pi-ui);
+}
+.pi-ticket__detail {
+  font-size: 13px;
+  color: var(--pi-soft);
+}
+.pi-ticket__remaining {
+  margin-top: 2px;
+  font-family: var(--pi-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pi-soft);
+}
+.pi-ticket__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex: none;
+}
+
+/* ---------- quantity ---------- */
+.pi-qty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pi-s2);
+  align-items: flex-start;
+}
+.pi-qty__control {
+  display: flex;
+  align-items: center;
+  gap: var(--pi-s1);
+  border: 1.5px solid var(--pi-line);
+  border-radius: var(--pi-r-pill);
+  padding: 4px;
+}
+.pi-qty__btn {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--pi-r-pill);
+  border: none;
+  background: var(--pi-ivory);
+  color: var(--pi-ink);
+  font-size: 20px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.pi-qty__btn:disabled {
+  color: var(--pi-soft);
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.pi-qty__value {
+  min-width: 56px;
+  text-align: center;
+  font-family: var(--pi-display);
+  font-weight: 700;
+  font-size: 21px;
+  font-variant-numeric: tabular-nums;
+}
+.pi-qty__limits {
+  margin: 0;
+  font-size: 13px;
+  color: var(--pi-soft);
+}
+
+/* ===========================================================================
+   Events world accent — Event Violet (--pi-violet: #8B5CF6)
+   ===========================================================================
+   Scoped to .pi-world-events. Travel and the rest of the site are untouched.
+
+   Event Violet is a SMALL ACCENT, never the page. No violet backgrounds, no
+   violet cards, no violet heroes, no violet sections — the Events world stays
+   ivory, white and light like the rest of the site.
+
+   It is used as fills, tints, thin borders and small decorative details
+   rather than as small text: PI-WB-002 rates Event Violet at 4.01 on ivory
+   and permits it for "large labels and fills only, never paragraph text", so
+   violet carries backgrounds and rules while the text on top stays Deep Ink.
+
+   Infinity Orange remains the universal primary action colour — Get tickets,
+   Request access, Continue, Book now, Request to book are all still orange.
+   Nothing below touches .pi-btn--primary.
+   =========================================================================== */
+
+/* A short Event Nova rule under the eyebrow — the restrained gradient. */
+.pi-world-events .pi-eyebrow::after {
+  content: "";
+  display: block;
+  width: 32px;
+  height: 2px;
+  margin-top: var(--pi-s1);
+  border-radius: var(--pi-r-pill);
+  background: var(--pi-g-nova);
+}
+
+/* Category reads as a small violet-tinted pill, with ink text on top. */
+.pi-event-category {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--pi-r-pill);
+  padding: 3px 9px;
+  background: rgba(139, 92, 246, 0.1);
+  color: var(--pi-ink);
+  font-family: var(--pi-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Availability keeps its own vocabulary; only the neutral state picks up the
+   world tint. Scarcity stays gold and sold out stays quiet grey. */
+.pi-world-events .pi-pill--neutral {
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--pi-ink);
+}
+
+/* A thin violet edge on the card and the booking module — a hairline, not a
+   fill. The surfaces themselves stay white. */
+.pi-world-events.pi-card,
+.pi-world-events .pi-booking {
+  border-top: 2px solid var(--pi-violet);
+}
+
+/* Small highlights inside the events flow. */
+.pi-world-events .pi-flow__step--current .pi-flow__step-num {
+  background: rgba(139, 92, 246, 0.14);
+  border-color: var(--pi-violet);
+  color: var(--pi-ink);
+}
+.pi-world-events .pi-booking__step-num {
+  border-color: rgba(139, 92, 246, 0.45);
+}
+.pi-world-events .pi-confirm__mark {
+  background: var(--pi-violet);
+}
+
+/* The chosen ticket is marked in violet rather than ember — this control is
+   Events-only, and the highlight is a tint plus a border, never text. */
+.pi-ticket--checked {
+  border-color: var(--pi-violet);
+  background: rgba(139, 92, 246, 0.06);
+}
+.pi-ticket input,
+.pi-world-events .pi-qty__btn {
+  accent-color: var(--pi-violet);
+}
+
+/* ===========================================================================
+   Storefront-only rules
+   These cover markup that exists in the Shopify theme but not in the React
+   app: Shopify's own pagination output, and two wrapper elements the Liquid
+   sections introduce. Every value still resolves to a PI-WB-002 token.
+   ======================================================================== */
+
+/* The footer brand column. A grid child that must be allowed to shrink so a
+   long tagline never forces the footer wider than the page. */
+.pi-footer__brand {
+  min-width: 0;
+}
+
+/* Left-hand column of the trip/event detail layout. Same reason. */
+.pi-trip-main {
+  min-width: 0;
+}
+
+/* Shopify renders pagination itself, so this styles its output rather than
+   markup we control: a row of numbers, current page marked in Ink. */
+.pi-pagination {
+  margin-top: var(--pi-s5);
+  padding-top: var(--pi-s3);
+  border-top: 1px solid var(--pi-line);
+  display: flex;
+  justify-content: center;
+}
+.pi-pagination .pagination,
+.pi-pagination > span {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--pi-mono);
+  font-size: var(--pi-micro);
+  letter-spacing: 0.12em;
+}
+.pi-pagination a,
+.pi-pagination .page,
+.pi-pagination .deco,
+.pi-pagination .prev,
+.pi-pagination .next {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding-inline: 10px;
+  border-radius: var(--pi-r-chip);
+  text-decoration: none;
+  color: var(--pi-soft);
+}
+.pi-pagination a {
+  border: 1px solid var(--pi-line);
+  color: var(--pi-ink);
+  transition: border-color var(--pi-t-ui) var(--pi-e-ui);
+}
+.pi-pagination a:hover {
+  border-color: var(--pi-ink);
+}
+.pi-pagination .page.current {
+  border: 1px solid var(--pi-ink);
+  color: var(--pi-ink);
+  font-weight: 700;
+}
+
+/* ---------- mobile nav current state ---------- */
+.pi-mobile__link--current {
+  color: var(--pi-orange);
+}
+
+/* ---------- cart ----------
+   The cart only exists in the storefront, so it is styled here rather than
+   ported. Same card geometry, same hairline, same tokens as everything else. */
+.pi-cart__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.pi-cart__item {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr) auto auto;
+  align-items: start;
+  gap: var(--pi-s3);
+  padding-block: var(--pi-s4);
+  border-top: 1px solid var(--pi-line);
+}
+.pi-cart__item:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.pi-cart__media {
+  width: 140px;
+}
+.pi-cart__title {
+  margin: 0;
+  font-size: 20px;
+  font-family: var(--pi-display);
+  font-weight: 600;
+  line-height: 1.2;
+}
+.pi-cart__title a {
+  color: inherit;
+  text-decoration: none;
+}
+.pi-cart__title a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.pi-cart__variant {
+  margin: var(--pi-s1) 0 0;
+  font-size: var(--pi-ui);
+  color: var(--pi-soft);
+}
+.pi-cart__unit {
+  margin: var(--pi-s2) 0 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.pi-cart__each {
+  font-family: var(--pi-mono);
+  font-size: var(--pi-micro);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pi-soft);
+}
+.pi-cart__controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--pi-s1);
+}
+.pi-cart__qty {
+  width: 88px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--pi-line);
+  border-radius: var(--pi-r-chip);
+  background: #FFFFFF;
+  color: var(--pi-ink);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+}
+.pi-cart__qty:focus-visible {
+  border-color: var(--pi-ink);
+}
+.pi-cart__line-total {
+  margin: 0;
+  text-align: right;
+}
+.pi-cart__foot {
+  margin-top: var(--pi-s5);
+  padding-top: var(--pi-s4);
+  border-top: 1px solid var(--pi-line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pi-s4);
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.pi-cart__subtotal-label {
+  margin: 0;
+  font-family: var(--pi-mono);
+  font-size: var(--pi-micro);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pi-soft);
+}
+.pi-cart__subtotal {
+  margin: var(--pi-s1) 0 0;
+}
+.pi-cart__note {
+  margin: var(--pi-s2) 0 0;
+  max-width: 44ch;
+  font-size: var(--pi-ui);
+  line-height: 1.7;
+  color: var(--pi-soft);
+}
+.pi-cart__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pi-s2);
+}
+
+@media (max-width: 899px) {
+  .pi-cart__item {
+    grid-template-columns: 96px minmax(0, 1fr);
+    grid-template-areas:
+      "media body"
+      "controls total";
+    column-gap: var(--pi-s3);
+  }
+  .pi-cart__media {
+    grid-area: media;
+    width: 96px;
+  }
+  .pi-cart__body {
+    grid-area: body;
+  }
+  .pi-cart__controls {
+    grid-area: controls;
+  }
+  .pi-cart__line-total {
+    grid-area: total;
+    align-self: center;
+  }
+  .pi-cart__actions .pi-btn {
+    flex: 1 1 100%;
+  }
+}
+
+/* ---------- search ---------- */
+.pi-search {
+  margin-top: var(--pi-s4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pi-s2);
+  max-width: 560px;
+}
+.pi-search__input {
+  flex: 1 1 260px;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 1px solid var(--pi-line);
+  border-radius: var(--pi-r-chip);
+  background: #FFFFFF;
+  color: var(--pi-ink);
+  font: inherit;
+}
+.pi-search__input::placeholder {
+  color: var(--pi-soft);
+}
+.pi-search__input:focus-visible {
+  border-color: var(--pi-ink);
+}
+
+/* ---------- header cart ----------
+   Only rendered when the cart actually holds something, so a browsing visitor
+   never sees an empty-cart link. */
+.pi-header__cart {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding-inline: 12px;
+  border-radius: var(--pi-r-chip);
+  font-family: var(--pi-mono);
+  font-size: var(--pi-micro);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--pi-ink);
+  border: 1px solid var(--pi-line);
+  transition: border-color var(--pi-t-ui) var(--pi-e-ui);
+}
+.pi-header__cart:hover {
+  border-color: var(--pi-ink);
+}
+.pi-header__cart-count {
+  font-variant-numeric: tabular-nums;
+  color: var(--pi-ember);
 }

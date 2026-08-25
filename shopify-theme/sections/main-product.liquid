@@ -1,4 +1,17 @@
-<section class="pi-section pi-section--ivory">
+{%- comment -%}
+  A product belongs to the Events world when it sits in the Events collection
+  chosen in Theme settings → Worlds. That decides the violet accent; Infinity
+  Orange still carries the primary action either way.
+{%- endcomment -%}
+{%- liquid
+  assign world = 'travel'
+  for c in product.collections
+    if c.handle == settings.events_collection.handle
+      assign world = 'events'
+    endif
+  endfor
+-%}
+<section class="pi-section pi-section--ivory{% if world == 'events' %} pi-world-events{% endif %}">
   <div class="pi-container pi-container--default">
     <nav class="pi-crumbs" aria-label="Breadcrumb">
       <ol>
@@ -11,7 +24,7 @@
   </div>
 </section>
 
-<section class="pi-section pi-section--white">
+<section class="pi-section pi-section--white{% if world == 'events' %} pi-world-events{% endif %}">
   <div class="pi-container pi-container--default">
     <div class="pi-trip-layout">
       <div class="pi-trip-main">
@@ -66,8 +79,8 @@
 {
   "name": "Product",
   "settings": [
-    { "type": "text", "id": "cta_label", "label": "CTA label", "default": "Request to book" },
-    { "type": "textarea", "id": "note", "label": "Note under the CTA", "default": "A request is not a booking. Nothing is charged until we confirm availability and you approve." }
+    { "type": "text", "id": "cta_label", "label": "CTA label", "default": "Book now", "info": "This button adds the product to the cart and leads to Shopify checkout, so it must say so. Use \"Book now\" or \"Get tickets\" — not \"Request to book\", which promises no payment." },
+    { "type": "textarea", "id": "note", "label": "Note under the CTA", "default": "You will be taken to checkout to confirm and pay." }
   ]
 }
 {% endschema %}

@@ -1,1 +1,6 @@
-{"current":{}}
+{
+  "current": {
+    "travel_collection": "travel",
+    "events_collection": "event"
+  }
+}

@@ -1,5 +1,10 @@
+{%- comment -%}
+  Which world this collection belongs to comes from Theme settings → Worlds,
+  so the Events accent follows whatever collection is pointed at there rather
+  than a handle hard-coded in the theme.
+{%- endcomment -%}
 {%- assign world = 'travel' -%}
-{%- if collection.handle == 'events' -%}{%- assign world = 'events' -%}{%- endif -%}
+{%- if collection.handle == settings.events_collection.handle -%}{%- assign world = 'events' -%}{%- endif -%}
 
 <section class="pi-section pi-section--ivory pi-listing-hero{% if world == 'events' %} pi-world-events{% endif %}">
   <div class="pi-container pi-container--default">

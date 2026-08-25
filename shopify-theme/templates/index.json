@@ -7,9 +7,7 @@
         "title": "Escape the ordinary",
         "lede": "Planet Infinity runs the whole adventure — the roads, the nights and everything in between — so you only carry the memories.",
         "cta_one_label": "Explore travel",
-        "cta_one_url": "/collections/travel",
-        "cta_two_label": "Explore events",
-        "cta_two_url": "/collections/events"
+        "cta_two_label": "Explore events"
       }
     },
     "worlds": {
@@ -21,7 +19,6 @@
             "title": "Travel",
             "body": "Trips and experiences — desert and sea, camping and stargazing, long roads and short escapes.",
             "link_label": "Explore travel",
-            "link_url": "/collections/travel",
             "locked": false
           }
         },
@@ -31,7 +28,6 @@
             "title": "Events",
             "body": "Beach sessions, movie nights, full-moon parties. After dark, run by the same crew and the same standards.",
             "link_label": "Explore events",
-            "link_url": "/collections/events",
             "locked": false
           }
         },
@@ -44,26 +40,15 @@
           }
         }
       },
-      "block_order": ["travel", "events", "themes"],
+      "block_order": [
+        "travel",
+        "events",
+        "themes"
+      ],
       "settings": {
         "eyebrow": "The universe",
         "title": "More than one world",
         "lede": "Each world has its own atmosphere and its own way of being booked. None of them is a side project."
-      }
-    },
-    "featured-experiences": {
-      "type": "featured-collection",
-      "settings": {
-        "world": "travel",
-        "tone": "ivory",
-        "eyebrow": "Experiences",
-        "title": "Featured experiences",
-        "lede": "The things worth clearing a weekend for.",
-        "link_label": "See all",
-        "link_url": "/collections",
-        "count": 3,
-        "empty_title": "Experiences are being confirmed",
-        "empty_body": "Nothing is listed here until it is real and bookable."
       }
     },
     "featured-trips": {
@@ -71,12 +56,11 @@
       "settings": {
         "collection": "travel",
         "world": "travel",
-        "tone": "white",
+        "tone": "ivory",
         "eyebrow": "Travel",
         "title": "Featured trips",
         "lede": "A short list of what is worth booking right now.",
         "link_label": "All trips",
-        "link_url": "/collections/travel",
         "count": 3,
         "empty_title": "The next departures are being confirmed",
         "empty_body": "Trips appear here the moment they are real and bookable — never before."
@@ -85,14 +69,13 @@
     "featured-events": {
       "type": "featured-collection",
       "settings": {
-        "collection": "events",
+        "collection": "event",
         "world": "events",
-        "tone": "ivory",
+        "tone": "white",
         "eyebrow": "Events",
         "title": "Featured events",
         "lede": "The nights worth clearing your calendar for.",
         "link_label": "All events",
-        "link_url": "/collections/events",
         "count": 3,
         "empty_title": "The next dates are being locked in",
         "empty_body": "Line-ups, venues and ticket details are confirmed before an event is announced here."
@@ -101,7 +84,7 @@
     "about": {
       "type": "about",
       "settings": {
-        "tone": "white",
+        "tone": "ivory",
         "eyebrow": "Who we are",
         "lead": "Planet Infinity is a travel company and an events company, run by the same people to the same standard.",
         "body": "<p>One week it is a road into the desert, a camp under the stars and a sunrise nobody photographs properly. The next it is a beach, a sound system and a night that runs until the light comes back.</p><p>We are not a booking form with a logo on it. Every trip and every event is planned, staffed and run by us, and the person who answers your message is the person who will be there on the day.</p>"
@@ -127,9 +110,12 @@
           }
         }
       },
-      "block_order": ["merch", "themes"],
+      "block_order": [
+        "merch",
+        "themes"
+      ],
       "settings": {
-        "tone": "ivory",
+        "tone": "white",
         "eyebrow": "Coming soon",
         "title": "The rest of the universe",
         "lede": "Two more parts of Planet Infinity, not open yet."
@@ -138,21 +124,18 @@
     "cta": {
       "type": "cta",
       "settings": {
-        "tone": "white",
+        "tone": "ivory",
         "eyebrow": "Ready when you are",
         "title": "Come with us",
         "body": "Pick a trip or a night out, send a request, and we take it from there.",
         "cta_one_label": "Explore travel",
-        "cta_one_url": "/collections/travel",
-        "cta_two_label": "Explore events",
-        "cta_two_url": "/collections/events"
+        "cta_two_label": "Explore events"
       }
     }
   },
   "order": [
     "hero",
     "worlds",
-    "featured-experiences",
     "featured-trips",
     "featured-events",
     "about",

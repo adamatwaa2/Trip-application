@@ -8,11 +8,23 @@
 
 {%- liquid
   assign is_events = false
-  if template.name == 'collection' and collection.handle == section.settings.events_handle
+  assign events_handle = settings.events_collection.handle | default: section.settings.events_handle
+  if template.name == 'collection' and collection.handle == events_handle
     assign is_events = true
   endif
   if template.name == 'page' and page.handle contains 'event'
     assign is_events = true
+  endif
+  comment
+    A product page belongs to the Events world when the product sits in the
+    Events collection, so the mark matches the section styling below it.
+  endcomment
+  if template.name == 'product'
+    for c in product.collections
+      if c.handle == events_handle
+        assign is_events = true
+      endif
+    endfor
   endif
   comment
     The official artwork ships with the theme, so the marks render correctly
@@ -30,6 +42,14 @@
   if picked != blank
     assign logo_src = picked | image_url: height: 68
   endif
+
+  comment
+    "Request to book" promises a conversation, not a checkout, so it resolves
+    to the page chosen in the Theme Editor, then the Contact page if one has
+    been written, and only then to the collections index. It is never a link
+    to something that does not exist.
+  endcomment
+  assign cta_href = section.settings.cta_page.url | default: section.settings.cta_url | default: pages['contact'].url | default: routes.collections_url
 -%}
 
 <header class="pi-header pi-header--solid" data-pi-header>
@@ -40,11 +60,10 @@
     </a>
 
     <nav class="pi-nav" aria-label="Primary">
-      {%- if section.settings.menu != blank -%}
-        {%- for link in section.settings.menu.links -%}
-          <a href="{{ link.url }}" class="pi-nav__link{% if link.active %} pi-nav__link--current{% endif %}">{{ link.title }}</a>
-        {%- endfor -%}
-      {%- endif -%}
+      {%- render 'nav-links',
+          menu: section.settings.menu,
+          link_class: 'pi-nav__link',
+          current_class: 'pi-nav__link--current' -%}
       {%- if section.settings.show_themes_soon -%}
         <span class="pi-nav__link pi-nav__link--soon" aria-disabled="true">
           {{ section.settings.themes_label }}
@@ -53,8 +72,18 @@
       {%- endif -%}
     </nav>
 
+    {%- comment -%}
+      The cart link appears only once the cart holds something. A store that is
+      still being filled never shows an empty cart to a visitor.
+    {%- endcomment -%}
+    {%- if cart.item_count > 0 -%}
+      <a href="{{ routes.cart_url }}" class="pi-header__cart">
+        Cart <span class="pi-header__cart-count">{{ cart.item_count }}</span>
+      </a>
+    {%- endif -%}
+
     {%- if section.settings.cta_label != blank -%}
-      <a href="{{ section.settings.cta_url | default: routes.root_url }}" class="pi-btn pi-btn--primary pi-header__cta">
+      <a href="{{ cta_href }}" class="pi-btn pi-btn--primary pi-header__cta">
         {{ section.settings.cta_label }}
       </a>
     {%- endif -%}
@@ -70,20 +99,22 @@
 trap this fixed panel inside the bar's own box. {%- endcomment -%}
 <div id="pi-mobile-menu" class="pi-mobile pi-night" hidden data-pi-panel>
   <nav class="pi-mobile__nav">
-    {%- if section.settings.menu != blank -%}
-      {%- for link in section.settings.menu.links -%}
-        <a href="{{ link.url }}" class="pi-mobile__link">{{ link.title }}</a>
-      {%- endfor -%}
-    {%- endif -%}
+    {%- render 'nav-links',
+        menu: section.settings.menu,
+        link_class: 'pi-mobile__link',
+        current_class: 'pi-mobile__link--current' -%}
     {%- if section.settings.show_themes_soon -%}
       <span class="pi-mobile__link pi-mobile__link--soon" aria-disabled="true">
         {{ section.settings.themes_label }}
         <span class="pi-nav__chip">{{ section.settings.soon_label }}</span>
       </span>
     {%- endif -%}
+    {%- if cart.item_count > 0 -%}
+      <a href="{{ routes.cart_url }}" class="pi-mobile__link">Cart ({{ cart.item_count }})</a>
+    {%- endif -%}
   </nav>
   {%- if section.settings.cta_label != blank -%}
-    <a href="{{ section.settings.cta_url | default: routes.root_url }}" class="pi-btn pi-btn--primary pi-mobile__cta">
+    <a href="{{ cta_href }}" class="pi-btn pi-btn--primary pi-mobile__cta">
       {{ section.settings.cta_label }}
     </a>
   {%- endif -%}
@@ -119,15 +150,16 @@ trap this fixed panel inside the bar's own box. {%- endcomment -%}
     { "type": "image_picker", "id": "logo_orange", "label": "Logo — orange (general, Travel)" },
     { "type": "image_picker", "id": "logo_violet", "label": "Logo — violet (Events world)" },
     { "type": "text", "id": "wordmark", "label": "Wordmark", "default": "Planet Infinity" },
-    { "type": "link_list", "id": "menu", "label": "Navigation menu" },
+    { "type": "link_list", "id": "menu", "label": "Navigation menu", "default": "main-menu", "info": "Leave empty and the theme falls back to a built-in menu that only links to collections and pages that already exist." },
     { "type": "header", "content": "Primary action" },
     { "type": "text", "id": "cta_label", "label": "CTA label", "default": "Request to book" },
-    { "type": "url", "id": "cta_url", "label": "CTA link" },
+    { "type": "page", "id": "cta_page", "label": "CTA page" },
+    { "type": "url", "id": "cta_url", "label": "CTA link (used only if no page is chosen)" },
     { "type": "header", "content": "Themes (coming soon)" },
     { "type": "checkbox", "id": "show_themes_soon", "label": "Show Themes as coming soon", "default": true },
     { "type": "text", "id": "themes_label", "label": "Themes label", "default": "Themes" },
     { "type": "text", "id": "soon_label", "label": "Coming soon chip", "default": "Soon" },
-    { "type": "text", "id": "events_handle", "label": "Events collection handle (switches to the violet logo)", "default": "events" }
+    { "type": "text", "id": "events_handle", "label": "Events collection handle (fallback)", "default": "event", "info": "Only used if no Events collection is chosen in Theme settings → Worlds." }
   ],
   "enabled_on": { "groups": ["header"] }
 }

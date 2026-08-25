@@ -24,6 +24,22 @@
                 {%- for link in block.settings.menu.links -%}
                   <li><a href="{{ link.url }}" class="pi-footer__link">{{ link.title }}</a></li>
                 {%- endfor -%}
+              {%- elsif block.settings.use_site_nav -%}
+                {%- comment -%}
+                  No menu attached. Rather than an empty column, fall back to the
+                  same built-in navigation the header uses — which only ever
+                  links to collections and pages that already exist.
+                {%- endcomment -%}
+                {%- render 'nav-links', link_class: 'pi-footer__link', current_class: '', wrap_li: true -%}
+              {%- endif -%}
+              {%- if block.settings.show_policies -%}
+                {%- comment -%}
+                  Store policies come from Shopify itself. A policy that has not
+                  been written yet simply does not appear — nothing is invented.
+                {%- endcomment -%}
+                {%- for policy in shop.policies -%}
+                  <li><a href="{{ policy.url }}" class="pi-footer__link">{{ policy.title }}</a></li>
+                {%- endfor -%}
               {%- endif -%}
               {%- if block.settings.soon_items != blank -%}
                 {%- assign items = block.settings.soon_items | split: ',' -%}
@@ -69,6 +85,8 @@
       "settings": [
         { "type": "text", "id": "title", "label": "Title", "default": "Explore" },
         { "type": "link_list", "id": "menu", "label": "Menu" },
+        { "type": "checkbox", "id": "use_site_nav", "label": "Use the site navigation when no menu is chosen", "default": false },
+        { "type": "checkbox", "id": "show_policies", "label": "List the store policies written in Shopify", "default": false },
         { "type": "text", "id": "soon_items", "label": "Coming soon items (comma separated)" },
         { "type": "text", "id": "free_text", "label": "Free text line" }
       ]
