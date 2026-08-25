@@ -10,7 +10,7 @@
         "show_themes_soon": true,
         "themes_label": "Themes",
         "soon_label": "Soon",
-        "events_handle": "events"
+        "events_handle": "event"
       }
     }
   },
