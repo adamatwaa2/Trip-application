@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { PolicyAcceptance } from "@/components/PolicyAcceptance";
 import { SeatSelection } from "@/components/SeatSelection";
 import { HIACE_14 } from "@/content/trips";
 
@@ -111,8 +112,8 @@ export default function BookPage() {
 
             <SeatSelection
               config={PREVIEW_SEAT_CONFIG}
-              selected={seat}
-              onSelect={setSeat}
+              selected={seat === null ? [] : [seat]}
+              onToggle={(nextSeat) => setSeat(seat === nextSeat ? null : nextSeat)}
             />
 
             <div className="selected-summary">
@@ -155,20 +156,11 @@ export default function BookPage() {
               onChange={(e) => setGuestNames(e.target.value)}
             />
 
-            <div className="agree-row">
-              <input
-                id="agreeTerms"
-                type="checkbox"
-                checked={agreed}
-                onChange={(e) => setAgreed(e.target.checked)}
-              />
-              <label htmlFor="agreeTerms">
-                I have read and agree to the Booking Terms &amp; Guest Policies
-                <span className="placeholder-note">
-                  The policy pages are not published yet.
-                </span>
-              </label>
-            </div>
+            <PolicyAcceptance
+              id="seatPreviewPolicyAcceptance"
+              checked={agreed}
+              onChange={setAgreed}
+            />
 
             <button className="submit-btn" type="submit" disabled={!canSubmit}>
               Request to book

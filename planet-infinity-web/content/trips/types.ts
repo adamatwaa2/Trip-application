@@ -22,6 +22,7 @@
  * ─────────────────────────────────────────────────────────────────────────
  */
 import type { AvailabilityState } from "../cta";
+import type { BookingFormField } from "@/lib/booking-form";
 
 export type Currency = "EGP";
 
@@ -29,7 +30,7 @@ export type Currency = "EGP";
 export type BookingMode =
   /** Capacity is live and payable. */
   | "booking"
-  /** We approve before any payment. Planet Infinity's usual path. */
+  /** Legacy/manual approval path. Direct booking is the normal path. */
   | "request"
   /** The guest applies and we curate; see /apply. */
   | "application";
@@ -113,7 +114,12 @@ export type Trip = {
     hero?: string;
     heroAlt?: string;
     gallery?: GalleryImage[];
+    /** Uploaded first-party video. The hero image is used as its poster. */
+    video?: string;
   };
+
+  /** A guest-facing PDF presented as a branded card, never a raw URL. */
+  document?: { url: string; label: string };
 
   /** Base price. Omit entirely when unset — never 0, never "from". */
   priceEgp?: number;
@@ -126,6 +132,9 @@ export type Trip = {
 
   bookingMode: BookingMode;
 
+  /** Independent curation gate. It does not change the post-approval booking mode. */
+  applicationRequired?: boolean;
+
   /** INDEPENDENT of seatBookingEnabled. */
   tripSelectionEnabled: boolean;
   /** INDEPENDENT of tripSelectionEnabled. Rare. Never defaulted to true. */
@@ -136,8 +145,19 @@ export type Trip = {
   /** Only read when seatBookingEnabled. */
   seat?: SeatConfig;
 
+  /** Fixed contact fields are always present; these are trip-specific additions. */
+  bookingFormFields?: BookingFormField[];
+  /** Requires a private receipt image before this booking request is submitted. */
+  paymentProofRequired?: boolean;
+
   meetingPoint?: string;
   departureTime?: string;
+  returnTime?: string;
+  departurePoint?: string;
+  returnPoint?: string;
+  packageLabel?: string;
+  accommodation?: string;
+  transportation?: string;
 
   included?: string[];
   notIncluded?: string[];
@@ -175,15 +195,19 @@ export const SHOPIFY_FIELD_MAP = {
   currency: "shop.currencyCode",
   availability: "metafield: trip.availability",
   bookingMode: "metafield: trip.booking_mode",
+  applicationRequired: "metafield: trip.application_required",
   tripSelectionEnabled: "metafield: trip.selection_enabled",
   seatBookingEnabled: "metafield: trip.seat_booking_enabled",
   optionGroups: "product options / variants, or metafield: trip.option_groups",
   seat: "metafield: trip.seat_config",
+  bookingFormFields: "metafield: trip.booking_form_fields",
+  paymentProofRequired: "metafield: trip.payment_proof_required",
   included: "metafield: trip.included",
   notIncluded: "metafield: trip.not_included",
   itinerary: "metafield: trip.itinerary",
   importantInformation: "metafield: trip.important_information",
   cancellationSummary: "metafield: trip.cancellation_summary",
   faq: "metafield: trip.faq",
+  document: "metafield: trip.document",
   media: "product.media",
 } as const;

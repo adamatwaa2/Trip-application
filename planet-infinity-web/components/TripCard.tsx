@@ -19,7 +19,12 @@ import { Price } from "./Price";
 export function TripCard({ trip }: { trip: Trip }) {
   return (
     <Card href={`/trips/${trip.slug}`} className="pi-tripcard">
-      <MediaBlock src={trip.media.hero} alt={trip.media.heroAlt ?? ""} ratio="3-2" />
+      <MediaBlock
+        src={trip.media.hero}
+        alt={trip.media.heroAlt ?? ""}
+        ratio="3-2"
+        emptyLabel={trip.destination}
+      />
       <div className="pi-card__body">
         <p className="pi-card__meta">
           {trip.destination}

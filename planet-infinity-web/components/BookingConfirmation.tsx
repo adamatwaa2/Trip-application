@@ -5,23 +5,22 @@ export type ConfirmationDetails = {
   /** Chosen option labels, in group order. Empty when selection is off. */
   selections?: string[];
   /** Only present when the trip enables seat booking. */
-  seat?: number | null;
+  seats?: number[];
   guestName?: string;
   guestEmail?: string;
   guestPhone?: string;
   guestCount?: number;
   totalEgp?: number;
-  /** "request" produces a request reference, not a booking reference. */
+  requestNumber?: string;
+  /** Direct bookings receive a booking reference; exceptional flows receive an application reference. */
   mode: "booking" | "request" | "application";
 };
 
 /**
  * Reusable confirmation state.
  *
- * It is capable of showing a reference, statuses and next steps — but it
- * INVENTS NOTHING. The booking reference and both statuses render as
- * placeholders, because no booking has actually been made: there is no
- * backend, nothing was submitted, and no payment exists.
+ * Direct bookings are saved immediately. Payment remains pending until the
+ * uploaded receipt is checked by an admin.
  */
 export function BookingConfirmation({ details }: { details: ConfirmationDetails }) {
   const isRequest = details.mode !== "booking";
@@ -37,15 +36,13 @@ export function BookingConfirmation({ details }: { details: ConfirmationDetails 
       <p className="pi-confirm__lede">
         {isRequest
           ? "Nothing is confirmed yet. We check availability with our suppliers and come back to you — a request is not a booking until we issue a written confirmation."
-          : "We have your booking. The written confirmation follows once payment is settled."}
+          : "Your booking and payment receipt are saved. We will issue the final Booking Confirmation after the receipt and trip services are verified."}
       </p>
 
       <dl className="pi-confirm__grid">
         <div>
-          <dt>{isRequest ? "Request reference" : "Booking reference"}</dt>
-          <dd>
-            <Placeholder id="bookingReference" />
-          </dd>
+          <dt>{isRequest ? "Application reference" : "Booking reference"}</dt>
+          <dd>{details.requestNumber ?? <Placeholder id="bookingReference" />}</dd>
         </div>
         <div>
           <dt>Trip</dt>
@@ -57,10 +54,10 @@ export function BookingConfirmation({ details }: { details: ConfirmationDetails 
             <dd>{details.selections.join(" · ")}</dd>
           </div>
         ) : null}
-        {typeof details.seat === "number" ? (
+        {details.seats?.length ? (
           <div>
-            <dt>Seat</dt>
-            <dd>Seat {details.seat}</dd>
+            <dt>{details.seats.length === 1 ? "Seat" : "Seats"}</dt>
+            <dd>{details.seats.map((seat) => `Seat ${seat}`).join(" · ")}</dd>
           </div>
         ) : null}
         <div>
@@ -88,36 +85,28 @@ export function BookingConfirmation({ details }: { details: ConfirmationDetails 
             )}
           </dd>
         </div>
-        <div>
-          <dt>Booking status</dt>
-          <dd>
-            <Placeholder id="bookingStatus" />
-          </dd>
-        </div>
-        <div>
-          <dt>Payment status</dt>
-          <dd>
-            <Placeholder id="paymentStatus" />
-          </dd>
-        </div>
       </dl>
 
       <div className="pi-confirm__next">
         <h3>What happens next</h3>
-        <ol>
-          <li>We check every service on the trip against our suppliers.</li>
-          <li>We come back to you with what is available and what it costs.</li>
-          <li>A deposit starts the booking; the balance is settled before the trip.</li>
-          <li>
-            Once everything is confirmed you receive a written Booking
-            Confirmation with every detail on it.
-          </li>
-        </ol>
+        {isRequest ? (
+          <ol>
+            <li>We review your application.</li>
+            <li>We contact you with the decision and the next booking step.</li>
+          </ol>
+        ) : (
+          <ol>
+            <li>We verify the uploaded payment receipt.</li>
+            <li>We confirm the trip services and your recorded choices.</li>
+            <li>You receive the final Booking Confirmation and PDF.</li>
+          </ol>
+        )}
       </div>
 
       <p className="pi-confirm__preview">
-        Preview only — nothing was sent, saved or charged. There is no backend
-        and no payment step yet.
+        {isRequest
+          ? "Your application has been saved for review."
+          : "Your booking is saved. The uploaded payment receipt is awaiting verification."}
       </p>
     </div>
   );

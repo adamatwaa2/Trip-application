@@ -9,7 +9,10 @@ export function CardPlaceholder({ label }: { label: string }) {
   return (
     <div className="pi-card pi-card--placeholder" aria-hidden="true">
       <div className="pi-media pi-media--3-2 pi-media--radius-card pi-media--empty">
-        <span className="pi-media__note">Photography pending</span>
+        <div className="pi-media__fallback" aria-hidden="true">
+          <span className="pi-media__fallback-mark">∞</span>
+          <span className="pi-media__fallback-label">Planet Infinity</span>
+        </div>
       </div>
       <div className="pi-card__body">
         <p className="pi-card__meta">

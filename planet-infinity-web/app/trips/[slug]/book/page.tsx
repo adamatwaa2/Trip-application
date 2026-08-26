@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
 import { TripBookingFlow } from "@/components/TripBookingFlow";
-import { getTripBySlug, getTripSlugs } from "@/content/source";
+import { getTripBySlug } from "@/content/source";
 
 type Params = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return getTripSlugs().map((slug) => ({ slug }));
-}
+// The trip catalogue is operational data, so booking pages are rendered on
+// demand and never call cookies() during generateStaticParams at build time.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const trip = getTripBySlug(slug);
+  const trip = await getTripBySlug(slug);
   return { title: trip ? `Book — ${trip.title}` : "Booking" };
 }
 
@@ -26,8 +26,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  */
 export default async function TripBookingPage({ params }: Params) {
   const { slug } = await params;
-  const trip = getTripBySlug(slug);
+  const trip = await getTripBySlug(slug);
   if (!trip) notFound();
+  if (trip.applicationRequired || trip.bookingMode === "application") {
+    redirect(`/apply?product=${encodeURIComponent(trip.id)}&type=trip&title=${encodeURIComponent(trip.title)}`);
+  }
 
   return (
     <Section tone="ivory">

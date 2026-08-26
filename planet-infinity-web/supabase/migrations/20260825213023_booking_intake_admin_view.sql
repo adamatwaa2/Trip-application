@@ -1,0 +1,40 @@
+create or replace view public.booking_intake_admin
+with (security_invoker = true) as
+select
+  s.id,
+  s.reference,
+  to_char(s.created_at at time zone 'Africa/Cairo','YYYY-MM-DD HH24:MI') as submitted_at,
+  s.created_at,
+  s.full_name,
+  s.phone_whatsapp,
+  s.email,
+  s.instagram,
+  t.title as trip_title,
+  s.trip_slug,
+  s.experience,
+  s.trip_date,
+  s.pickup_point,
+  s.package_option,
+  s.guest_count,
+  s.guests,
+  s.guest_names,
+  s.form_answers,
+  s.song_request,
+  s.special_notes,
+  s.emergency_name,
+  s.emergency_phone,
+  s.heard_about,
+  s.total_amount,
+  s.amount_paid,
+  (s.total_amount - s.amount_paid) as balance_due,
+  s.payment_method,
+  s.payment_status,
+  s.payment_proof_path,
+  s.payment_proof_name,
+  s.whatsapp_opt_in,
+  s.policies_accepted,
+  s.review_status,
+  s.admin_note
+from public.booking_intake_submissions s
+left join public.trips t on t.id = s.trip_id
+order by s.created_at desc;

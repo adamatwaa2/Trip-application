@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState, useTransition } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { submitPublicRequest } from "@/app/actions/requests";
+import { PolicyAcceptance } from "@/components/PolicyAcceptance";
 
 const MUSIC_TASTES = [
   "Mahraganat",
@@ -18,35 +21,62 @@ const TRAVELED_BEFORE = [
   "Nope, first time",
 ];
 
-export default function ApplyPage() {
+const SMOKING_OPTIONS = ["No", "Occasionally", "Yes"];
+
+function ApplyForm() {
+  const searchParams = useSearchParams();
+  const productId = searchParams.get("product") ?? undefined;
+  const queryTitle = (searchParams.get("title") ?? "").trim().slice(0, 160);
+  const productType = ["trip", "event"].includes(searchParams.get("type") ?? "")
+    ? (searchParams.get("type") as "trip" | "event")
+    : undefined;
+  const subjectTitle = queryTitle || "Planet Infinity application";
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [age, setAge] = useState("");
   const [instagram, setInstagram] = useState("");
+  const [jobOrStudy, setJobOrStudy] = useState("");
   const [music, setMusic] = useState("");
   const [travelledBefore, setTravelledBefore] = useState("");
+  const [smoking, setSmoking] = useState("");
+  const [heardAbout, setHeardAbout] = useState("");
   const [why, setWhy] = useState("");
   const [agreed, setAgreed] = useState(false);
+  const [whatsappOptIn, setWhatsappOptIn] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [requestNumber, setRequestNumber] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const canSubmit =
     fullName.trim() !== "" &&
     phone.trim() !== "" &&
+    email.trim() !== "" &&
     age.trim() !== "" &&
+    jobOrStudy.trim() !== "" &&
     music !== "" &&
     travelledBefore !== "" &&
+    smoking !== "" &&
     agreed;
 
   function resetForm() {
     setFullName("");
     setPhone("");
+    setEmail("");
     setAge("");
     setInstagram("");
+    setJobOrStudy("");
     setMusic("");
     setTravelledBefore("");
+    setSmoking("");
+    setHeardAbout("");
     setWhy("");
     setAgreed(false);
+    setWhatsappOptIn(false);
     setSubmitted(false);
+    setRequestNumber(null);
+    setSubmitError(null);
   }
 
   if (submitted) {
@@ -61,6 +91,7 @@ export default function ApplyPage() {
             Your application is in. We review every one and get back to you fast —
             if you&apos;re in, you&apos;ll get a link to pick your seat next.
           </p>
+          {requestNumber ? <p className="preview-note">Request reference: {requestNumber}</p> : null}
           <div className="thanks-recap">
             <div>
               <b>Name:</b> {fullName || "—"}
@@ -69,10 +100,16 @@ export default function ApplyPage() {
               <b>Mobile / WhatsApp:</b> {phone || "—"}
             </div>
             <div>
+              <b>Email:</b> {email || "—"}
+            </div>
+            <div>
               <b>Age:</b> {age || "—"}
             </div>
             <div>
               <b>Instagram:</b> {instagram || "—"}
+            </div>
+            <div>
+              <b>Job / study:</b> {jobOrStudy || "—"}
             </div>
             <div>
               <b>Music taste:</b> {music || "—"}
@@ -81,15 +118,19 @@ export default function ApplyPage() {
               <b>Travelled with us before:</b> {travelledBefore || "—"}
             </div>
             <div>
+              <b>Smoking:</b> {smoking || "—"}
+            </div>
+            <div>
+              <b>Heard about us:</b> {heardAbout || "—"}
+            </div>
+            <div>
               <b>Why join:</b> {why || "—"}
             </div>
           </div>
           <button className="ghost-btn" type="button" onClick={resetForm}>
             Back to the form
           </button>
-          <p className="preview-note">
-            Preview only — nothing was sent or saved anywhere.
-          </p>
+          <p className="preview-note">Your application has been saved.</p>
         </div>
       </div>
     );
@@ -99,7 +140,7 @@ export default function ApplyPage() {
     <>
       <header className="pi-page-intro">
         <span className="kicker">Planet Infinity · Good vibes, good times</span>
-        <h1>Apply to Join — [Trip Name]</h1>
+        <h1>Apply to Join{queryTitle ? ` — ${queryTitle}` : ""}</h1>
         <p className="tagline">
           Not everyone rides with us — we curate the crew, not just fill seats.
         </p>
@@ -117,7 +158,37 @@ export default function ApplyPage() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (canSubmit) setSubmitted(true);
+            if (!canSubmit) return;
+            setSubmitError(null);
+            startTransition(async () => {
+              const result = await submitPublicRequest({
+                requestType: "application",
+                productId,
+                subjectTitle,
+                fullName,
+                email,
+                phone,
+                termsAccepted: agreed,
+                whatsappOptIn,
+                selections: {
+                  age,
+                  instagram,
+                  jobOrStudy,
+                  music,
+                  travelledBefore,
+                  smoking,
+                  heardAbout,
+                  why,
+                  ...(productType ? { productType } : {}),
+                },
+              });
+              if (!result.ok) {
+                setSubmitError(result.error);
+                return;
+              }
+              setRequestNumber(result.requestNumber);
+              setSubmitted(true);
+            });
           }}
         >
           {/* 1 — basics */}
@@ -145,6 +216,15 @@ export default function ApplyPage() {
               onChange={(e) => setPhone(e.target.value)}
             />
 
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="e.g. sarah@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
             <label htmlFor="age">Age</label>
             <input
               id="age"
@@ -163,6 +243,15 @@ export default function ApplyPage() {
               placeholder="@username"
               value={instagram}
               onChange={(e) => setInstagram(e.target.value)}
+            />
+
+            <label htmlFor="jobOrStudy">What do you do — work or study?</label>
+            <input
+              id="jobOrStudy"
+              type="text"
+              placeholder="e.g. Designer / Engineering student"
+              value={jobOrStudy}
+              onChange={(e) => setJobOrStudy(e.target.value)}
             />
           </div>
 
@@ -206,6 +295,12 @@ export default function ApplyPage() {
               ))}
             </select>
 
+            <label htmlFor="smoking">Do you smoke?</label>
+            <select id="smoking" value={smoking} onChange={(e) => setSmoking(e.target.value)}>
+              <option value="">Choose...</option>
+              {SMOKING_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
+            </select>
+
             <label htmlFor="why">Why do you want to join? (a few words)</label>
             <textarea
               id="why"
@@ -214,30 +309,35 @@ export default function ApplyPage() {
               onChange={(e) => setWhy(e.target.value)}
             />
 
-            <div className="agree-row">
-              <input
-                id="agreeTerms"
-                type="checkbox"
-                checked={agreed}
-                onChange={(e) => setAgreed(e.target.checked)}
-              />
-              <label htmlFor="agreeTerms">
-                I&apos;ve read and I agree to the Terms &amp; Conditions
-                <span className="placeholder-note">
-                  Placeholder — the Booking Terms &amp; Guest Policies PDF gets
-                  linked here later.
-                </span>
-              </label>
-            </div>
+            <label htmlFor="heardAbout">How did you hear about Planet Infinity? <span className="opt">(optional)</span></label>
+            <input
+              id="heardAbout"
+              type="text"
+              placeholder="Instagram, a friend, an earlier trip..."
+              value={heardAbout}
+              onChange={(e) => setHeardAbout(e.target.value)}
+            />
+
+            <PolicyAcceptance
+              id="applicationPolicyAcceptance"
+              scope="application"
+              checked={agreed}
+              onChange={setAgreed}
+            />
+            <label className="agree-row" htmlFor="applicationWhatsappOptIn">
+              <input id="applicationWhatsappOptIn" type="checkbox" checked={whatsappOptIn} onChange={(event) => setWhatsappOptIn(event.target.checked)} />
+              <span>If approved and booked, send only the final Booking Confirmation and its PDF to this number on WhatsApp.</span>
+            </label>
           </div>
 
-          <button className="submit-btn" type="submit" disabled={!canSubmit}>
-            Submit
+          <button className="submit-btn" type="submit" disabled={!canSubmit || isPending}>
+            {isPending ? "Sending…" : "Submit"}
           </button>
+          {submitError ? <p className="pi-flow__error" role="alert">{submitError}</p> : null}
         </form>
 
         <p className="preview-note">
-          Visual preview — submitting doesn&apos;t send or save anything yet.
+          We review every application and reply either way.
         </p>
 
         <div className="footer-note">
@@ -252,5 +352,13 @@ export default function ApplyPage() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function ApplyPage() {
+  return (
+    <Suspense fallback={<div className="thanks-screen">Loading application…</div>}>
+      <ApplyForm />
+    </Suspense>
   );
 }

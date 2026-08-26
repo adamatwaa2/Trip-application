@@ -15,6 +15,7 @@ export type EventConfirmationDetails = {
   guestEmail?: string;
   guestPhone?: string;
   totalEgp?: number;
+  requestNumber?: string;
   mode: "booking" | "request" | "application";
 };
 
@@ -25,8 +26,8 @@ export type EventConfirmationDetails = {
  * component, because the fields differ: tickets and quantity instead of
  * selections and seats.
  *
- * It invents nothing. Reference and both statuses render as placeholders,
- * because no booking exists: no backend, no submission, no payment.
+ * It shows the reference produced by the request inbox. Availability and
+ * payment are confirmed later by the team.
  */
 export function EventConfirmation({
   details,
@@ -54,10 +55,8 @@ export function EventConfirmation({
 
       <dl className="pi-confirm__grid">
         <div>
-          <dt>{isRequest ? "Request reference" : "Booking reference"}</dt>
-          <dd>
-            <Placeholder id="bookingReference" />
-          </dd>
+          <dt>Request reference</dt>
+          <dd>{details.requestNumber ?? <Placeholder id="bookingReference" />}</dd>
         </div>
         <div>
           <dt>Event</dt>
@@ -114,18 +113,6 @@ export function EventConfirmation({
             )}
           </dd>
         </div>
-        <div>
-          <dt>Booking status</dt>
-          <dd>
-            <Placeholder id="bookingStatus" />
-          </dd>
-        </div>
-        <div>
-          <dt>Payment status</dt>
-          <dd>
-            <Placeholder id="paymentStatus" />
-          </dd>
-        </div>
       </dl>
 
       <div className="pi-confirm__next">
@@ -140,8 +127,7 @@ export function EventConfirmation({
       </div>
 
       <p className="pi-confirm__preview">
-        Preview only — nothing was sent, saved or charged. There is no backend,
-        no email, no WhatsApp automation and no payment step.
+        Your request has been saved. There is no email, WhatsApp automation or payment step yet.
       </p>
     </div>
   );

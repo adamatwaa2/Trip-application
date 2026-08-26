@@ -16,8 +16,8 @@ export const metadata: Metadata = {
     "Planet Infinity trips and experiences — desert and sea, camping and stargazing, long roads and short escapes.",
 };
 
-export default function TripsPage() {
-  const { trips, usingDemoData } = getListedTrips();
+export default async function TripsPage() {
+  const { trips, usingDemoData } = await getListedTrips();
 
   return (
     <>

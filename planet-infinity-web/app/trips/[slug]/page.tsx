@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { CatalogDocumentCard } from "@/components/CatalogDocumentCard";
 import { Container } from "@/components/Container";
 import { DemoBadge } from "@/components/DemoBadge";
 import { Eyebrow } from "@/components/Eyebrow";
@@ -9,17 +10,17 @@ import { Section } from "@/components/Section";
 import { TripBookingModule } from "@/components/TripBookingModule";
 import { AvailabilityPill } from "@/components/AvailabilityPill";
 import { Placeholder } from "@/components/Placeholder";
-import { getTripBySlug, getTripSlugs } from "@/content/source";
+import { getTripBySlug } from "@/content/source";
 
 type Params = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return getTripSlugs().map((slug) => ({ slug }));
-}
+// Catalogue items are read from Supabase and use request cookies for SSR auth.
+// These pages must render dynamically rather than during the production build.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const trip = getTripBySlug(slug);
+  const trip = await getTripBySlug(slug);
   if (!trip) return { title: "Trip not found" };
   return { title: trip.title, description: trip.shortDescription };
 }
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  */
 export default async function TripPage({ params }: Params) {
   const { slug } = await params;
-  const trip = getTripBySlug(slug);
+  const trip = await getTripBySlug(slug);
   if (!trip) notFound();
 
   return (
@@ -68,6 +69,12 @@ export default async function TripPage({ params }: Params) {
               <dt>Departure</dt>
               <dd>{trip.departureTime ?? <Placeholder id="departureTime" />}</dd>
             </div>
+            {trip.returnTime ? <div><dt>Return</dt><dd>{trip.returnTime}</dd></div> : null}
+            {trip.departurePoint ? <div><dt>Departure point</dt><dd>{trip.departurePoint}</dd></div> : null}
+            {trip.returnPoint ? <div><dt>Return point</dt><dd>{trip.returnPoint}</dd></div> : null}
+            {trip.packageLabel ? <div><dt>Package</dt><dd>{trip.packageLabel}</dd></div> : null}
+            {trip.accommodation ? <div><dt>Accommodation</dt><dd>{trip.accommodation}</dd></div> : null}
+            {trip.transportation ? <div><dt>Transportation</dt><dd>{trip.transportation}</dd></div> : null}
             <div>
               <dt>Availability</dt>
               <dd>
@@ -91,6 +98,7 @@ export default async function TripPage({ params }: Params) {
           <div className="pi-trip-hero__media">
             <MediaBlock
               src={trip.media.hero}
+              videoSrc={trip.media.video}
               alt={trip.media.heroAlt ?? ""}
               ratio="21-9"
               radius="hero"
@@ -109,6 +117,17 @@ export default async function TripPage({ params }: Params) {
                   <p key={paragraph.slice(0, 32)}>{paragraph}</p>
                 ))}
               </section>
+
+              {trip.document ? (
+                <section className="pi-trip-block">
+                  <h2>Trip document</h2>
+                  <CatalogDocumentCard
+                    url={trip.document.url}
+                    label={trip.document.label}
+                    kind="trip"
+                  />
+                </section>
+              ) : null}
 
               {trip.included?.length || trip.notIncluded?.length ? (
                 <section className="pi-trip-block">

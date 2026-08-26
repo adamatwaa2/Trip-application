@@ -26,7 +26,7 @@ export const PLACEHOLDERS = {
   // --- contact -----------------------------------------------------------
   whatsapp: {
     label: "WhatsApp number",
-    value: null,
+    value: "+20 103 729 9464",
     note: "Booking Confirmation PDF · 'Need help?' block",
   },
   reservationsEmail: {

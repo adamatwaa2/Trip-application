@@ -45,19 +45,24 @@ export function findTrip(slug: string): Trip | undefined {
  * rather than reading the two flags themselves, so no component can drift
  * into assuming seats.
  */
-export type BookingStep = "selection" | "seats" | "guest" | "review";
+export type BookingStep = "selection" | "seats" | "custom" | "guest" | "payment" | "review";
 
 export function bookingSteps(trip: Trip): BookingStep[] {
   const steps: BookingStep[] = [];
   if (trip.tripSelectionEnabled) steps.push("selection");
   if (trip.seatBookingEnabled) steps.push("seats");
-  steps.push("guest", "review");
+  if (trip.bookingFormFields?.length) steps.push("custom");
+  steps.push("guest");
+  if (trip.paymentProofRequired) steps.push("payment");
+  steps.push("review");
   return steps;
 }
 
 export const STEP_LABELS: Record<BookingStep, string> = {
   selection: "Your choices",
   seats: "Your seat",
+  custom: "Trip questions",
   guest: "Your details",
+  payment: "Payment proof",
   review: "Review",
 };

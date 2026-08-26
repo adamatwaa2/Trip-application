@@ -16,8 +16,8 @@ export const metadata: Metadata = {
     "Beach sessions, movie nights and full-moon parties from Planet Infinity Entertainment.",
 };
 
-export default function EventsPage() {
-  const { events, usingDemoData } = getListedEvents();
+export default async function EventsPage() {
+  const { events, usingDemoData } = await getListedEvents();
 
   return (
     <div className="pi-world-events">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AvailabilityPill } from "@/components/AvailabilityPill";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { CatalogDocumentCard } from "@/components/CatalogDocumentCard";
 import { Container } from "@/components/Container";
 import { DemoBadge } from "@/components/DemoBadge";
 import { EventBookingModule } from "@/components/EventBookingModule";
@@ -9,17 +10,17 @@ import { Eyebrow } from "@/components/Eyebrow";
 import { MediaBlock } from "@/components/MediaBlock";
 import { Placeholder } from "@/components/Placeholder";
 import { Section } from "@/components/Section";
-import { getEventBySlug, getEventSlugs } from "@/content/source";
+import { getEventBySlug } from "@/content/source";
 
 type Params = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return getEventSlugs().map((slug) => ({ slug }));
-}
+// Catalogue items are read from Supabase and use request cookies for SSR auth.
+// These pages must render dynamically rather than during the production build.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const event = getEventBySlug(slug);
+  const event = await getEventBySlug(slug);
   if (!event) return { title: "Event not found" };
   return { title: event.title, description: event.shortDescription };
 }
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  */
 export default async function EventPage({ params }: Params) {
   const { slug } = await params;
-  const event = getEventBySlug(slug);
+  const event = await getEventBySlug(slug);
   if (!event) notFound();
 
   return (
@@ -97,6 +98,7 @@ export default async function EventPage({ params }: Params) {
           <div className="pi-trip-hero__media">
             <MediaBlock
               src={event.media.hero}
+              videoSrc={event.media.video}
               alt={event.media.heroAlt ?? ""}
               ratio="21-9"
               radius="hero"
@@ -115,6 +117,17 @@ export default async function EventPage({ params }: Params) {
                   <p key={paragraph.slice(0, 32)}>{paragraph}</p>
                 ))}
               </section>
+
+              {event.document ? (
+                <section className="pi-trip-block">
+                  <h2>Event document</h2>
+                  <CatalogDocumentCard
+                    url={event.document.url}
+                    label={event.document.label}
+                    kind="event"
+                  />
+                </section>
+              ) : null}
 
               {event.whatIsIncluded?.length || event.whatIsNotIncluded?.length ? (
                 <section className="pi-trip-block">

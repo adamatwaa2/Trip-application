@@ -36,8 +36,8 @@ export const PRIMARY_NAV: NavItem[] = [
  * and trips and events are booked differently from each other.
  */
 export const HEADER_CTA: NavItem = {
-  label: "Request to book",
-  href: "/explore",
+  label: "Explore trips",
+  href: "/trips",
   status: "ready",
 };
 
@@ -65,9 +65,13 @@ export const COMING_SOON_LINKS: NavItem[] = [
   { label: "Merch", href: "/merch", status: "soon", note: "Soon" },
 ];
 
-/** The three parts of the Booking Terms & Guest Policies pack. Not built yet. */
+/** Public trust and booking-policy surfaces. */
 export const POLICY_LINKS: NavItem[] = [
-  { label: "Booking terms", href: "/terms", status: "soon" },
-  { label: "Cancellation & refunds", href: "/cancellation-policy", status: "soon" },
-  { label: "Trip etiquette", href: "/etiquette", status: "soon" },
+  { label: "All policies", href: "/policies", status: "ready" },
+  { label: "Booking terms", href: "/policies/booking", status: "ready" },
+  { label: "Payment", href: "/policies/payment", status: "ready" },
+  { label: "Cancellation", href: "/policies/cancellation", status: "ready" },
+  { label: "Refunds", href: "/policies/refund", status: "ready" },
+  { label: "Trip etiquette", href: "/policies/etiquette", status: "ready" },
+  { label: "Privacy", href: "/policies/privacy", status: "ready" },
 ];

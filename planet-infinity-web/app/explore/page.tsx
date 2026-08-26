@@ -24,9 +24,8 @@ export const metadata: Metadata = {
  * catalogue that does not — and it never shows demo configurations as
  * inventory.
  */
-export default function ExplorePage() {
-  const { trips, usingDemoData: tripsAreDemo } = getListedTrips();
-  const { events, usingDemoData: eventsAreDemo } = getListedEvents();
+export default async function ExplorePage() {
+  const [{ trips, usingDemoData: tripsAreDemo }, { events, usingDemoData: eventsAreDemo }] = await Promise.all([getListedTrips(), getListedEvents()]);
 
   // Demo configurations are architecture test cases, never public inventory.
   const tripCount = tripsAreDemo ? 0 : trips.length;

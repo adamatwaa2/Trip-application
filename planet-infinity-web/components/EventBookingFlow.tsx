@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import {
   eventBookingSteps,
@@ -13,6 +13,8 @@ import { Button } from "./Button";
 import { EventConfirmation } from "./EventConfirmation";
 import { EventQuantity } from "./EventQuantity";
 import { EventTicketSelection } from "./EventTicketSelection";
+import { submitPublicRequest } from "@/app/actions/requests";
+import { PolicyAcceptance } from "./PolicyAcceptance";
 
 /**
  * Front-end event booking flow. Separate from the trip flow by design: the
@@ -26,7 +28,8 @@ import { EventTicketSelection } from "./EventTicketSelection";
  *   tickets + quantity  →  details → tickets → quantity → guest → review → …
  *   application         →  details → request → confirmation
  *
- * Nothing submits, saves, emails or charges. Preview only.
+ * The final step saves a real request. Availability and payment are confirmed
+ * manually by the team.
  */
 export function EventBookingFlow({ event }: { event: PlanetEvent }) {
   const steps = useMemo(() => eventBookingSteps(event), [event]);
@@ -40,6 +43,10 @@ export function EventBookingFlow({ event }: { event: PlanetEvent }) {
   const [guestPhone, setGuestPhone] = useState("");
   const [message, setMessage] = useState("");
   const [agreed, setAgreed] = useState(false);
+  const [whatsappOptIn, setWhatsappOptIn] = useState(false);
+  const [requestNumber, setRequestNumber] = useState<string | undefined>();
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const step = steps[stepIndex];
   const ticket = event.ticketOptions?.find((option) => option.id === ticketId);
@@ -57,7 +64,7 @@ export function EventBookingFlow({ event }: { event: PlanetEvent }) {
       return quantity >= limits.min && quantity <= limits.max;
     }
     if (current === "guest" || current === "application") {
-      return guestName.trim() !== "" && guestEmail.trim() !== "" && agreed;
+      return guestName.trim() !== "" && guestEmail.trim() !== "" && agreed && (!whatsappOptIn || guestPhone.trim() !== "");
     }
     return true;
   }
@@ -78,9 +85,43 @@ export function EventBookingFlow({ event }: { event: PlanetEvent }) {
           guestPhone,
           totalEgp: total,
           mode: event.bookingMode,
+          requestNumber,
         }}
       />
     );
+  }
+
+  function submitRequest() {
+    setSubmitError(null);
+    startTransition(async () => {
+      const result = await submitPublicRequest({
+        requestType: "event",
+        productId: event.id,
+        externalSubjectId: event.id,
+        subjectSlug: event.slug,
+        subjectTitle: event.title,
+        fullName: guestName,
+        email: guestEmail,
+        phone: guestPhone,
+        termsAccepted: agreed,
+        whatsappOptIn,
+        guestCount: event.quantityEnabled ? quantity : 1,
+        notes: message,
+        selections: {
+          bookingMode: event.bookingMode,
+          ticket: event.ticketSelectionEnabled ? ticket?.label ?? null : null,
+          quantity: event.quantityEnabled ? quantity : 1,
+          message: step === "application" ? message : null,
+          totalEgp: total ?? null,
+        },
+      });
+      if (!result.ok) {
+        setSubmitError(result.error);
+        return;
+      }
+      setRequestNumber(result.requestNumber);
+      setDone(true);
+    });
   }
 
   return (
@@ -175,7 +216,7 @@ export function EventBookingFlow({ event }: { event: PlanetEvent }) {
             />
 
             <label htmlFor="guestPhone">
-              Mobile / WhatsApp <span className="opt">(optional)</span>
+              Mobile / WhatsApp <span className="opt">(required for WhatsApp updates)</span>
             </label>
             <input
               id="guestPhone"
@@ -197,20 +238,12 @@ export function EventBookingFlow({ event }: { event: PlanetEvent }) {
               </>
             ) : null}
 
-            <div className="agree-row">
-              <input
-                id="agreeTerms"
-                type="checkbox"
-                checked={agreed}
-                onChange={(e) => setAgreed(e.target.checked)}
-              />
-              <label htmlFor="agreeTerms">
-                I have read and agree to the Booking Terms &amp; Guest Policies
-                <span className="placeholder-note">
-                  The policy pages are not published yet.
-                </span>
-              </label>
-            </div>
+            <label className="agree-row" htmlFor="eventWhatsappOptIn">
+              <input id="eventWhatsappOptIn" type="checkbox" checked={whatsappOptIn} onChange={(e) => setWhatsappOptIn(e.target.checked)} />
+              <span>Send only the final Booking Confirmation and its PDF to this number on WhatsApp.</span>
+            </label>
+
+            <PolicyAcceptance checked={agreed} onChange={setAgreed} />
           </>
         ) : null}
 
@@ -255,8 +288,7 @@ export function EventBookingFlow({ event }: { event: PlanetEvent }) {
               </div>
             </dl>
             <p className="pi-flow__hint">
-              Sending this confirms nothing. Nothing is charged and nothing is
-              saved — this is a front-end preview.
+              This sends a request only. Nothing is charged until we confirm it.
             </p>
           </>
         ) : null}
@@ -284,15 +316,18 @@ export function EventBookingFlow({ event }: { event: PlanetEvent }) {
             Continue
           </Button>
         ) : (
-          <Button disabled={!canContinue(step)} onClick={() => setDone(true)}>
-            {event.bookingMode === "booking"
-              ? "Get tickets"
-              : event.bookingMode === "application"
-                ? "Request access"
-                : "Request to book"}
+          <Button disabled={!canContinue(step) || isPending} onClick={submitRequest}>
+            {isPending
+              ? "Sending…"
+              : event.bookingMode === "booking"
+                ? "Get tickets"
+                : event.bookingMode === "application"
+                  ? "Request access"
+                  : "Request to book"}
           </Button>
         )}
       </div>
+      {submitError ? <p className="pi-flow__error" role="alert">{submitError}</p> : null}
     </div>
   );
 }

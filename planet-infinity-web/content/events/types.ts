@@ -81,7 +81,12 @@ export type PlanetEvent = {
     hero?: string;
     heroAlt?: string;
     gallery?: EventGalleryImage[];
+    /** Uploaded first-party video. The hero image is used as its poster. */
+    video?: string;
   };
+
+  /** A guest-facing PDF presented as a branded card, never a raw URL. */
+  document?: { url: string; label: string };
 
   /** Base price. Omit entirely when unset. */
   priceEgp?: number;
@@ -94,6 +99,8 @@ export type PlanetEvent = {
   capacity?: number;
 
   bookingMode: EventBookingMode;
+  /** Independent curation gate. It does not change the post-approval booking mode. */
+  applicationRequired?: boolean;
   ticketType?: TicketType;
 
   /** INDEPENDENT of quantityEnabled. */
@@ -141,6 +148,7 @@ export const SHOPIFY_FIELD_MAP = {
   availability: "metafield: event.availability",
   capacity: "metafield: event.capacity",
   bookingMode: "metafield: event.booking_mode",
+  applicationRequired: "metafield: event.application_required",
   ticketType: "metafield: event.ticket_type",
   ticketSelectionEnabled: "metafield: event.ticket_selection_enabled",
   quantityEnabled: "metafield: event.quantity_enabled",
@@ -152,5 +160,6 @@ export const SHOPIFY_FIELD_MAP = {
   importantInformation: "metafield: event.important_information",
   cancellationSummary: "metafield: event.cancellation_summary",
   faq: "metafield: event.faq",
+  document: "metafield: event.document",
   media: "product.media",
 } as const;

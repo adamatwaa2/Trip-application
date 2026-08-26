@@ -15,9 +15,8 @@ export const metadata: Metadata = {
 /**
  * Contact.
  *
- * Every channel is a placeholder. No phone number, email address, WhatsApp
- * number, postal address or social handle is invented — the only real value
- * on this page is the Instagram handle, which comes from PI-WB-002.
+ * Unknown channels remain explicit placeholders. Confirmed business contact
+ * details are rendered from content/placeholders.ts.
  */
 export default function ContactPage() {
   return (

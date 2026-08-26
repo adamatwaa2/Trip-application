@@ -6,8 +6,8 @@ export type SeatState = "available" | "selected" | "taken" | "unavailable";
 
 type SeatSelectionProps = {
   config: SeatConfig;
-  selected: number | null;
-  onSelect: (seat: number) => void;
+  selected: number[];
+  onToggle: (seat: number) => void;
 };
 
 /**
@@ -20,14 +20,14 @@ type SeatSelectionProps = {
  * Geometry comes from the trip's SeatLayout, so a different vehicle is a data
  * change, not a code change. Taken seats stay quiet grey — never red.
  */
-export function SeatSelection({ config, selected, onSelect }: SeatSelectionProps) {
+export function SeatSelection({ config, selected, onToggle }: SeatSelectionProps) {
   const taken = config.taken ?? [];
   const unavailable = config.unavailable ?? [];
 
   function stateOf(seat: number): SeatState {
     if (taken.includes(seat)) return "taken";
     if (unavailable.includes(seat)) return "unavailable";
-    if (selected === seat) return "selected";
+    if (selected.includes(seat)) return "selected";
     return "available";
   }
 
@@ -48,7 +48,7 @@ export function SeatSelection({ config, selected, onSelect }: SeatSelectionProps
             : `Seat ${seat}, available`
         }
         onClick={() => {
-          if (!locked) onSelect(seat);
+          if (!locked) onToggle(seat);
         }}
       >
         <span className="pi-seat__num">{seat}</span>

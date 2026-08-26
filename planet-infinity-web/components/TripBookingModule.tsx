@@ -14,13 +14,13 @@ import { Price } from "./Price";
  *
  * CTA wording follows bookingMode, from the locked lexicon:
  *   booking      → Book now
- *   request      → Request to book
+ *   request      → legacy manual request
  *   application  → sends the guest to the application flow instead
  */
 export function TripBookingModule({ trip }: { trip: Trip }) {
   const steps = bookingSteps(trip);
 
-  if (trip.bookingMode === "application") {
+  if (trip.applicationRequired || trip.bookingMode === "application") {
     return (
       <aside className="pi-booking">
         <div className="pi-booking__head">
@@ -31,16 +31,18 @@ export function TripBookingModule({ trip }: { trip: Trip }) {
           This trip is by application. We review who is coming before any seat
           is held.
         </p>
-        <ButtonLink href="/apply" size="large" className="pi-booking__cta">
+        <ButtonLink
+          href={`/apply?product=${encodeURIComponent(trip.id)}&type=trip&title=${encodeURIComponent(trip.title)}`}
+          size="large"
+          className="pi-booking__cta"
+        >
           Apply to join
         </ButtonLink>
       </aside>
     );
   }
 
-  const label =
-    trip.ctaLabelOverride ??
-    (trip.bookingMode === "booking" ? CTA.bookNow : CTA.requestToBook);
+  const label = trip.ctaLabelOverride ?? CTA.bookNow;
 
   return (
     <aside className="pi-booking">
@@ -72,10 +74,7 @@ export function TripBookingModule({ trip }: { trip: Trip }) {
       </ButtonLink>
 
       <p className="pi-booking__note">
-        {trip.ctaHelper ??
-          (trip.bookingMode === "request"
-            ? "A request is not a booking. Nothing is charged until we confirm availability and you approve."
-            : "Nothing is charged in this preview — there is no payment step yet.")}
+        {trip.ctaHelper ?? "Payment instructions and the private receipt upload appear in the booking form."}
       </p>
     </aside>
   );

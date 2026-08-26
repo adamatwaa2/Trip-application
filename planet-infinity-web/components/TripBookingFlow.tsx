@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import {
   bookingSteps,
@@ -12,11 +12,18 @@ import { BookingConfirmation } from "./BookingConfirmation";
 import { Button } from "./Button";
 import { SeatSelection } from "./SeatSelection";
 import { TripSelection, type SelectionState } from "./TripSelection";
+import { submitPublicRequest, submitPublicTripBooking } from "@/app/actions/requests";
+import { PolicyAcceptance } from "./PolicyAcceptance";
+import {
+  bookingFormAnswersComplete,
+  type BookingFormAnswer,
+} from "@/lib/booking-form";
+import { TripCustomQuestions } from "./TripCustomQuestions";
+import { PaymentProofStep, type PaymentProofValue } from "./PaymentProofStep";
 
 /**
- * Front-end booking flow. No backend, no persistence, no payment, no
- * submission of any kind — the final step renders a confirmation state
- * locally and nothing leaves the browser.
+ * Trip checkout flow. Direct trips create a booking immediately; the rare
+ * application/request paths continue to use the request inbox.
  *
  * The steps come from bookingSteps(trip), which is the single place the four
  * configurations are resolved:
@@ -34,14 +41,22 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
   const [done, setDone] = useState(false);
 
   const [selection, setSelection] = useState<SelectionState>({});
-  const [seat, setSeat] = useState<number | null>(null);
+  const [seats, setSeats] = useState<number[]>([]);
   const [guestName, setGuestName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
+  const [guestNotes, setGuestNotes] = useState("");
   const [guestCount, setGuestCount] = useState("1");
+  const [customAnswers, setCustomAnswers] = useState<Record<string, BookingFormAnswer>>({});
+  const [paymentProof, setPaymentProof] = useState<PaymentProofValue | null>(null);
   const [agreed, setAgreed] = useState(false);
+  const [whatsappOptIn, setWhatsappOptIn] = useState(false);
+  const [requestNumber, setRequestNumber] = useState<string | undefined>();
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const step = steps[stepIndex];
+  const guestCountNumber = Math.max(1, Number(guestCount) || 1);
 
   /** Chosen labels, in the order the trip defines its groups. */
   const selectionLabels = useMemo(() => {
@@ -71,9 +86,11 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
       const required = (trip.optionGroups ?? []).filter((g) => g.required !== false);
       return required.every((g) => Boolean(selection[g.id]));
     }
-    if (current === "seats") return seat !== null;
+    if (current === "seats") return seats.length === guestCountNumber;
+    if (current === "custom") return bookingFormAnswersComplete(trip.bookingFormFields ?? [], customAnswers);
+    if (current === "payment") return Boolean(paymentProof?.path);
     if (current === "guest") {
-      return guestName.trim() !== "" && guestEmail.trim() !== "" && agreed;
+      return guestName.trim() !== "" && guestEmail.trim() !== "" && agreed && (!whatsappOptIn || guestPhone.trim() !== "");
     }
     return true;
   }
@@ -84,16 +101,64 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
         details={{
           tripTitle: trip.title,
           selections: selectionLabels,
-          seat: trip.seatBookingEnabled ? seat : undefined,
+          seats: trip.seatBookingEnabled ? seats : undefined,
           guestName,
           guestEmail,
           guestPhone,
           guestCount: Number(guestCount) || 1,
           totalEgp: total,
           mode: trip.bookingMode,
+          requestNumber,
         }}
       />
     );
+  }
+
+  function submitRequest() {
+    setSubmitError(null);
+    startTransition(async () => {
+      const payload = {
+        productId: trip.id,
+        fullName: guestName,
+        email: guestEmail,
+        phone: guestPhone,
+        termsAccepted: agreed,
+        guestCount: guestCountNumber,
+        notes: guestNotes,
+        whatsappOptIn,
+        selections: {
+          bookingMode: trip.bookingMode,
+          selections: selectionLabels,
+          ...(trip.seatBookingEnabled ? { seats } : {}),
+          guestCount: guestCountNumber,
+          totalEgp: total ?? null,
+          customAnswers,
+          customResponses: (trip.bookingFormFields ?? []).map((field) => ({
+            id: field.id,
+            label: field.label,
+            answer: customAnswers[field.id] ?? null,
+          })),
+          paymentProof: paymentProof
+            ? { method: paymentProof.method, path: paymentProof.path }
+            : null,
+        },
+      };
+      const result = trip.bookingMode === "booking"
+        ? await submitPublicTripBooking(payload)
+        : await submitPublicRequest({
+            ...payload,
+            requestType: "trip",
+            externalSubjectId: trip.id,
+            subjectSlug: trip.slug,
+            subjectTitle: trip.title,
+          });
+      if (!result.ok) {
+        setSubmitError(result.error);
+        return;
+      }
+      setRequestNumber("bookingNumber" in result ? result.bookingNumber : result.requestNumber);
+      setDone(true);
+    });
   }
 
   return (
@@ -135,13 +200,51 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
           <>
             <h2 className="pi-flow__title">{STEP_LABELS.seats}</h2>
             <p className="pi-flow__hint">
-              Your seat applies to both the outbound and return journey unless
-              we confirm otherwise.
+              Choose one seat for every guest. The same seats apply to the return
+              journey unless we confirm otherwise.
             </p>
-            <SeatSelection config={trip.seat} selected={seat} onSelect={setSeat} />
+            <label htmlFor="seatGuestCount">Number of guests</label>
+            <input
+              id="seatGuestCount"
+              type="number"
+              min="1"
+              max="14"
+              value={guestCount}
+              onChange={(event) => {
+                const next = Math.max(1, Number(event.target.value) || 1);
+                setGuestCount(String(next));
+                setSeats((current) => current.slice(0, next));
+              }}
+            />
+            <SeatSelection
+              config={trip.seat}
+              selected={seats}
+              onToggle={(seat) =>
+                setSeats((current) =>
+                  current.includes(seat)
+                    ? current.filter((value) => value !== seat)
+                    : current.length < guestCountNumber
+                      ? [...current, seat].sort((a, b) => a - b)
+                      : current,
+                )
+              }
+            />
             <p className="pi-flow__selected">
-              {seat === null ? "No seat picked yet — tap one above" : `Seat ${seat} selected`}
+              {seats.length === 0
+                ? "No seats picked yet — tap the map above"
+                : `${seats.map((seat) => `Seat ${seat}`).join(" · ")} selected (${seats.length}/${guestCountNumber})`}
             </p>
+          </>
+        ) : null}
+
+        {step === "custom" && trip.bookingFormFields?.length ? (
+          <>
+            <h2 className="pi-flow__title">{STEP_LABELS.custom}</h2>
+            <TripCustomQuestions
+              fields={trip.bookingFormFields}
+              answers={customAnswers}
+              onChange={(id, answer) => setCustomAnswers((current) => ({ ...current, [id]: answer }))}
+            />
           </>
         ) : null}
 
@@ -156,6 +259,9 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
               onChange={(e) => setGuestName(e.target.value)}
             />
 
+            <label htmlFor="guestNotes">Anything we should know? <span className="opt">(optional)</span></label>
+            <textarea id="guestNotes" value={guestNotes} onChange={(e) => setGuestNotes(e.target.value)} />
+
             <label htmlFor="guestEmail">Email</label>
             <input
               id="guestEmail"
@@ -165,7 +271,7 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
             />
 
             <label htmlFor="guestPhone">
-              Mobile / WhatsApp <span className="opt">(optional)</span>
+              Mobile / WhatsApp <span className="opt">(required for WhatsApp updates)</span>
             </label>
             <input
               id="guestPhone"
@@ -174,29 +280,27 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
               onChange={(e) => setGuestPhone(e.target.value)}
             />
 
-            <label htmlFor="guestCount">Number of guests</label>
-            <input
-              id="guestCount"
-              type="number"
-              min="1"
-              value={guestCount}
-              onChange={(e) => setGuestCount(e.target.value)}
-            />
+            {!trip.seatBookingEnabled ? (
+              <>
+                <label htmlFor="guestCount">Number of guests</label>
+                <input id="guestCount" type="number" min="1" value={guestCount} onChange={(e) => setGuestCount(e.target.value)} />
+              </>
+            ) : null}
 
-            <div className="agree-row">
-              <input
-                id="agreeTerms"
-                type="checkbox"
-                checked={agreed}
-                onChange={(e) => setAgreed(e.target.checked)}
-              />
-              <label htmlFor="agreeTerms">
-                I have read and agree to the Booking Terms &amp; Guest Policies
-                <span className="placeholder-note">
-                  The policy pages are not published yet.
-                </span>
-              </label>
-            </div>
+            <label className="agree-row" htmlFor="whatsappOptIn">
+              <input id="whatsappOptIn" type="checkbox" checked={whatsappOptIn} onChange={(e) => setWhatsappOptIn(e.target.checked)} />
+              <span>Send only the final Booking Confirmation and its PDF to this number on WhatsApp.</span>
+            </label>
+
+            <PolicyAcceptance checked={agreed} onChange={setAgreed} />
+          </>
+        ) : null}
+
+        {step === "payment" ? (
+          <>
+            <h2 className="pi-flow__title">{STEP_LABELS.payment}</h2>
+            <p className="pi-flow__hint">Transfer the confirmed amount, then upload the receipt. Uploading a receipt does not confirm payment until our admin checks it.</p>
+            <PaymentProofStep tripId={trip.id} totalEgp={total} value={paymentProof} onChange={setPaymentProof} />
           </>
         ) : null}
 
@@ -216,8 +320,18 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
               ) : null}
               {trip.seatBookingEnabled ? (
                 <div>
-                  <dt>Seat</dt>
-                  <dd>{seat === null ? "—" : `Seat ${seat}`}</dd>
+                  <dt>{seats.length === 1 ? "Seat" : "Seats"}</dt>
+                  <dd>{seats.length ? seats.map((seat) => `Seat ${seat}`).join(" · ") : "—"}</dd>
+                </div>
+              ) : null}
+              {(trip.bookingFormFields ?? []).length ? (
+                <div>
+                  <dt>Trip questions</dt>
+                  <dd>{(trip.bookingFormFields ?? []).map((field) => {
+                    const answer = customAnswers[field.id];
+                    const display = Array.isArray(answer) ? answer.join(", ") : answer === true ? "Yes" : answer === false ? "No" : answer || "—";
+                    return `${field.label}: ${display}`;
+                  }).join(" · ")}</dd>
                 </div>
               ) : null}
               <div>
@@ -243,10 +357,17 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
                     : "Price not set"}
                 </dd>
               </div>
+              {paymentProof ? (
+                <div>
+                  <dt>Payment proof</dt>
+                  <dd>{paymentProof.method === "instapay" ? "InstaPay" : "Vodafone Cash"} · {paymentProof.fileName}</dd>
+                </div>
+              ) : null}
             </dl>
             <p className="pi-flow__hint">
-              Sending this does not confirm anything. Nothing is charged, and
-              nothing is saved — this is a front-end preview.
+              {trip.bookingMode === "booking"
+                ? "This completes your booking and securely sends the receipt for payment verification. Your final Booking Confirmation follows after our team verifies it."
+                : "This sends your application for review. No booking is created until our team accepts it."}
             </p>
           </>
         ) : null}
@@ -271,11 +392,16 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
             Continue
           </Button>
         ) : (
-          <Button disabled={!canContinue(step)} onClick={() => setDone(true)}>
-            {trip.bookingMode === "booking" ? "Book now" : "Request to book"}
+          <Button disabled={!canContinue(step) || isPending} onClick={submitRequest}>
+            {isPending
+              ? "Sending…"
+              : trip.bookingMode === "booking"
+                ? "Complete booking"
+                : "Send for confirmation"}
           </Button>
         )}
       </div>
+      {submitError ? <p className="pi-flow__error" role="alert">{submitError}</p> : null}
     </div>
   );
 }

@@ -23,13 +23,37 @@ import { Price } from "./Price";
 export function EventBookingModule({ event }: { event: PlanetEvent }) {
   const steps = eventBookingSteps(event);
 
+  if (event.applicationRequired || event.bookingMode === "application") {
+    return (
+      <aside className="pi-booking">
+        <div className="pi-booking__head">
+          <Price
+            egp={event.priceEgp}
+            unit={event.priceUnit}
+            size="large"
+            placeholderId="ticketPrice"
+          />
+          <AvailabilityPill state={event.availability} />
+        </div>
+        <p className="pi-booking__note">
+          This event requires an application. We review each request before booking.
+        </p>
+        <ButtonLink
+          href={`/apply?product=${encodeURIComponent(event.id)}&type=event&title=${encodeURIComponent(event.title)}`}
+          size="large"
+          className="pi-booking__cta"
+        >
+          Request access
+        </ButtonLink>
+      </aside>
+    );
+  }
+
   const label =
     event.ctaLabelOverride ??
     (event.bookingMode === "booking"
       ? "Get tickets"
-      : event.bookingMode === "application"
-        ? "Request access"
-        : "Request to book");
+      : "Request to book");
 
   return (
     <aside className="pi-booking">
@@ -68,9 +92,7 @@ export function EventBookingModule({ event }: { event: PlanetEvent }) {
 
       <p className="pi-booking__note">
         {event.ctaHelper ??
-          (event.bookingMode === "application"
-            ? "Curated event. We review every request and reply either way."
-            : "Nothing is charged in this preview — there is no payment step yet.")}
+          "Nothing is charged in this preview — there is no payment step yet."}
       </p>
     </aside>
   );
