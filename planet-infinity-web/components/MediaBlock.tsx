@@ -15,6 +15,8 @@ type MediaBlockProps = {
   className?: string;
   /** Branded copy used when first-party photography has not been uploaded. */
   emptyLabel?: string;
+  /** Reserve eager loading for the single above-the-fold hero image. */
+  eager?: boolean;
 };
 
 /**
@@ -31,6 +33,7 @@ export function MediaBlock({
   children,
   className,
   emptyLabel = "Planet Infinity",
+  eager = false,
 }: MediaBlockProps) {
   const classNames = [
     "pi-media",
@@ -61,6 +64,7 @@ export function MediaBlock({
           src={src}
           alt={alt}
           fill
+          loading={eager ? "eager" : undefined}
           sizes="(max-width: 899px) 100vw, (max-width: 1199px) 50vw, 33vw"
         />
       ) : (

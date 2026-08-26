@@ -10,14 +10,10 @@
    three declarations re-bind the SAME families in the SAME order to the
    generated names. This is build mechanics, not a brand change.
 
-   'Clash Display' is intentionally still referenced by literal name: the face
-   is not installed yet (licensing verification pending — see CLAUDE.md), so
-   display type currently falls through to Plus Jakarta Sans, which is exactly
-   the fallback PI-WB-002 specifies inside --pi-display. When the licensed
-   woff2 files land, @font-face here is the only place that changes.
+   Clash Display is bundled locally from the supplied brand-guidelines asset.
    ------------------------------------------------------------------------ */
 :root {
-  --pi-display: 'Clash Display', var(--font-jakarta), system-ui, sans-serif;
+  --pi-display: var(--font-clash), var(--font-jakarta), system-ui, sans-serif;
   --pi-body: var(--font-jakarta), system-ui, -apple-system, sans-serif;
   --pi-arabic: var(--font-plex-arabic), var(--font-jakarta), system-ui, sans-serif;
 }

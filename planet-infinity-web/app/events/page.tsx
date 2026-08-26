@@ -53,8 +53,8 @@ export default async function EventsPage() {
             </Grid>
           ) : (
             <EmptyState
-              title="The next dates are being locked in"
-              body="Line-ups, venues and ticket details are confirmed before an event is listed. Nothing is announced here before it is certain."
+              title={copy.events_empty_title}
+              body={copy.events_empty_body}
               action={
                 <ButtonLink href="/trips" variant="secondary">
                   {CTA.exploreTravel}

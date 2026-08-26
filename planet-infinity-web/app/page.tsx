@@ -30,8 +30,8 @@ export default async function HomePage() {
             <h1>{copy.home_title}</h1>
             <p className="pi-home-hero__lede">{copy.home_lede}</p>
             <div className="pi-home-hero__actions">
-              <ButtonLink href="#trips" size="large">See open trips</ButtonLink>
-              <ButtonLink href="#events" variant="secondary" size="large">See events</ButtonLink>
+              <ButtonLink href="#trips" size="large">{copy.home_trips_cta}</ButtonLink>
+              <ButtonLink href="#events" variant="secondary" size="large">{copy.home_events_cta}</ButtonLink>
             </div>
           </div>
 
@@ -45,10 +45,11 @@ export default async function HomePage() {
                   alt={featured.media.heroAlt ?? ""}
                   ratio="4-5"
                   radius="hero"
+                  eager
                 >
-                  <p className="pi-home-feature__meta">Featured trip</p>
+                  <p className="pi-home-feature__meta">{copy.home_feature_label}</p>
                   <h2>{featured.title}</h2>
-                  <span>Open trip details →</span>
+                  <span>{copy.home_feature_cta} →</span>
                 </MediaBlock>
               </Link>
             ) : (
@@ -64,12 +65,12 @@ export default async function HomePage() {
             eyebrow="Travel"
             title={copy.home_trips_title}
             lede={copy.home_trips_lede}
-            action={<ButtonLink href="/trips" variant="secondary">View all trips</ButtonLink>}
+            action={<ButtonLink href="/trips" variant="secondary">{copy.home_trips_all}</ButtonLink>}
           />
           {trips.length > 0 ? (
             <Grid columns={3}>{trips.map((trip) => <TripCard key={trip.id} trip={trip} />)}</Grid>
           ) : (
-            <EmptyState title="No trips are open right now" body="New departures will appear here as soon as they are published." />
+            <EmptyState title={copy.home_trips_empty_title} body={copy.home_trips_empty_body} />
           )}
         </Container>
       </Section>
@@ -80,12 +81,12 @@ export default async function HomePage() {
             eyebrow="Events"
             title={copy.home_events_title}
             lede={copy.home_events_lede}
-            action={<ButtonLink href="/events" variant="secondary">Enter the events world</ButtonLink>}
+            action={<ButtonLink href="/events" variant="secondary">{copy.home_events_all}</ButtonLink>}
           />
           {events.length > 0 ? (
             <Grid columns={3}>{events.map((event) => <EventCard key={event.id} event={event} />)}</Grid>
           ) : (
-            <EmptyState title="The next event is taking shape" body="Day or night, it will appear here as soon as the date and ticket details are certain." />
+            <EmptyState title={copy.home_events_empty_title} body={copy.home_events_empty_body} />
           )}
         </Container>
       </Section>

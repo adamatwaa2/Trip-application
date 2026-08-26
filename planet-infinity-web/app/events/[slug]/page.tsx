@@ -7,10 +7,11 @@ import { Container } from "@/components/Container";
 import { DemoBadge } from "@/components/DemoBadge";
 import { EventBookingModule } from "@/components/EventBookingModule";
 import { Eyebrow } from "@/components/Eyebrow";
+import { GalleryLightbox } from "@/components/GalleryLightbox";
 import { MediaBlock } from "@/components/MediaBlock";
-import { Placeholder } from "@/components/Placeholder";
 import { Section } from "@/components/Section";
 import { getEventBySlug } from "@/content/source";
+import { getSiteCopy } from "@/lib/site-copy";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -34,93 +35,77 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  */
 export default async function EventPage({ params }: Params) {
   const { slug } = await params;
-  const event = await getEventBySlug(slug);
+  const [event, copy] = await Promise.all([getEventBySlug(slug), getSiteCopy()]);
   if (!event) notFound();
+
+  const gallery = [
+    ...(event.media.hero ? [{ src: event.media.hero, alt: event.media.heroAlt ?? event.title }] : []),
+    ...(event.media.gallery ?? []),
+  ].filter((image, index, images) => images.findIndex((entry) => entry.src === image.src) === index);
+
+  const facts = [
+    ["Category", event.category],
+    ["Date", event.eventDate],
+    ["Time", event.startTime ? `${event.startTime}${event.endTime ? ` – ${event.endTime}` : ""}` : undefined],
+    ["Location", event.venue],
+  ].filter((entry): entry is [string, string] => Boolean(entry[1]));
 
   return (
     <div className="pi-world-events">
-      <Section tone="ivory" className="pi-trip-hero">
+      <section className="pi-trip-cinema pi-event-cinema">
+        <MediaBlock
+          src={event.media.hero}
+          videoSrc={event.media.video}
+          alt={event.media.heroAlt ?? event.title}
+          ratio="21-9"
+          radius="none"
+          className="pi-trip-cinema__media"
+          emptyLabel={event.category}
+          eager
+        >
+          <Container className="pi-trip-cinema__content">
+            <Breadcrumbs trail={[{ label: "Home", href: "/" }, { label: "Events", href: "/events" }, { label: event.title }]} />
+            <Eyebrow>{event.category}</Eyebrow>
+            <h1>{event.title}</h1>
+            <p>{event.shortDescription}</p>
+          </Container>
+        </MediaBlock>
+      </section>
+
+      <Section tone="white" className="pi-trip-story">
         <Container>
-          <Breadcrumbs
-            trail={[
-              { label: "Home", href: "/" },
-              { label: "Events", href: "/events" },
-              { label: event.title },
-            ]}
-          />
-          <Eyebrow>{event.category}</Eyebrow>
-          <h1 className="pi-trip-hero__title">{event.title}</h1>
-          <p className="pi-trip-hero__lede">{event.shortDescription}</p>
-
-          <div className="pi-trip-facts">
-            <div>
-              <dt>Category</dt>
-              <dd>{event.category}</dd>
-            </div>
-            <div>
-              <dt>Date</dt>
-              <dd>{event.eventDate ?? <Placeholder id="eventDate" label="Not set" />}</dd>
-            </div>
-            <div>
-              <dt>Time</dt>
-              <dd>
-                {event.startTime ? (
-                  `${event.startTime}${event.endTime ? ` – ${event.endTime}` : ""}`
-                ) : (
-                  <Placeholder id="eventTime" label="Not set" />
-                )}
-              </dd>
-            </div>
-            <div>
-              <dt>Location</dt>
-              <dd>{event.venue ?? <Placeholder id="eventVenue" label="Not set" />}</dd>
-            </div>
-            <div>
-              <dt>Availability</dt>
-              <dd>
-                {event.availability ? (
-                  <AvailabilityPill state={event.availability} />
-                ) : (
-                  <Placeholder id="availability" label="Not set" />
-                )}
-              </dd>
-            </div>
-          </div>
-
-          {event.isDemo ? (
-            <p className="pi-trip-hero__demo">
-              <DemoBadge /> This is an architecture test case, not a real
-              Planet Infinity event. It carries no price, date, time or venue —
-              everything operational shows as a placeholder.
-            </p>
-          ) : null}
-
-          <div className="pi-trip-hero__media">
-            <MediaBlock
-              src={event.media.hero}
-              videoSrc={event.media.video}
-              alt={event.media.heroAlt ?? ""}
-              ratio="21-9"
-              radius="hero"
-            />
-          </div>
-        </Container>
-      </Section>
-
-      <Section tone="white">
-        <Container>
+          {event.isDemo ? <p className="pi-trip-hero__demo"><DemoBadge /> This is an architecture test case, not a real Planet Infinity event.</p> : null}
           <div className="pi-trip-layout">
             <div className="pi-trip-main">
-              <section className="pi-trip-block">
-                <h2>About the night</h2>
+              <section className="pi-trip-block pi-trip-block--intro">
+                <Eyebrow>Event story</Eyebrow>
+                <h2>{copy.event_overview_title}</h2>
                 {event.description.map((paragraph) => (
                   <p key={paragraph.slice(0, 32)}>{paragraph}</p>
                 ))}
               </section>
 
+              {gallery.length ? (
+                <section className="pi-trip-block pi-trip-block--gallery">
+                  <div className="pi-trip-block__head"><div><Eyebrow>Photography</Eyebrow><h2>{copy.event_gallery_title}</h2></div><p>{copy.trip_gallery_hint}</p></div>
+                  <GalleryLightbox images={gallery} />
+                </section>
+              ) : null}
+
+              {facts.length || event.availability ? (
+                <section className="pi-trip-block">
+                  <Eyebrow>At a glance</Eyebrow>
+                  <h2>{copy.trip_details_title}</h2>
+                  <dl className="pi-trip-facts">
+                    {facts.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
+                    {event.availability ? <div><dt>Availability</dt><dd><AvailabilityPill state={event.availability} /></dd></div> : null}
+                  </dl>
+                </section>
+              ) : null}
+
               {event.document ? (
                 <section className="pi-trip-block">
-                  <h2>Event document</h2>
+                  <h2>{copy.event_document_title}</h2>
                   <CatalogDocumentCard
                     url={event.document.url}
                     label={event.document.label}
@@ -131,7 +116,7 @@ export default async function EventPage({ params }: Params) {
 
               {event.whatIsIncluded?.length || event.whatIsNotIncluded?.length ? (
                 <section className="pi-trip-block">
-                  <h2>What is included</h2>
+                  <h2>{copy.trip_included_title}</h2>
                   <div className="pi-includes">
                     <ul className="pi-includes__list pi-includes__list--in">
                       {event.whatIsIncluded?.map((item) => (
@@ -139,7 +124,7 @@ export default async function EventPage({ params }: Params) {
                       ))}
                     </ul>
                     <div>
-                      <h3 className="pi-includes__subtitle">Not included</h3>
+                      <h3 className="pi-includes__subtitle">{copy.trip_not_included_title}</h3>
                       <ul className="pi-includes__list pi-includes__list--out">
                         {event.whatIsNotIncluded?.map((item) => (
                           <li key={item}>{item}</li>
@@ -152,7 +137,7 @@ export default async function EventPage({ params }: Params) {
 
               {event.importantInformation?.length ? (
                 <section className="pi-trip-block">
-                  <h2>Important information</h2>
+                  <h2>{copy.event_information_title}</h2>
                   <ul className="pi-notes">
                     {event.importantInformation.map((item) => (
                       <li key={item}>{item}</li>
@@ -161,31 +146,9 @@ export default async function EventPage({ params }: Params) {
                 </section>
               ) : null}
 
-              <section className="pi-trip-block">
-                <h2>Gallery</h2>
-                {event.media.gallery?.length ? (
-                  <div className="pi-gallery">
-                    {event.media.gallery.map((image) => (
-                      <MediaBlock
-                        key={image.src}
-                        src={image.src}
-                        alt={image.alt}
-                        ratio="3-2"
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="pi-gallery">
-                    <MediaBlock ratio="3-2" />
-                    <MediaBlock ratio="3-2" />
-                    <MediaBlock ratio="3-2" />
-                  </div>
-                )}
-              </section>
-
               {event.faq?.length ? (
                 <section className="pi-trip-block">
-                  <h2>Questions</h2>
+                  <h2>{copy.event_questions_title}</h2>
                   <div className="pi-faq">
                     {event.faq.map((item) => (
                       <details key={item.question}>
@@ -198,7 +161,7 @@ export default async function EventPage({ params }: Params) {
               ) : null}
 
               <section className="pi-trip-block">
-                <h2>Cancellation</h2>
+                <h2>{copy.event_cancellation_title}</h2>
                 <p className="pi-trip-block__body">
                   {event.cancellationSummary ??
                     "Cancellation terms are set per event and shared in writing before any payment is made."}

@@ -6,17 +6,20 @@
  *   Plus Jakarta Sans    body, UI, buttons, labels, forms, data
  *   IBM Plex Sans Arabic all Arabic, display through caption
  *
- * Clash Display is NOT loaded yet. Licensing verification is pending (the
- * primary source is unreachable from this environment — see CLAUDE.md), and
- * no display face is substituted without Adam's approval. Until then display
- * type resolves to Plus Jakarta Sans, which is the fallback PI-WB-002 itself
- * specifies inside --pi-display.
- *
- * To add Clash Display once approved: drop the licensed woff2 files into
- * app/fonts/, declare them with next/font/local here, and export the variable.
- * Nothing else in the codebase needs to change.
+ * Clash Display is loaded from the font embedded in Adam's supplied website
+ * brand-guidelines file. Keeping it local avoids a third-party font request
+ * and makes the production rendering deterministic.
  */
 import { Plus_Jakarta_Sans, IBM_Plex_Sans_Arabic } from "next/font/google";
+import localFont from "next/font/local";
+
+export const clash = localFont({
+  src: "./typefaces/ClashDisplay-Bold.woff2",
+  variable: "--font-clash",
+  weight: "700",
+  style: "normal",
+  display: "swap",
+});
 
 export const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -36,4 +39,4 @@ export const plexArabic = IBM_Plex_Sans_Arabic({
   display: "swap",
 });
 
-export const fontVariables = `${jakarta.variable} ${plexArabic.variable}`;
+export const fontVariables = `${clash.variable} ${jakarta.variable} ${plexArabic.variable}`;

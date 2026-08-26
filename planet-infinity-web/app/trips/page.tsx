@@ -9,6 +9,7 @@ import { Section } from "@/components/Section";
 import { TripCard } from "@/components/TripCard";
 import { CTA } from "@/content/cta";
 import { getListedTrips } from "@/content/source";
+import { getSiteCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   title: "Travel",
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 export default async function TripsPage() {
-  const { trips, usingDemoData } = await getListedTrips();
+  const [{ trips, usingDemoData }, copy] = await Promise.all([getListedTrips(), getSiteCopy()]);
 
   return (
     <>
@@ -25,12 +26,8 @@ export default async function TripsPage() {
         <Container>
           <Breadcrumbs trail={[{ label: "Home", href: "/" }, { label: "Travel" }]} />
           <Eyebrow>Travel</Eyebrow>
-          <h1 className="pi-listing-hero__title">Every trip we run</h1>
-          <p className="pi-listing-hero__lede">
-            Desert and sea, camping and stargazing, long roads and short
-            escapes. Every trip is planned, staffed and run by us — and no two
-            are booked the same way.
-          </p>
+          <h1 className="pi-listing-hero__title">{copy.trips_title}</h1>
+          <p className="pi-listing-hero__lede">{copy.trips_lede}</p>
         </Container>
       </Section>
 
@@ -54,8 +51,8 @@ export default async function TripsPage() {
             </Grid>
           ) : (
             <EmptyState
-              title="The trip line-up is being finalised"
-              body="Departures, prices and meeting points are confirmed before anything is listed here. Nothing goes up until it is real and bookable."
+              title={copy.trips_empty_title}
+              body={copy.trips_empty_body}
               action={
                 <ButtonLink href="/events" variant="secondary">
                   {CTA.exploreEvents}

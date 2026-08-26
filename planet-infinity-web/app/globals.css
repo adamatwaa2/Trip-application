@@ -207,10 +207,9 @@ select:focus {
   padding: 0 var(--pi-s4);
   border: none;
   border-radius: var(--pi-r-pill);
-  background: var(--pi-g-cta);
-  background-size: 180% 100%;
-  background-position: 72% 0; /* keeps the gold stop off the label */
-  color: var(--pi-ivory);
+  background: var(--pi-g-shine);
+  background-size: 140% 100%;
+  color: var(--pi-ink);
   font-size: 17px;
   font-weight: 800;
   font-family: var(--pi-body);

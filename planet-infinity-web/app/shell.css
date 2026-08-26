@@ -213,6 +213,7 @@
   padding: 96px var(--pi-s3) var(--pi-s5);
   flex-direction: column;
   justify-content: space-between;
+  background: linear-gradient(145deg, var(--pi-ink) 0%, var(--pi-cyan) 72%, var(--pi-violet-deep) 150%);
 }
 .pi-mobile[hidden] {
   display: none;
@@ -267,9 +268,10 @@
 /* ---------- footer ---------- */
 .pi-footer {
   padding-block: var(--pi-s7) var(--pi-s5);
+  background: linear-gradient(145deg, var(--pi-ink) 0%, var(--pi-cyan) 150%);
 }
 .pi-footer--events {
-  background: linear-gradient(145deg, var(--pi-violet-deep) 0%, var(--pi-ink) 64%, var(--pi-violet) 150%);
+  background: linear-gradient(145deg, var(--pi-violet-deep) 0%, var(--pi-cyan) 72%, var(--pi-violet) 150%);
 }
 .pi-footer--events .pi-footer__link:hover { border-bottom-color: var(--pi-violet-hot); }
 .pi-footer__line { white-space: pre-line; }

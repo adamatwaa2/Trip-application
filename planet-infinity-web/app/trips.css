@@ -916,6 +916,7 @@
 
 /* ---------- cinematic trip detail ---------- */
 .pi-trip-cinema { position: relative; background: var(--pi-ink); }
+.pi-event-cinema .pi-media__overlay::before { background: linear-gradient(180deg, rgba(61, 43, 140, .02) 24%, rgba(61, 43, 140, .82) 100%); }
 .pi-trip-cinema__media { min-height: min(760px, calc(100svh - 72px)); }
 .pi-trip-cinema__media.pi-media--21-9 { aspect-ratio: 21 / 9; }
 .pi-trip-cinema__media .pi-media__overlay { justify-content: flex-end; padding: clamp(32px, 7vw, 96px) 0; }

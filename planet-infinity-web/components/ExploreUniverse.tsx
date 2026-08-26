@@ -13,7 +13,7 @@ export function ExploreUniverse({ tripCount, eventCount }: { tripCount: number; 
           <span className="pi-universe__number">01 · Travel</span>
           <h2>Follow the horizon.</h2>
           <p>Desert departures, camp nights and experiences built around a real place and date.</p>
-          <strong>{tripCount > 0 ? `${tripCount} open now` : "Next departure coming soon"}</strong>
+          <strong>{tripCount > 0 ? `${tripCount} ${tripCount === 1 ? "trip" : "trips"}` : "Next departure coming soon"}</strong>
         </Link>
         <Link href="/events" className="pi-universe__world pi-universe__world--events">
           <span className="pi-universe__number">02 · Events</span>

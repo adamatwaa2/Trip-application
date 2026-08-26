@@ -11,6 +11,7 @@ import { MediaBlock } from "@/components/MediaBlock";
 import { Section } from "@/components/Section";
 import { TripBookingModule } from "@/components/TripBookingModule";
 import { getTripBySlug } from "@/content/source";
+import { getSiteCopy } from "@/lib/site-copy";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -25,7 +26,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function TripPage({ params }: Params) {
   const { slug } = await params;
-  const trip = await getTripBySlug(slug);
+  const [trip, copy] = await Promise.all([getTripBySlug(slug), getSiteCopy()]);
   if (!trip) notFound();
 
   const gallery = [
@@ -57,6 +58,7 @@ export default async function TripPage({ params }: Params) {
           radius="none"
           className="pi-trip-cinema__media"
           emptyLabel={trip.destination}
+          eager
         >
           <Container className="pi-trip-cinema__content">
             <Breadcrumbs trail={[{ label: "Home", href: "/" }, { label: "Travel", href: "/trips" }, { label: trip.title }]} />
@@ -74,13 +76,13 @@ export default async function TripPage({ params }: Params) {
             <div className="pi-trip-main">
               <section className="pi-trip-block pi-trip-block--intro">
                 <Eyebrow>Trip story</Eyebrow>
-                <h2>Overview</h2>
+                <h2>{copy.trip_overview_title}</h2>
                 {trip.description.map((paragraph) => <p key={paragraph.slice(0, 32)}>{paragraph}</p>)}
               </section>
 
               {gallery.length ? (
                 <section className="pi-trip-block pi-trip-block--gallery">
-                  <div className="pi-trip-block__head"><div><Eyebrow>Photography</Eyebrow><h2>Gallery</h2></div><p>Tap any image to open it.</p></div>
+                  <div className="pi-trip-block__head"><div><Eyebrow>Photography</Eyebrow><h2>{copy.trip_gallery_title}</h2></div><p>{copy.trip_gallery_hint}</p></div>
                   <GalleryLightbox images={gallery} />
                 </section>
               ) : null}
@@ -88,7 +90,7 @@ export default async function TripPage({ params }: Params) {
               {facts.length ? (
                 <section className="pi-trip-block">
                   <Eyebrow>At a glance</Eyebrow>
-                  <h2>Trip details</h2>
+                  <h2>{copy.trip_details_title}</h2>
                   <dl className="pi-trip-facts">
                     {facts.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
                     {trip.availability ? <div><dt>Availability</dt><dd><AvailabilityPill state={trip.availability} /></dd></div> : null}
@@ -96,19 +98,19 @@ export default async function TripPage({ params }: Params) {
                 </section>
               ) : null}
 
-              {trip.document ? <section className="pi-trip-block"><h2>Trip document</h2><CatalogDocumentCard url={trip.document.url} label={trip.document.label} kind="trip" /></section> : null}
+              {trip.document ? <section className="pi-trip-block"><h2>{copy.trip_document_title}</h2><CatalogDocumentCard url={trip.document.url} label={trip.document.label} kind="trip" /></section> : null}
 
               {trip.included?.length || trip.notIncluded?.length ? (
-                <section className="pi-trip-block"><h2>What is included</h2><div className="pi-includes"><ul className="pi-includes__list pi-includes__list--in">{trip.included?.map((item) => <li key={item}>{item}</li>)}</ul><div><h3 className="pi-includes__subtitle">Not included</h3><ul className="pi-includes__list pi-includes__list--out">{trip.notIncluded?.map((item) => <li key={item}>{item}</li>)}</ul></div></div></section>
+                <section className="pi-trip-block"><h2>{copy.trip_included_title}</h2><div className="pi-includes"><ul className="pi-includes__list pi-includes__list--in">{trip.included?.map((item) => <li key={item}>{item}</li>)}</ul><div><h3 className="pi-includes__subtitle">{copy.trip_not_included_title}</h3><ul className="pi-includes__list pi-includes__list--out">{trip.notIncluded?.map((item) => <li key={item}>{item}</li>)}</ul></div></div></section>
               ) : null}
 
-              {trip.itinerary?.length ? <section className="pi-trip-block"><h2>Itinerary</h2><ol className="pi-itinerary">{trip.itinerary.map((stop) => <li key={stop.label}><p className="pi-itinerary__label">{stop.label}</p><h3 className="pi-itinerary__title">{stop.title}</h3><p className="pi-itinerary__body">{stop.body}</p></li>)}</ol></section> : null}
+              {trip.itinerary?.length ? <section className="pi-trip-block"><h2>{copy.trip_itinerary_title}</h2><ol className="pi-itinerary">{trip.itinerary.map((stop) => <li key={stop.label}><p className="pi-itinerary__label">{stop.label}</p><h3 className="pi-itinerary__title">{stop.title}</h3><p className="pi-itinerary__body">{stop.body}</p></li>)}</ol></section> : null}
 
-              {trip.importantInformation?.length ? <section className="pi-trip-block"><h2>Important information</h2><ul className="pi-notes">{trip.importantInformation.map((item) => <li key={item}>{item}</li>)}</ul></section> : null}
+              {trip.importantInformation?.length ? <section className="pi-trip-block"><h2>{copy.trip_information_title}</h2><ul className="pi-notes">{trip.importantInformation.map((item) => <li key={item}>{item}</li>)}</ul></section> : null}
 
-              {trip.faq?.length ? <section className="pi-trip-block"><h2>Questions</h2><div className="pi-faq">{trip.faq.map((item) => <details key={item.question}><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div></section> : null}
+              {trip.faq?.length ? <section className="pi-trip-block"><h2>{copy.trip_questions_title}</h2><div className="pi-faq">{trip.faq.map((item) => <details key={item.question}><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div></section> : null}
 
-              <section className="pi-trip-block"><h2>Cancellation</h2><p className="pi-trip-block__body">{trip.cancellationSummary ?? "Cancellation terms are set per trip and shared in writing before any payment is made."}</p></section>
+              <section className="pi-trip-block"><h2>{copy.trip_cancellation_title}</h2><p className="pi-trip-block__body">{trip.cancellationSummary ?? "Cancellation terms are set per trip and shared in writing before any payment is made."}</p></section>
             </div>
 
             <aside className="pi-trip-aside" aria-label="Booking options"><TripBookingModule trip={trip} /></aside>
