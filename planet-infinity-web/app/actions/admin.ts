@@ -13,6 +13,7 @@ import {
   normaliseBookingFormFields,
   type BookingFormField,
 } from "@/lib/booking-form";
+import { SITE_COPY_FIELDS, type SiteCopy } from "@/content/site-copy";
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -276,5 +277,24 @@ export async function savePolicy(input: { id: string; body: string; version: str
   const { error } = await supabase.from("policies").update({ body: input.body.trim(), version: text(input.version, 80), is_active: input.active }).eq("id", input.id);
   if (error) return { ok: false, error: "The policy could not be saved." };
   revalidatePath("/admin/settings"); revalidatePath("/policies/[slug]", "page");
+  return { ok: true };
+}
+
+export async function saveSiteCopy(input: SiteCopy): Promise<ActionResult> {
+  await requireAdmin();
+  const rows = SITE_COPY_FIELDS.map((field) => ({
+    key: field.key,
+    value: text(input[field.key] ?? "", 4000) || field.fallback,
+    label: field.label,
+    is_public: true,
+    updated_at: new Date().toISOString(),
+  }));
+  const supabase = await createClient();
+  const { error } = await supabase.from("settings").upsert(rows, { onConflict: "key" });
+  if (error) return { ok: false, error: "The website copy could not be saved." };
+  revalidatePath("/");
+  revalidatePath("/events");
+  revalidatePath("/explore");
+  revalidatePath("/admin/settings");
   return { ok: true };
 }

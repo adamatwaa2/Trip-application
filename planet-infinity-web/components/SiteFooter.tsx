@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { BrandLockup } from "./BrandLockup";
 import { Container } from "./Container";
 import { Placeholder } from "./Placeholder";
+import { SiteFooterFrame } from "./SiteFooterFrame";
+import { SiteFooterBrand } from "./SiteFooterBrand";
+import { getSiteCopy } from "@/lib/site-copy";
 import {
   COMING_SOON_LINKS,
   COMPANY_LINKS,
@@ -52,18 +54,15 @@ function Column({ title, items }: { title: string; items: NavItem[] }) {
  * Contact details are placeholders. Nothing here is invented; the address
  * line is the registered company location from PI-WB-002.
  */
-export function SiteFooter() {
+export async function SiteFooter() {
+  const copy = await getSiteCopy();
   return (
-    <footer className="pi-night pi-footer">
+    <SiteFooterFrame>
       <Container>
         <div className="pi-footer__top">
           <div className="pi-footer__brand">
-            <BrandLockup tone="ivory" />
-            <p className="pi-footer__line">
-              Travel, experiences and events.
-              <br />
-              One brand, more than one world.
-            </p>
+            <SiteFooterBrand />
+            <p className="pi-footer__line">{copy.footer_tagline}</p>
           </div>
 
           <div className="pi-footer__cols">
@@ -88,13 +87,13 @@ export function SiteFooter() {
         </div>
 
         <div className="pi-footer__bottom">
-          <span>Planet Infinity Entertainment · Dahab · South Sinai · Egypt</span>
+          <span>Planet Infinity Entertainment</span>
           <span>
             <Placeholder id="instagramHandle" />
           </span>
           <span>© {new Date().getFullYear()} planetinfinity.online</span>
         </div>
       </Container>
-    </footer>
+    </SiteFooterFrame>
   );
 }

@@ -399,7 +399,7 @@ export function AdminCatalogForm({
         ) : null}
         <div className="pi-admin-form__grid">
           <label>
-            {isTrip ? "Departure" : "Starts"}
+            {isTrip ? <>Departure <span className="opt">Optional</span></> : "Starts"}
             <input
               type="datetime-local"
               value={date}
@@ -535,7 +535,7 @@ export function AdminCatalogForm({
       <fieldset className="pi-admin-form__section">
         <legend>Photos and video</legend>
         <p className="pi-admin-help">
-          Upload directly from a phone or computer. Images: 10 MB max. Video: 45 MB max.
+          Upload directly from a phone or computer. Images: 10 MB max. Video: 50 MB on the current Supabase plan. For a larger video, paste its externally hosted URL below.
         </p>
         <label>
           Cover image URL

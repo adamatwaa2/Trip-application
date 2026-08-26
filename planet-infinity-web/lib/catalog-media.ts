@@ -11,7 +11,7 @@ const DOCUMENT_TYPES = ["application/pdf"] as const;
 
 export const CATALOG_MEDIA_LIMITS: Record<CatalogMediaKind, number> = {
   image: 10 * 1024 * 1024,
-  video: 45 * 1024 * 1024,
+  video: 50 * 1024 * 1024,
   document: 15 * 1024 * 1024,
 };
 

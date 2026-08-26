@@ -9,6 +9,7 @@ import { Grid } from "@/components/Grid";
 import { Section } from "@/components/Section";
 import { CTA } from "@/content/cta";
 import { getListedEvents } from "@/content/source";
+import { getSiteCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   title: "Events",
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 export default async function EventsPage() {
-  const { events, usingDemoData } = await getListedEvents();
+  const [{ events, usingDemoData }, copy] = await Promise.all([getListedEvents(), getSiteCopy()]);
 
   return (
     <div className="pi-world-events">
@@ -27,11 +28,8 @@ export default async function EventsPage() {
             trail={[{ label: "Home", href: "/" }, { label: "Events" }]}
           />
           <Eyebrow>Events</Eyebrow>
-          <h1 className="pi-listing-hero__title">The nights we throw</h1>
-          <p className="pi-listing-hero__lede">
-            Beach sessions, movie nights, full-moon parties. Run by the same
-            crew that runs the trips — and no two are ticketed the same way.
-          </p>
+          <h1 className="pi-listing-hero__title">{copy.events_title}</h1>
+          <p className="pi-listing-hero__lede">{copy.events_lede}</p>
         </Container>
       </Section>
 

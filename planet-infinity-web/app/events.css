@@ -189,3 +189,15 @@
 .pi-world-events .pi-qty__btn {
   accent-color: var(--pi-violet);
 }
+
+.pi-world-events .pi-listing-hero {
+  background: var(--pi-g-nova);
+}
+.pi-world-events .pi-listing-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 82% 18%, rgba(247, 201, 72, .34), transparent 24%);
+  pointer-events: none;
+}
+.pi-world-events .pi-listing-hero .pi-eyebrow { color: var(--pi-ivory); }
