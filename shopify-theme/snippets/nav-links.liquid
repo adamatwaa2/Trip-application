@@ -1,0 +1,66 @@
+{%- comment -%}
+  The primary navigation, shared by the desktop bar, the mobile panel and the
+  footer.
+
+  A Shopify link list drives the nav whenever one is attached in the Theme
+  Editor. When none is attached the theme still renders a real navigation
+  rather than an empty bar — but only to destinations that actually exist on
+  this store, so the fallback can never produce a 404. Travel and Events come
+  from Theme settings → Worlds; Contact appears once the page is written.
+
+  Accepts: menu (link_list), link_class, current_class, wrap_li
+{%- endcomment -%}
+
+{%- liquid
+  assign link_class = link_class | default: 'pi-nav__link'
+  comment
+    An explicitly empty current_class means "never mark the current page" —
+    the footer asks for that. The default filter treats "" as blank, so it
+    cannot be used here.
+  endcomment
+  unless current_class
+    assign current_class = 'pi-nav__link--current'
+  endunless
+
+  assign open_tag = ''
+  assign close_tag = ''
+  if wrap_li
+    assign open_tag = '<li>'
+    assign close_tag = '</li>'
+  endif
+-%}
+
+{%- if menu != blank and menu.links.size > 0 -%}
+  {%- for link in menu.links -%}
+    {{ open_tag }}<a href="{{ link.url }}" class="{{ link_class }}{% if link.active %} {{ current_class }}{% endif %}">{{ link.title }}</a>{{ close_tag }}
+  {%- endfor -%}
+{%- else -%}
+  {%- liquid
+    assign travel = settings.travel_collection
+    assign events = settings.events_collection
+    assign contact_page = pages['contact']
+
+    comment
+      "Current" is decided from the handle of the collection actually being
+      viewed. It is only ever compared when there is one, so an unset world
+      collection cannot make every page look current.
+    endcomment
+    assign here = collection.handle
+  -%}
+
+  {{ open_tag }}<a href="{{ routes.root_url }}" class="{{ link_class }}{% if template.name == 'index' %} {{ current_class }}{% endif %}">Home</a>{{ close_tag }}
+
+  {%- if travel.handle -%}
+    {{ open_tag }}<a href="{{ travel.url }}" class="{{ link_class }}{% if here and here == travel.handle %} {{ current_class }}{% endif %}">Travel</a>{{ close_tag }}
+  {%- endif -%}
+
+  {%- if events.handle -%}
+    {{ open_tag }}<a href="{{ events.url }}" class="{{ link_class }}{% if here and here == events.handle %} {{ current_class }}{% endif %}">Events</a>{{ close_tag }}
+  {%- endif -%}
+
+  {{ open_tag }}<a href="{{ routes.all_products_collection_url }}" class="{{ link_class }}{% if here == 'all' %} {{ current_class }}{% endif %}">Catalogue</a>{{ close_tag }}
+
+  {%- if contact_page.handle -%}
+    {{ open_tag }}<a href="{{ contact_page.url }}" class="{{ link_class }}{% if page.handle == 'contact' %} {{ current_class }}{% endif %}">Contact</a>{{ close_tag }}
+  {%- endif -%}
+{%- endif -%}

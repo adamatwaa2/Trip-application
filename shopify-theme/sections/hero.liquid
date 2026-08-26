@@ -5,6 +5,15 @@
       if section.settings.logo != blank
         assign hero_logo = section.settings.logo | image_url: height: 192
       endif
+
+      comment
+        Destinations resolve in this order: the collection chosen in the Theme
+        Editor, then an explicit link, then the full catalogue. A button never
+        points at a collection that has not been created, so the homepage
+        cannot produce a 404 before Travel and Events exist.
+      endcomment
+      assign cta_one_href = section.settings.cta_one_collection.url | default: section.settings.cta_one_url | default: routes.all_products_collection_url
+      assign cta_two_href = section.settings.cta_two_collection.url | default: section.settings.cta_two_url | default: routes.all_products_collection_url
     -%}
     <div class="pi-hero__mark">
       <img src="{{ hero_logo }}" alt="{{ shop.name }}" class="pi-logo" loading="eager">
@@ -22,10 +31,10 @@
 
     <div class="pi-hero__actions">
       {%- if section.settings.cta_one_label != blank -%}
-        <a href="{{ section.settings.cta_one_url }}" class="pi-btn pi-btn--primary pi-btn--large">{{ section.settings.cta_one_label }}</a>
+        <a href="{{ cta_one_href }}" class="pi-btn pi-btn--primary pi-btn--large">{{ section.settings.cta_one_label }}</a>
       {%- endif -%}
       {%- if section.settings.cta_two_label != blank -%}
-        <a href="{{ section.settings.cta_two_url }}" class="pi-btn pi-btn--secondary pi-btn--large">{{ section.settings.cta_two_label }}</a>
+        <a href="{{ cta_two_href }}" class="pi-btn pi-btn--secondary pi-btn--large">{{ section.settings.cta_two_label }}</a>
       {%- endif -%}
     </div>
   </div>
@@ -51,9 +60,11 @@
     { "type": "image_picker", "id": "image", "label": "Hero image (optional)" },
     { "type": "header", "content": "Actions" },
     { "type": "text", "id": "cta_one_label", "label": "Primary CTA label", "default": "Explore travel" },
-    { "type": "url", "id": "cta_one_url", "label": "Primary CTA link" },
+    { "type": "collection", "id": "cta_one_collection", "label": "Primary CTA collection" },
+    { "type": "url", "id": "cta_one_url", "label": "Primary CTA link (used only if no collection is chosen)" },
     { "type": "text", "id": "cta_two_label", "label": "Secondary CTA label", "default": "Explore events" },
-    { "type": "url", "id": "cta_two_url", "label": "Secondary CTA link" }
+    { "type": "collection", "id": "cta_two_collection", "label": "Secondary CTA collection" },
+    { "type": "url", "id": "cta_two_url", "label": "Secondary CTA link (used only if no collection is chosen)" }
   ],
   "presets": [{ "name": "Hero" }]
 }

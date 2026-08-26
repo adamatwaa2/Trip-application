@@ -1,0 +1,74 @@
+{%- comment -%}
+  Search results.
+
+  Shopify's search route is linked from the 404 page and from the browser, so
+  the theme has to answer it. Results are Shopify's own; nothing is padded out
+  with suggestions we made up.
+{%- endcomment -%}
+
+<section class="pi-section pi-section--ivory pi-listing-hero">
+  <div class="pi-container pi-container--default">
+    <nav class="pi-crumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span></li>
+        <li><span aria-current="page">Search</span></li>
+      </ol>
+    </nav>
+    <p class="pi-eyebrow">Search</p>
+    <h1 class="pi-listing-hero__title">
+      {%- if search.performed -%}{{ search.results_count }} result{% unless search.results_count == 1 %}s{% endunless %}{%- else -%}Find something{%- endif -%}
+    </h1>
+
+    <form action="{{ routes.search_url }}" method="get" role="search" class="pi-search">
+      <label class="pi-visually-hidden" for="pi-search-input">Search trips, events and products</label>
+      <input type="search" id="pi-search-input" name="q" value="{{ search.terms | escape }}"
+             placeholder="Trips, events, anything" class="pi-search__input">
+      <button type="submit" class="pi-btn pi-btn--primary">Search</button>
+    </form>
+  </div>
+</section>
+
+<section class="pi-section pi-section--white">
+  <div class="pi-container pi-container--default">
+    {%- if search.performed and search.results_count > 0 -%}
+      {%- paginate search.results by 24 -%}
+        <div class="pi-grid pi-grid--3">
+          {%- for item in search.results -%}
+            {%- if item.object_type == 'product' -%}
+              {%- render 'product-card', card_product: item, world: 'travel' -%}
+            {%- else -%}
+              <a href="{{ item.url }}" class="pi-card pi-card--link">
+                <div class="pi-card__body">
+                  <h2 class="pi-card__title">{{ item.title }}</h2>
+                </div>
+              </a>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+        {%- if paginate.pages > 1 -%}
+          <div class="pi-pagination">{{ paginate | default_pagination }}</div>
+        {%- endif -%}
+      {%- endpaginate -%}
+    {%- elsif search.performed -%}
+      <div class="pi-empty">
+        <h2 class="pi-empty__title">Nothing matched “{{ search.terms | escape }}”</h2>
+        <p class="pi-empty__body">Try a shorter word, or look through everything that is on.</p>
+        <div class="pi-empty__action">
+          <a href="{{ routes.all_products_collection_url }}" class="pi-btn pi-btn--secondary">See what is on</a>
+        </div>
+      </div>
+    {%- else -%}
+      <div class="pi-empty">
+        <h2 class="pi-empty__title">Search Planet Infinity</h2>
+        <p class="pi-empty__body">Type a place, a date or the name of a night.</p>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Search",
+  "settings": []
+}
+{% endschema %}

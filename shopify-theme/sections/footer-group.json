@@ -5,11 +5,33 @@
     "footer": {
       "type": "footer",
       "blocks": {
-        "worlds": { "type": "column", "settings": { "title": "Worlds" } },
-        "company": { "type": "column", "settings": { "title": "Company" } },
-        "soon": { "type": "column", "settings": { "title": "Coming soon", "soon_items": "Themes, Merch" } }
+        "worlds": {
+          "type": "column",
+          "settings": {
+            "title": "Worlds",
+            "use_site_nav": true
+          }
+        },
+        "company": {
+          "type": "column",
+          "settings": {
+            "title": "Company",
+            "show_policies": true
+          }
+        },
+        "soon": {
+          "type": "column",
+          "settings": {
+            "title": "Coming soon",
+            "soon_items": "Themes, Merch"
+          }
+        }
       },
-      "block_order": ["worlds", "company", "soon"],
+      "block_order": [
+        "worlds",
+        "company",
+        "soon"
+      ],
       "settings": {
         "wordmark": "Planet Infinity",
         "tagline": "Travel, experiences and events. One brand, more than one world.",
@@ -18,5 +40,7 @@
       }
     }
   },
-  "order": ["footer"]
+  "order": [
+    "footer"
+  ]
 }

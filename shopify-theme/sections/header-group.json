@@ -7,13 +7,14 @@
       "settings": {
         "wordmark": "Planet Infinity",
         "cta_label": "Request to book",
-        "cta_url": "/collections",
         "show_themes_soon": true,
         "themes_label": "Themes",
         "soon_label": "Soon",
-        "events_handle": "events"
+        "events_handle": "event"
       }
     }
   },
-  "order": ["header"]
+  "order": [
+    "header"
+  ]
 }

@@ -1,3 +1,11 @@
+{%- liquid
+  comment
+    Same resolution order as the hero: chosen collection, explicit link, then
+    the full catalogue. Never a link to something that does not exist yet.
+  endcomment
+  assign cta_one_href = section.settings.cta_one_collection.url | default: section.settings.cta_one_url | default: routes.all_products_collection_url
+  assign cta_two_href = section.settings.cta_two_collection.url | default: section.settings.cta_two_url | default: routes.all_products_collection_url
+-%}
 <section class="pi-section pi-section--{{ section.settings.tone }} pi-cta">
   <div class="pi-container pi-container--default">
     <div class="pi-cta__inner">
@@ -6,10 +14,10 @@
       {%- if section.settings.body != blank -%}<p class="pi-cta__body">{{ section.settings.body }}</p>{%- endif -%}
       <div class="pi-cta__actions">
         {%- if section.settings.cta_one_label != blank -%}
-          <a href="{{ section.settings.cta_one_url }}" class="pi-btn pi-btn--primary pi-btn--large">{{ section.settings.cta_one_label }}</a>
+          <a href="{{ cta_one_href }}" class="pi-btn pi-btn--primary pi-btn--large">{{ section.settings.cta_one_label }}</a>
         {%- endif -%}
         {%- if section.settings.cta_two_label != blank -%}
-          <a href="{{ section.settings.cta_two_url }}" class="pi-btn pi-btn--secondary pi-btn--large">{{ section.settings.cta_two_label }}</a>
+          <a href="{{ cta_two_href }}" class="pi-btn pi-btn--secondary pi-btn--large">{{ section.settings.cta_two_label }}</a>
         {%- endif -%}
       </div>
     </div>
@@ -27,9 +35,11 @@
     { "type": "text", "id": "title", "label": "Title", "default": "Come with us" },
     { "type": "textarea", "id": "body", "label": "Body" },
     { "type": "text", "id": "cta_one_label", "label": "Primary CTA", "default": "Explore travel" },
-    { "type": "url", "id": "cta_one_url", "label": "Primary link" },
+    { "type": "collection", "id": "cta_one_collection", "label": "Primary collection" },
+    { "type": "url", "id": "cta_one_url", "label": "Primary link (used only if no collection is chosen)" },
     { "type": "text", "id": "cta_two_label", "label": "Secondary CTA", "default": "Explore events" },
-    { "type": "url", "id": "cta_two_url", "label": "Secondary link" }
+    { "type": "collection", "id": "cta_two_collection", "label": "Secondary collection" },
+    { "type": "url", "id": "cta_two_url", "label": "Secondary link (used only if no collection is chosen)" }
   ],
   "presets": [{ "name": "Closing CTA" }]
 }

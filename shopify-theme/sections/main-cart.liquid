@@ -1,0 +1,118 @@
+{%- comment -%}
+  Cart.
+
+  The product page adds to the cart, so the cart route has to exist and has to
+  look like the rest of the site. Everything here is Shopify's own cart data —
+  no totals, fees or delivery estimates are invented, and checkout, payment,
+  tax and shipping behaviour is untouched: the button hands off to Shopify's
+  standard checkout.
+{%- endcomment -%}
+
+<section class="pi-section pi-section--ivory pi-listing-hero">
+  <div class="pi-container pi-container--default">
+    <nav class="pi-crumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span></li>
+        <li><span aria-current="page">{{ section.settings.title }}</span></li>
+      </ol>
+    </nav>
+    <p class="pi-eyebrow">{{ section.settings.eyebrow }}</p>
+    <h1 class="pi-listing-hero__title">{{ section.settings.title }}</h1>
+  </div>
+</section>
+
+<section class="pi-section pi-section--white">
+  <div class="pi-container pi-container--default">
+    {%- if cart.item_count > 0 -%}
+      {%- form 'cart', cart, class: 'pi-cart' -%}
+        <ul class="pi-cart__list">
+          {%- for item in cart.items -%}
+            <li class="pi-cart__item">
+              <div class="pi-cart__media pi-media pi-media--3-2 pi-media--radius-card{% unless item.image %} pi-media--empty{% endunless %}">
+                {%- if item.image -%}
+                  <img src="{{ item.image | image_url: width: 400 }}"
+                       alt="{{ item.image.alt | escape }}" class="pi-media__img" loading="lazy">
+                {%- else -%}
+                  <span class="pi-media__note">Photography pending</span>
+                {%- endif -%}
+              </div>
+
+              <div class="pi-cart__body">
+                <h2 class="pi-cart__title"><a href="{{ item.url }}">{{ item.product.title }}</a></h2>
+                {%- unless item.variant.title contains 'Default' -%}
+                  <p class="pi-cart__variant">{{ item.variant.title }}</p>
+                {%- endunless -%}
+                <p class="pi-cart__unit">
+                  <span class="pi-price">
+                    <span class="pi-price__amount">{{ item.original_price | money_without_currency }}</span>
+                    <span class="pi-price__currency">{{ cart.currency.iso_code }}</span>
+                  </span>
+                  <span class="pi-cart__each">each</span>
+                </p>
+              </div>
+
+              <div class="pi-cart__controls">
+                <label class="pi-visually-hidden" for="qty-{{ item.index | plus: 1 }}">
+                  Quantity for {{ item.product.title }}
+                </label>
+                <input class="pi-cart__qty" id="qty-{{ item.index | plus: 1 }}"
+                       type="number" inputmode="numeric" min="0"
+                       name="updates[]" value="{{ item.quantity }}">
+                <a class="pi-btn pi-btn--tertiary" href="{{ item.url_to_remove }}">Remove</a>
+              </div>
+
+              <p class="pi-cart__line-total">
+                <span class="pi-price">
+                  <span class="pi-price__amount">{{ item.original_line_price | money_without_currency }}</span>
+                  <span class="pi-price__currency">{{ cart.currency.iso_code }}</span>
+                </span>
+              </p>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        <div class="pi-cart__foot">
+          <div class="pi-cart__totals">
+            <p class="pi-cart__subtotal-label">Subtotal</p>
+            <p class="pi-cart__subtotal">
+              <span class="pi-price pi-price--large">
+                <span class="pi-price__amount">{{ cart.total_price | money_without_currency }}</span>
+                <span class="pi-price__currency">{{ cart.currency.iso_code }}</span>
+              </span>
+            </p>
+            <p class="pi-cart__note">{{ section.settings.note }}</p>
+          </div>
+
+          <div class="pi-cart__actions">
+            <button type="submit" name="update" class="pi-btn pi-btn--secondary">Update cart</button>
+            <button type="submit" name="checkout" class="pi-btn pi-btn--primary pi-btn--large">
+              {{ section.settings.checkout_label }}
+            </button>
+          </div>
+        </div>
+      {%- endform -%}
+    {%- else -%}
+      <div class="pi-empty">
+        <h2 class="pi-empty__title">{{ section.settings.empty_title }}</h2>
+        <p class="pi-empty__body">{{ section.settings.empty_body }}</p>
+        <div class="pi-empty__action">
+          <a href="{{ routes.all_products_collection_url }}" class="pi-btn pi-btn--secondary">See what is on</a>
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Cart",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Your booking" },
+    { "type": "text", "id": "title", "label": "Title", "default": "Cart" },
+    { "type": "text", "id": "checkout_label", "label": "Checkout button", "default": "Continue to payment" },
+    { "type": "textarea", "id": "note", "label": "Note", "default": "Taxes and any delivery are calculated at checkout by Shopify." },
+    { "type": "text", "id": "empty_title", "label": "Empty title", "default": "Nothing booked yet" },
+    { "type": "textarea", "id": "empty_body", "label": "Empty body", "default": "Once you pick a trip or a night out, it shows up here." }
+  ]
+}
+{% endschema %}

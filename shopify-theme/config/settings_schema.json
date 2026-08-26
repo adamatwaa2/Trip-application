@@ -17,12 +17,31 @@
       {
         "type": "image_picker",
         "id": "logo_orange",
-        "label": "Logo \u2014 orange (general, Travel)"
+        "label": "Logo — orange (general, Travel)"
       },
       {
         "type": "image_picker",
         "id": "logo_violet",
-        "label": "Logo \u2014 violet (Events)"
+        "label": "Logo — violet (Events)"
+      }
+    ]
+  },
+  {
+    "name": "Worlds",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Travel and Events are ordinary Shopify collections. Point the theme at them here and every section — navigation, featured bands, the violet Events accent — follows automatically."
+      },
+      {
+        "type": "collection",
+        "id": "travel_collection",
+        "label": "Travel collection"
+      },
+      {
+        "type": "collection",
+        "id": "events_collection",
+        "label": "Events collection"
       }
     ]
   }
