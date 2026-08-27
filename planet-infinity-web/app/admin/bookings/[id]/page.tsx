@@ -72,7 +72,7 @@ export default async function BookingDetailPage({
         <section className="pi-admin-section">
           <h2>Customer & booking</h2>
           <dl className="pi-admin-details">
-            <div><dt>Customer</dt><dd>{booking.customer?.full_name ?? "Unknown"}</dd></div>
+            <div><dt>Customer</dt><dd>{booking.customer ? <Link href={`/admin/customers/${booking.customer.id}`}>{booking.customer.full_name}</Link> : "Unknown"}</dd></div>
             <div><dt>Email</dt><dd>{booking.customer?.email ?? "Not provided"}</dd></div>
             <div><dt>Mobile</dt><dd>{booking.customer?.phone ?? "Not provided"}</dd></div>
             <div><dt>WhatsApp confirmation</dt><dd>{booking.whatsapp_opt_in ? "Customer opted in" : "Not requested"}</dd></div>

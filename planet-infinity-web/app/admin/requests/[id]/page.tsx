@@ -28,6 +28,24 @@ function customResponses(value: unknown) {
   });
 }
 
+function selectionDetails(value: Record<string, unknown>) {
+  return Object.entries(value).flatMap(([key, raw]) => {
+    if (key === "customResponses" || raw === null || raw === undefined || raw === "") return [];
+    const answer = Array.isArray(raw)
+      ? raw.map(String).filter(Boolean).join(", ")
+      : raw === true
+        ? "Yes"
+        : raw === false
+          ? "No"
+          : typeof raw === "string" || typeof raw === "number"
+            ? String(raw)
+            : "";
+    if (!answer) return [];
+    const label = key.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[_-]+/g, " ").replace(/^./, (letter) => letter.toUpperCase());
+    return [{ label, answer }];
+  });
+}
+
 export default async function RequestDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const profile = await requireAdmin();
   const { id } = await params;
@@ -35,6 +53,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
   if (!request) notFound();
   const paymentProofUrl = await getPaymentProofUrl(request.payment_proof_path);
   const tripAnswers = customResponses(request.selections.customResponses);
+  const submittedDetails = selectionDetails(request.selections);
   const whatsappNumber = request.customer?.phone?.replace(/\D/g, "") ?? "";
   const whatsappMessage = encodeURIComponent(`Hello ${request.customer?.full_name ?? ""}, this is Planet Infinity regarding ${request.request_number}.`);
 
@@ -48,7 +67,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
         <section className="pi-admin-section">
           <div className="pi-admin-section__head"><h2>Request</h2><span className={`pi-admin-status pi-admin-status--${request.status}`}>{request.status}</span></div>
           <dl className="pi-admin-details">
-            <div><dt>Guest</dt><dd>{request.customer?.full_name ?? "Unknown"}</dd></div>
+            <div><dt>Guest</dt><dd>{request.customer ? <Link href={`/admin/customers/${request.customer.id}`}>{request.customer.full_name}</Link> : "Unknown"}</dd></div>
             <div><dt>Email</dt><dd>{request.customer?.email ? <a href={`mailto:${request.customer.email}`}>{request.customer.email}</a> : "Not provided"}</dd></div>
             <div><dt>Phone</dt><dd>{request.customer?.phone || "Not provided"}</dd></div>
             <div><dt>Subject</dt><dd>{requestSubject(request)}</dd></div>
@@ -62,8 +81,10 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
           </div>
           {paymentProofUrl ? <div className="pi-admin-payment-proof"><h3>Uploaded payment receipt</h3><a href={paymentProofUrl} target="_blank" rel="noreferrer"><Image src={paymentProofUrl} width={900} height={900} unoptimized alt={`Payment receipt for ${request.request_number}`} /></a><p>Review the receiving account before recording this payment. The uploaded image alone is not proof of a successful transfer.</p></div> : null}
           {tripAnswers.length ? <div className="pi-admin-submitted-answers"><h3>Trip-specific answers</h3><dl className="pi-admin-details">{tripAnswers.map((answer, index) => <div key={`${answer.label}-${index}`}><dt>{answer.label}</dt><dd>{answer.answer}</dd></div>)}</dl></div> : null}
-          <h3>Submitted details</h3>
-          <pre className="pi-admin-payload">{JSON.stringify({ selections: request.selections, notes: request.notes }, null, 2)}</pre>
+          {submittedDetails.length || request.notes ? <div className="pi-admin-submitted-answers"><h3>Submitted details</h3><dl className="pi-admin-details">
+            {submittedDetails.map((detail) => <div key={detail.label}><dt>{detail.label}</dt><dd>{detail.answer}</dd></div>)}
+            {request.notes ? <div><dt>Notes</dt><dd>{request.notes}</dd></div> : null}
+          </dl></div> : null}
         </section>
         <aside className="pi-admin-section"><h2>Update request</h2><RequestStatusForm requestId={request.id} currentStatus={request.status} currentNote={request.admin_note} /><h3>Convert to booking</h3>{request.booking ? <p className="pi-admin-success">This request is linked to {request.booking.booking_number}.</p> : <RequestToBookingForm requestId={request.id} disabled={request.request_type === "application" || request.status !== "accepted"} />}</aside>
       </div>

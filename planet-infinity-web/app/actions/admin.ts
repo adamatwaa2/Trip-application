@@ -298,3 +298,17 @@ export async function saveSiteCopy(input: SiteCopy): Promise<ActionResult> {
   revalidatePath("/admin/settings");
   return { ok: true };
 }
+
+export async function updateCustomerNotes(input: { customerId: string; notes: string }): Promise<ActionResult> {
+  await requireAdmin();
+  if (!uuidPattern.test(input.customerId)) return { ok: false, error: "Invalid customer reference." };
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("customers")
+    .update({ notes: text(input.notes, 4000) || null })
+    .eq("id", input.customerId);
+  if (error) return { ok: false, error: "Customer notes could not be saved." };
+  revalidatePath("/admin/customers");
+  revalidatePath(`/admin/customers/${input.customerId}`);
+  return { ok: true };
+}

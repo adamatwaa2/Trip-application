@@ -6,7 +6,35 @@ import { createClient } from "@/lib/supabase/server";
 
 export type AdminBooking = { id: string; booking_number: string; booking_type: "trip" | "event"; status: "pending" | "confirmed" | "cancelled"; total_amount: number; amount_paid: number; scheduled_at: string | null; created_at: string; payment_token: string; guest_count: number; selections: Record<string, unknown>; notes: string | null; whatsapp_opt_in: boolean; whatsapp_opted_in_at: string | null; services_confirmed_at: string | null; confirmation_ready_at: string | null; confirmation_issued_at: string | null; confirmation_pdf_path: string | null; confirmation_version: number; customer: { id: string; full_name: string; email: string; phone: string | null } | null; trip: { title: string } | null; event: { title: string } | null; request: { id: string; request_number: string } | null; guests?: { full_name: string; is_primary: boolean }[] };
 export type AdminPayment = { id: string; amount: number; payment_method: string; status: "pending" | "recorded" | "void"; received_at: string | null; reference: string | null; payment_proof_path: string | null; created_at: string; booking: { id: string; booking_number: string; customer: { full_name: string; email: string } | null } | null };
-export type AdminCustomer = { id: string; full_name: string; email: string; phone: string | null; notes: string | null; created_at: string; requests: { id: string }[]; bookings: { id: string }[] };
+export type CustomerRequestSummary = {
+  id: string;
+  request_number: string;
+  request_type: "trip" | "event" | "application";
+  status: "pending" | "accepted" | "rejected" | "confirmed";
+  subject_title: string | null;
+  created_at: string;
+};
+export type CustomerBookingSummary = {
+  id: string;
+  booking_number: string;
+  status: "pending" | "confirmed" | "cancelled";
+  total_amount: number;
+  amount_paid: number;
+  scheduled_at: string | null;
+  created_at: string;
+  trip: { title: string } | null;
+  event: { title: string } | null;
+};
+export type AdminCustomer = {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string | null;
+  notes: string | null;
+  created_at: string;
+  requests: CustomerRequestSummary[];
+  bookings: CustomerBookingSummary[];
+};
 export type AdminProduct = {
   id: string;
   slug: string;
@@ -72,8 +100,21 @@ export async function getPayments() {
 }
 export async function getCustomers() {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("customers").select("id, full_name, email, phone, notes, created_at, requests(id), bookings(id)").order("created_at", { ascending: false });
-  return { items: (data ?? []) as AdminCustomer[], error: error ? "Customers could not be loaded." : null };
+  const { data, error } = await supabase
+    .from("customers")
+    .select("id, full_name, email, phone, notes, created_at, requests(id, request_number, request_type, status, subject_title, created_at), bookings(id, booking_number, status, total_amount, amount_paid, scheduled_at, created_at, trip:trips(title), event:events(title))")
+    .order("created_at", { ascending: false });
+  return { items: (data ?? []) as unknown as AdminCustomer[], error: error ? "Customers could not be loaded." : null };
+}
+
+export async function getCustomer(id: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("customers")
+    .select("id, full_name, email, phone, notes, created_at, requests(id, request_number, request_type, status, subject_title, created_at), bookings(id, booking_number, status, total_amount, amount_paid, scheduled_at, created_at, trip:trips(title), event:events(title))")
+    .eq("id", id)
+    .maybeSingle();
+  return { item: data as unknown as AdminCustomer | null, error: error ? "Customer could not be loaded." : null };
 }
 export async function getProducts(kind: "trips" | "events") {
   const supabase = await createClient();

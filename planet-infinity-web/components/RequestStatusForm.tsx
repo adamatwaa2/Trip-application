@@ -6,7 +6,7 @@ import { updateRequestStatus, type RequestStatus } from "@/app/actions/requests"
 
 const statuses: { value: RequestStatus; label: string }[] = [
   { value: "pending", label: "Pending" },
-  { value: "accepted", label: "Accepted" },
+  { value: "accepted", label: "Approved" },
   { value: "rejected", label: "Rejected" },
   { value: "confirmed", label: "Confirmed" },
 ];
@@ -47,7 +47,7 @@ export function RequestStatusForm({
   return (
     <form className="pi-admin-status-form" onSubmit={submit}>
       <div className="pi-admin-quick-actions" aria-label="Quick status actions">
-        <button type="button" disabled={pending} onClick={() => save("accepted")}>Accept</button>
+        <button type="button" disabled={pending} onClick={() => save("accepted")}>Approve</button>
         <button type="button" disabled={pending} onClick={() => save("rejected")}>Reject</button>
         <button type="button" disabled={pending} onClick={() => save("confirmed")}>Confirm</button>
       </div>
