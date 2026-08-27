@@ -12,8 +12,9 @@ export function AdminRequestTable({ requests }: { requests: AdminRequest[] }) {
   }
 
   return (
-    <div className="pi-admin-table-wrap">
-      <table className="pi-admin-table">
+    <>
+      <div className="pi-admin-table-wrap pi-admin-desktop-list">
+        <table className="pi-admin-table">
         <thead>
           <tr>
             <th>Reference</th>
@@ -37,7 +38,22 @@ export function AdminRequestTable({ requests }: { requests: AdminRequest[] }) {
             </tr>
           ))}
         </tbody>
-      </table>
-    </div>
+        </table>
+      </div>
+      <div className="pi-admin-mobile-list" aria-label="Requests">
+        {requests.map((request) => (
+          <Link className="pi-admin-mobile-card" href={`/admin/requests/${request.id}`} key={request.id}>
+            <div className="pi-admin-mobile-card__head">
+              <strong>{request.request_number}</strong>
+              <span className={`pi-admin-status pi-admin-status--${request.status}`}>{request.status}</span>
+            </div>
+            <h2>{request.customer?.full_name ?? "Unknown customer"}</h2>
+            <p>{requestTypeLabel(request.request_type)} · {requestSubject(request)}</p>
+            <span>{request.customer?.email ?? "No email"}</span>
+            <footer><span>{formatDate(request.created_at)}</span><b>Review request →</b></footer>
+          </Link>
+        ))}
+      </div>
+    </>
   );
 }

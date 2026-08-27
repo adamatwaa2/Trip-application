@@ -35,6 +35,8 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
   if (!request) notFound();
   const paymentProofUrl = await getPaymentProofUrl(request.payment_proof_path);
   const tripAnswers = customResponses(request.selections.customResponses);
+  const whatsappNumber = request.customer?.phone?.replace(/\D/g, "") ?? "";
+  const whatsappMessage = encodeURIComponent(`Hello ${request.customer?.full_name ?? ""}, this is Planet Infinity regarding ${request.request_number}.`);
 
   return (
     <AdminShell profile={profile} current="/admin/requests">
@@ -54,6 +56,10 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
             <div><dt>Booking</dt><dd>{request.booking ? <Link href={`/admin/bookings/${request.booking.id}`}>{request.booking.booking_number}</Link> : "Not created"}</dd></div>
             <div><dt>Payment method</dt><dd>{request.payment_method === "vodafone_cash" ? "Vodafone Cash" : request.payment_method === "instapay" ? "InstaPay" : "Not submitted"}</dd></div>
           </dl>
+          <div className="pi-admin-contact-actions">
+            {whatsappNumber ? <a href={`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`} target="_blank" rel="noreferrer">Message on WhatsApp</a> : null}
+            {request.customer?.email ? <a href={`mailto:${request.customer.email}?subject=${encodeURIComponent(`Planet Infinity · ${request.request_number}`)}`}>Send email</a> : null}
+          </div>
           {paymentProofUrl ? <div className="pi-admin-payment-proof"><h3>Uploaded payment receipt</h3><a href={paymentProofUrl} target="_blank" rel="noreferrer"><Image src={paymentProofUrl} width={900} height={900} unoptimized alt={`Payment receipt for ${request.request_number}`} /></a><p>Review the receiving account before recording this payment. The uploaded image alone is not proof of a successful transfer.</p></div> : null}
           {tripAnswers.length ? <div className="pi-admin-submitted-answers"><h3>Trip-specific answers</h3><dl className="pi-admin-details">{tripAnswers.map((answer, index) => <div key={`${answer.label}-${index}`}><dt>{answer.label}</dt><dd>{answer.answer}</dd></div>)}</dl></div> : null}
           <h3>Submitted details</h3>

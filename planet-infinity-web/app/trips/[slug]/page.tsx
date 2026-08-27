@@ -69,6 +69,14 @@ export default async function TripPage({ params }: Params) {
         </MediaBlock>
       </section>
 
+      {trip.document ? (
+        <Section tone="white" className="pi-trip-document-rail">
+          <Container>
+            <CatalogDocumentCard url={trip.document.url} label={trip.document.label} kind="trip" />
+          </Container>
+        </Section>
+      ) : null}
+
       <Section tone="white" className="pi-trip-story">
         <Container>
           {trip.isDemo ? <p className="pi-trip-hero__demo"><DemoBadge /> This is an architecture test case, not a real Planet Infinity trip.</p> : null}
@@ -97,8 +105,6 @@ export default async function TripPage({ params }: Params) {
                   </dl>
                 </section>
               ) : null}
-
-              {trip.document ? <section className="pi-trip-block"><h2>{copy.trip_document_title}</h2><CatalogDocumentCard url={trip.document.url} label={trip.document.label} kind="trip" /></section> : null}
 
               {trip.included?.length || trip.notIncluded?.length ? (
                 <section className="pi-trip-block"><h2>{copy.trip_included_title}</h2><div className="pi-includes"><ul className="pi-includes__list pi-includes__list--in">{trip.included?.map((item) => <li key={item}>{item}</li>)}</ul><div><h3 className="pi-includes__subtitle">{copy.trip_not_included_title}</h3><ul className="pi-includes__list pi-includes__list--out">{trip.notIncluded?.map((item) => <li key={item}>{item}</li>)}</ul></div></div></section>

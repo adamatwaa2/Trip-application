@@ -51,6 +51,11 @@ export function TripBookingModule({ trip }: { trip: Trip }) {
         <AvailabilityPill state={trip.availability} />
       </div>
 
+      <div className="pi-booking__overview">
+        <span>Overview</span>
+        <p>{trip.shortDescription}</p>
+      </div>
+
       <p className="pi-booking__meta">
         {trip.duration ?? <Placeholder id="tripDuration" label="Duration not set" />}
       </p>

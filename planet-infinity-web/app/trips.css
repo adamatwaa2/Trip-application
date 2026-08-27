@@ -413,6 +413,24 @@
   font-size: var(--pi-ui);
   color: var(--pi-soft);
 }
+.pi-booking__overview {
+  padding: var(--pi-s2);
+  border-radius: var(--pi-r-chip);
+  background: linear-gradient(135deg, var(--pi-sky) 0%, rgba(255, 231, 154, .58) 100%);
+}
+.pi-booking__overview > span {
+  font-family: var(--pi-mono);
+  font-size: 10px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--pi-ember);
+}
+.pi-booking__overview p {
+  margin: 7px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--pi-ink);
+}
 .pi-booking__steps {
   list-style: none;
   margin: 0;
@@ -926,6 +944,8 @@
 .pi-trip-cinema__content h1 { max-width: 13ch; font-size: var(--pi-d1); line-height: .86; letter-spacing: -.045em; }
 .pi-trip-cinema__content > p { max-width: 650px; margin: var(--pi-s3) 0 0; font-size: var(--pi-lede); line-height: 1.55; color: rgba(253, 248, 241, .82); }
 .pi-trip-story { background: linear-gradient(180deg, #fff 0%, var(--pi-ivory) 100%); }
+.pi-trip-document-rail { padding-block: clamp(20px, 4vw, 44px); background: #fff; border-bottom: 1px solid var(--pi-line); }
+.pi-trip-document-rail .pi-document-card { max-width: 920px; }
 .pi-trip-block--intro > p { font-size: var(--pi-lede); line-height: 1.8; }
 .pi-trip-block__head { display: flex; justify-content: space-between; align-items: end; gap: var(--pi-s3); margin-bottom: var(--pi-s3); }
 .pi-trip-block__head h2, .pi-trip-block__head .pi-eyebrow { margin-bottom: 0; }

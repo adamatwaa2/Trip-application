@@ -26,10 +26,10 @@ export function RequestStatusForm({
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  function submit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function save(nextStatus: RequestStatus) {
     startTransition(async () => {
-      const result = await updateRequestStatus(requestId, status, note);
+      setStatus(nextStatus);
+      const result = await updateRequestStatus(requestId, nextStatus, note);
       if (!result.ok) {
         setMessage(result.error);
         return;
@@ -39,8 +39,18 @@ export function RequestStatusForm({
     });
   }
 
+  function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    save(status);
+  }
+
   return (
     <form className="pi-admin-status-form" onSubmit={submit}>
+      <div className="pi-admin-quick-actions" aria-label="Quick status actions">
+        <button type="button" disabled={pending} onClick={() => save("accepted")}>Accept</button>
+        <button type="button" disabled={pending} onClick={() => save("rejected")}>Reject</button>
+        <button type="button" disabled={pending} onClick={() => save("confirmed")}>Confirm</button>
+      </div>
       <label htmlFor="request-status">Status</label>
       <select
         id="request-status"

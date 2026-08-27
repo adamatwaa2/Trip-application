@@ -50,7 +50,7 @@ export const WORLD_NAV: NavItem[] = [
 /** Guest-facing flows that already exist. */
 export const PLAN_LINKS: NavItem[] = [
   { label: "Apply to join", href: "/apply", status: "ready" },
-  { label: "Seat selection preview", href: "/book", status: "ready" },
+  { label: "Book a trip", href: "/trips", status: "ready" },
 ];
 
 /** Company / about surfaces. */
