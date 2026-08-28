@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: "Travel",
   description:
     "Planet Infinity trips and experiences — desert and sea, camping and stargazing, long roads and short escapes.",
+  alternates: { canonical: "/trips" },
 };
 
 export default async function TripsPage() {

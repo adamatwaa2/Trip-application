@@ -8,6 +8,7 @@ import { getSiteCopy } from "@/lib/site-copy";
 export const metadata: Metadata = {
   title: "Explore",
   description: "Move through the travel and events worlds of Planet Infinity.",
+  alternates: { canonical: "/explore" },
 };
 
 export default async function ExplorePage() {

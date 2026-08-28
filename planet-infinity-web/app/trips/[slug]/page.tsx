@@ -20,8 +20,18 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const trip = await getTripBySlug(slug);
-  if (!trip) return { title: "Trip not found" };
-  return { title: trip.title, description: trip.shortDescription };
+  if (!trip) return { title: "Trip not found", robots: { index: false, follow: false } };
+  return {
+    title: trip.title,
+    description: trip.shortDescription,
+    alternates: { canonical: `/trips/${trip.slug}` },
+    openGraph: {
+      title: trip.title,
+      description: trip.shortDescription,
+      url: `/trips/${trip.slug}`,
+      images: trip.media.hero ? [{ url: trip.media.hero, alt: trip.media.heroAlt ?? trip.title }] : undefined,
+    },
+  };
 }
 
 export default async function TripPage({ params }: Params) {

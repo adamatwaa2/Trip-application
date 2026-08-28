@@ -13,8 +13,9 @@ import { getEvents, getTrips } from "@/content/source";
 import { getSiteCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
-  title: "Trips, experiences and events",
-  description: "Book Planet Infinity trips, experiences and events.",
+  title: { absolute: "Planet Infinity | Trips, Experiences & Events in Egypt" },
+  description: "Book Planet Infinity trips, desert experiences and events across Egypt. See upcoming departures, prices, galleries and secure booking details.",
+  alternates: { canonical: "/" },
 };
 
 export default async function HomePage() {

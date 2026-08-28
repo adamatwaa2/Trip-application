@@ -90,7 +90,16 @@ function mapEvent(row: DatabaseEvent): PlanetEvent {
 async function databaseTrips(): Promise<Trip[] | null> {
   if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
-  const { data, error } = await supabase.from("trips").select("id, slug, title, short_description, description, destination, duration_label, departure_at, return_at, meeting_point, departure_point, return_point, package_label, accommodation, transportation, important_information, price_egp, capacity, booking_mode, application_required, seat_selection_enabled, seat_config, booking_form_fields, payment_proof_required, song_request_enabled, document_url, document_label, is_featured, media, inclusions, exclusions, itinerary, options").eq("is_published", true).order("departure_at", { ascending: true, nullsFirst: false });
+  const baseColumns = "id, slug, title, short_description, description, destination, duration_label, departure_at, return_at, meeting_point, departure_point, return_point, package_label, accommodation, transportation, important_information, price_egp, capacity, booking_mode, application_required, seat_selection_enabled, seat_config, booking_form_fields, payment_proof_required, document_url, document_label, is_featured, media, inclusions, exclusions, itinerary, options";
+  let { data, error } = await supabase.from("trips").select(`${baseColumns}, song_request_enabled`).eq("is_published", true).order("departure_at", { ascending: true, nullsFirst: false });
+  // Keep the public catalogue online while a newly deployed optional field is
+  // waiting for its database migration. Core trip and booking data must not
+  // disappear just because the playlist toggle is not available yet.
+  if (error?.code === "42703" && error.message.includes("song_request_enabled")) {
+    const fallback = await supabase.from("trips").select(baseColumns).eq("is_published", true).order("departure_at", { ascending: true, nullsFirst: false });
+    data = fallback.data?.map((row) => ({ ...row, song_request_enabled: false })) ?? null;
+    error = fallback.error;
+  }
   // An empty operational catalogue is not a valid replacement for the
   // local fallback. This keeps the public site usable immediately after the
   // database schema is created, before the team publishes its first trip.

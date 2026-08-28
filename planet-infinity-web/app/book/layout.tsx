@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 
 /**
  * /book is a client component, so its metadata lives here. It is a standalone
@@ -9,8 +10,9 @@ export const metadata: Metadata = {
   title: "Seat selection preview",
   description:
     "A preview of the Planet Infinity seat map. Most trips do not use seat selection.",
+  robots: { index: false, follow: false },
 };
 
-export default function BookLayout({ children }: LayoutProps<"/book">) {
+export default function BookLayout({ children }: { children: ReactNode }) {
   return children;
 }

@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: "Events",
   description:
     "Beach sessions, movie nights and full-moon parties from Planet Infinity Entertainment.",
+  alternates: { canonical: "/events" },
 };
 
 export default async function EventsPage() {

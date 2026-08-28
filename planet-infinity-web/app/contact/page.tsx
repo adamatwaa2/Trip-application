@@ -10,6 +10,7 @@ import { CTA } from "@/content/cta";
 export const metadata: Metadata = {
   title: "Contact",
   description: "Talk to Planet Infinity about a trip, an event, or anything else.",
+  alternates: { canonical: "/contact" },
 };
 
 /**

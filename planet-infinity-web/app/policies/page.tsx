@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Policies",
   description:
     "Planet Infinity booking terms, payment, cancellation, refund, trip etiquette and privacy information.",
+  alternates: { canonical: "/policies" },
 };
 
 export default function PoliciesPage() {

@@ -22,8 +22,18 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const event = await getEventBySlug(slug);
-  if (!event) return { title: "Event not found" };
-  return { title: event.title, description: event.shortDescription };
+  if (!event) return { title: "Event not found", robots: { index: false, follow: false } };
+  return {
+    title: event.title,
+    description: event.shortDescription,
+    alternates: { canonical: `/events/${event.slug}` },
+    openGraph: {
+      title: event.title,
+      description: event.shortDescription,
+      url: `/events/${event.slug}`,
+      images: event.media.hero ? [{ url: event.media.hero, alt: event.media.heroAlt ?? event.title }] : undefined,
+    },
+  };
 }
 
 /**
