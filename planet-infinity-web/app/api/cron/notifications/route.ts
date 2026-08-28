@@ -5,10 +5,17 @@ import { sendWhatsAppTemplate } from "@/lib/whatsapp/client";
 
 type OutboxRow = {
   id: string;
+  booking_id: string | null;
   channel: "whatsapp" | "email";
   event_type: "booking_confirmation";
   recipient: string;
   payload: Record<string, unknown>;
+};
+
+type BookingTitleRow = {
+  booking_number: string;
+  trip: { title: string } | null;
+  event: { title: string } | null;
 };
 
 function authorized(request: NextRequest) {
@@ -31,15 +38,21 @@ export async function GET(request: NextRequest) {
   for (const row of (data ?? []) as OutboxRow[]) {
     try {
       if (row.channel !== "whatsapp" || row.event_type !== "booking_confirmation") throw new Error("Only Booking Confirmation WhatsApp messages are enabled.");
-      const storagePath = String(row.payload.storage_path ?? "");
-      const { data: signed, error: signError } = await supabase.storage
-        .from("booking-confirmations")
-        .createSignedUrl(storagePath, 60 * 60);
-      if (signError || !signed?.signedUrl) throw new Error("The confirmation PDF link could not be created.");
+      if (!row.booking_id) throw new Error("The booking reference is unavailable.");
+      const { data: booking, error: bookingError } = await supabase
+        .from("bookings")
+        .select("booking_number, trip:trips(title), event:events(title)")
+        .eq("id", row.booking_id)
+        .maybeSingle();
+      const bookingInfo = booking as BookingTitleRow | null;
+      if (bookingError || !bookingInfo) throw new Error("The booking details are unavailable.");
       const messageId = await sendWhatsAppTemplate({
         recipient: row.recipient,
-        payload: row.payload,
-        documentUrl: signed.signedUrl,
+        payload: {
+          ...row.payload,
+          booking_number: bookingInfo.booking_number,
+          trip_title: bookingInfo.trip?.title ?? bookingInfo.event?.title ?? "Planet Infinity booking",
+        },
       });
       await supabase.rpc("complete_notification_outbox", {
         p_id: row.id,

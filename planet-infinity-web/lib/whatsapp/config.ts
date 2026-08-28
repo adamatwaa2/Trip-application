@@ -8,6 +8,7 @@ export type WhatsAppConfig = {
   verifyToken: string;
   languageCode: string;
   confirmationTemplate: string;
+  confirmationTemplateHasDocument: boolean;
 };
 
 export function isWhatsAppConfigured() {
@@ -30,6 +31,7 @@ export function getWhatsAppConfig(): WhatsAppConfig {
     verifyToken: process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN ?? "",
     languageCode: process.env.WHATSAPP_TEMPLATE_LANGUAGE ?? "en_US",
     confirmationTemplate: process.env.WHATSAPP_CONFIRMATION_TEMPLATE ?? "",
+    confirmationTemplateHasDocument: process.env.WHATSAPP_CONFIRMATION_TEMPLATE_HAS_DOCUMENT === "true",
   };
   if (!isWhatsAppConfigured()) throw new Error("WhatsApp Business is not configured.");
   return config;

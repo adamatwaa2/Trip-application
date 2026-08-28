@@ -23,22 +23,26 @@ export async function sendWhatsAppTemplate(input: SendInput): Promise<string> {
   if (to.length < 8 || to.length > 15) throw new Error("Invalid international WhatsApp number.");
 
   const templateName = config.confirmationTemplate;
-  const components: Record<string, unknown>[] = [];
-  if (!input.documentUrl) throw new Error("The confirmation document is unavailable.");
-  components.push({
-    type: "header",
-    parameters: [{
-      type: "document",
-      document: {
-        link: input.documentUrl,
-        filename: `Planet-Infinity-${text(input.payload.booking_number, "booking")}.pdf`,
-      },
-    }],
-  });
-  components.push({
+  const components: Record<string, unknown>[] = [{
     type: "body",
-    parameters: [{ type: "text", text: text(input.payload.booking_number) }],
-  });
+    parameters: [
+      { type: "text", text: text(input.payload.trip_title, "Planet Infinity booking") },
+      { type: "text", text: text(input.payload.booking_number) },
+    ],
+  }];
+  if (config.confirmationTemplateHasDocument) {
+    if (!input.documentUrl) throw new Error("The confirmation document is unavailable.");
+    components.unshift({
+      type: "header",
+      parameters: [{
+        type: "document",
+        document: {
+          link: input.documentUrl,
+          filename: `Planet-Infinity-${text(input.payload.booking_number, "booking")}.pdf`,
+        },
+      }],
+    });
+  }
 
   const response = await fetch(
     `https://graph.facebook.com/${encodeURIComponent(config.graphVersion)}/${encodeURIComponent(config.phoneNumberId)}/messages`,
