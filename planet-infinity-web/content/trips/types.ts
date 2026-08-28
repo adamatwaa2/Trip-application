@@ -149,6 +149,8 @@ export type Trip = {
   bookingFormFields?: BookingFormField[];
   /** Requires a private receipt image before this booking request is submitted. */
   paymentProofRequired?: boolean;
+  /** Lets this trip collect an optional song request for the shared playlist. */
+  songRequestEnabled?: boolean;
 
   meetingPoint?: string;
   departureTime?: string;

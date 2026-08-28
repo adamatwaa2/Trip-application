@@ -11,7 +11,14 @@ export type BookingFormField = {
   type: BookingFormFieldType;
   required?: boolean;
   help?: string;
-  options?: string[];
+  options?: BookingFormOption[];
+};
+
+/** A trip add-on. The price is always in EGP and is added per guest. */
+export type BookingFormOption = {
+  id: string;
+  label: string;
+  priceEgp?: number;
 };
 
 export type BookingFormAnswer = string | string[] | boolean;
@@ -45,8 +52,22 @@ export function normaliseBookingFormFields(value: unknown): BookingFormField[] |
     }
     ids.add(id);
 
+    const optionIds = new Set<string>();
     const options = Array.isArray(source.options)
-      ? source.options.map((option) => clean(option, 120)).filter(Boolean).slice(0, 30)
+      ? source.options.flatMap((rawOption, index) => {
+          // Keep existing saved questions working while moving them to the
+          // safer label + price structure.
+          const legacyLabel = clean(rawOption, 120);
+          const option = rawOption && typeof rawOption === "object"
+            ? rawOption as Partial<BookingFormOption>
+            : null;
+          const label = option ? clean(option.label, 120) : legacyLabel;
+          const id = option ? clean(option.id, 60) : `option-${index + 1}`;
+          const price = option?.priceEgp;
+          if (!label || !id || !FIELD_ID.test(id) || optionIds.has(id) || (price !== undefined && (!Number.isFinite(price) || price < 0))) return [];
+          optionIds.add(id);
+          return [{ id, label, ...(price && price > 0 ? { priceEgp: Math.round(price) } : {}) }];
+        }).slice(0, 30)
       : [];
     if ((type === "select" || type === "multiselect") && options.length < 1) return null;
 
@@ -61,6 +82,23 @@ export function normaliseBookingFormFields(value: unknown): BookingFormField[] |
   }
 
   return fields;
+}
+
+export function bookingOptionLabel(option: BookingFormOption) {
+  return option.priceEgp ? `${option.label} · +${option.priceEgp.toLocaleString("en-EG")} EGP` : option.label;
+}
+
+export function bookingOptionPrice(
+  fields: BookingFormField[],
+  answers: Record<string, BookingFormAnswer>,
+) {
+  return fields.reduce((total, field) => {
+    const answer = answers[field.id];
+    const ids = Array.isArray(answer) ? answer : typeof answer === "string" ? [answer] : [];
+    return total + (field.options ?? [])
+      .filter((option) => ids.includes(option.id))
+      .reduce((sum, option) => sum + (option.priceEgp ?? 0), 0);
+  }, 0);
 }
 
 export function bookingFormAnswersComplete(

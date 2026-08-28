@@ -54,6 +54,19 @@ export type PaymentProofUploadResult =
   | { ok: true; bucket: string; path: string; token: string }
   | { ok: false; error: string };
 
+export async function choosePaidBookingSeats(input: { paymentToken: string; seats: number[] }): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (!UUID.test(input.paymentToken) || !Array.isArray(input.seats) || input.seats.some((seat) => !Number.isInteger(seat))) {
+    return { ok: false, error: "Choose valid seats." };
+  }
+  if (!isSupabaseServiceConfigured()) return { ok: false, error: "Seat selection is not configured yet." };
+  const supabase = createServiceClient();
+  const { error } = await supabase.rpc("assign_paid_booking_seats", { p_payment_token: input.paymentToken, p_seats: input.seats });
+  if (!error) return { ok: true };
+  if (error.message.includes("after full payment")) return { ok: false, error: "Seat selection unlocks after full payment is recorded." };
+  if (error.message.includes("just taken")) return { ok: false, error: "One of those seats was just taken. Choose another seat." };
+  return { ok: false, error: "We could not save those seats. Please try again." };
+}
+
 function cleanText(value: string | undefined, limit = MAX_TEXT): string {
   return (value ?? "").trim().slice(0, limit);
 }

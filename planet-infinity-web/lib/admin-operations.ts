@@ -69,6 +69,7 @@ export type AdminProductDetail = Omit<AdminProduct, "updated_at"> & {
   seat_config?: SeatConfig | null;
   booking_form_fields?: BookingFormField[] | null;
   payment_proof_required?: boolean;
+  song_request_enabled?: boolean;
   media: {
     hero?: string;
     heroAlt?: string;
@@ -143,7 +144,7 @@ export async function getProduct(kind: "trips" | "events", id: string) {
   if (kind === "trips") {
     const { data } = await supabase
       .from("trips")
-      .select("id, slug, title, short_description, description, destination, duration_label, meeting_point, departure_at, return_at, departure_point, return_point, package_label, accommodation, transportation, important_information, price_egp, capacity, booking_mode, application_required, seat_selection_enabled, seat_config, booking_form_fields, payment_proof_required, media, inclusions, exclusions, document_url, document_label, is_published, is_featured")
+      .select("id, slug, title, short_description, description, destination, duration_label, meeting_point, departure_at, return_at, departure_point, return_point, package_label, accommodation, transportation, important_information, price_egp, capacity, booking_mode, application_required, seat_selection_enabled, seat_config, booking_form_fields, payment_proof_required, song_request_enabled, media, inclusions, exclusions, document_url, document_label, is_published, is_featured")
       .eq("id", id)
       .maybeSingle();
     return data as unknown as AdminProductDetail | null;

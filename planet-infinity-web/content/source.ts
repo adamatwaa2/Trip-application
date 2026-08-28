@@ -37,6 +37,7 @@ type DatabaseTrip = {
   seat_config: Trip["seat"] | null;
   booking_form_fields: Trip["bookingFormFields"];
   payment_proof_required: boolean;
+  song_request_enabled: boolean;
   document_url: string | null;
   document_label: string | null;
   is_featured: boolean;
@@ -79,7 +80,7 @@ function dateParts(value: string | null) {
 function mapTrip(row: DatabaseTrip): Trip {
   const departure = dateParts(row.departure_at);
   const returning = dateParts(row.return_at);
-  return { id: row.id, slug: row.slug, title: row.title, shortDescription: row.short_description, description: row.description ? row.description.split("\n").filter(Boolean) : [], destination: row.destination ?? "Trip", duration: row.duration_label ?? undefined, meetingPoint: row.meeting_point ?? undefined, departureTime: departure.time, returnTime: returning.time, departurePoint: row.departure_point ?? undefined, returnPoint: row.return_point ?? undefined, packageLabel: row.package_label ?? undefined, accommodation: row.accommodation ?? undefined, transportation: row.transportation ?? undefined, priceEgp: row.price_egp ?? undefined, currency: "EGP", featured: row.is_featured, bookingMode: row.booking_mode, applicationRequired: row.application_required, tripSelectionEnabled: Array.isArray(row.options) && row.options.length > 0, seatBookingEnabled: row.seat_selection_enabled, optionGroups: row.options, seat: row.seat_selection_enabled && row.seat_config?.layout ? row.seat_config : undefined, bookingFormFields: row.booking_form_fields ?? [], paymentProofRequired: row.payment_proof_required, document: row.document_url ? { url: row.document_url, label: row.document_label ?? "Trip information PDF" } : undefined, media: row.media ?? {}, included: row.inclusions, notIncluded: row.exclusions, itinerary: row.itinerary, importantInformation: row.important_information };
+  return { id: row.id, slug: row.slug, title: row.title, shortDescription: row.short_description, description: row.description ? row.description.split("\n").filter(Boolean) : [], destination: row.destination ?? "Trip", duration: row.duration_label ?? undefined, meetingPoint: row.meeting_point ?? undefined, departureTime: departure.time, returnTime: returning.time, departurePoint: row.departure_point ?? undefined, returnPoint: row.return_point ?? undefined, packageLabel: row.package_label ?? undefined, accommodation: row.accommodation ?? undefined, transportation: row.transportation ?? undefined, priceEgp: row.price_egp ?? undefined, currency: "EGP", featured: row.is_featured, bookingMode: row.booking_mode, applicationRequired: row.application_required, tripSelectionEnabled: Array.isArray(row.options) && row.options.length > 0, seatBookingEnabled: row.seat_selection_enabled, optionGroups: row.options, seat: row.seat_selection_enabled && row.seat_config?.layout ? row.seat_config : undefined, bookingFormFields: row.booking_form_fields ?? [], paymentProofRequired: row.payment_proof_required, songRequestEnabled: row.song_request_enabled, document: row.document_url ? { url: row.document_url, label: row.document_label ?? "Trip information PDF" } : undefined, media: row.media ?? {}, included: row.inclusions, notIncluded: row.exclusions, itinerary: row.itinerary, importantInformation: row.important_information };
 }
 function mapEvent(row: DatabaseEvent): PlanetEvent {
   const starts = dateParts(row.starts_at); const ends = dateParts(row.ends_at);
@@ -89,7 +90,7 @@ function mapEvent(row: DatabaseEvent): PlanetEvent {
 async function databaseTrips(): Promise<Trip[] | null> {
   if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
-  const { data, error } = await supabase.from("trips").select("id, slug, title, short_description, description, destination, duration_label, departure_at, return_at, meeting_point, departure_point, return_point, package_label, accommodation, transportation, important_information, price_egp, capacity, booking_mode, application_required, seat_selection_enabled, seat_config, booking_form_fields, payment_proof_required, document_url, document_label, is_featured, media, inclusions, exclusions, itinerary, options").eq("is_published", true).order("departure_at", { ascending: true, nullsFirst: false });
+  const { data, error } = await supabase.from("trips").select("id, slug, title, short_description, description, destination, duration_label, departure_at, return_at, meeting_point, departure_point, return_point, package_label, accommodation, transportation, important_information, price_egp, capacity, booking_mode, application_required, seat_selection_enabled, seat_config, booking_form_fields, payment_proof_required, song_request_enabled, document_url, document_label, is_featured, media, inclusions, exclusions, itinerary, options").eq("is_published", true).order("departure_at", { ascending: true, nullsFirst: false });
   // An empty operational catalogue is not a valid replacement for the
   // local fallback. This keeps the public site usable immediately after the
   // database schema is created, before the team publishes its first trip.

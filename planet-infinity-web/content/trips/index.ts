@@ -45,12 +45,13 @@ export function findTrip(slug: string): Trip | undefined {
  * rather than reading the two flags themselves, so no component can drift
  * into assuming seats.
  */
-export type BookingStep = "selection" | "seats" | "custom" | "guest" | "payment" | "review";
+export type BookingStep = "selection" | "custom" | "guest" | "payment" | "review";
 
 export function bookingSteps(trip: Trip): BookingStep[] {
   const steps: BookingStep[] = [];
   if (trip.tripSelectionEnabled) steps.push("selection");
-  if (trip.seatBookingEnabled) steps.push("seats");
+  // Seats are chosen only after the booking has been fully paid. This keeps
+  // an unpaid request from locking a seat for other guests.
   if (trip.bookingFormFields?.length) steps.push("custom");
   steps.push("guest");
   if (trip.paymentProofRequired) steps.push("payment");
@@ -60,7 +61,6 @@ export function bookingSteps(trip: Trip): BookingStep[] {
 
 export const STEP_LABELS: Record<BookingStep, string> = {
   selection: "Your choices",
-  seats: "Your seat",
   custom: "Trip questions",
   guest: "Your details",
   payment: "Payment proof",

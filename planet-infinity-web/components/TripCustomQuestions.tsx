@@ -1,6 +1,6 @@
 "use client";
 
-import type { BookingFormAnswer, BookingFormField } from "@/lib/booking-form";
+import { bookingOptionLabel, type BookingFormAnswer, type BookingFormField } from "@/lib/booking-form";
 
 export function TripCustomQuestions({
   fields,
@@ -28,14 +28,14 @@ export function TripCustomQuestions({
             {field.type === "select" ? (
               <select aria-label={field.label} value={typeof answer === "string" ? answer : ""} required={field.required} onChange={(event) => onChange(field.id, event.target.value)}>
                 <option value="">Choose an option</option>
-                {(field.options ?? []).map((option) => <option value={option} key={option}>{option}</option>)}
+                {(field.options ?? []).map((option) => <option value={option.id} key={option.id}>{bookingOptionLabel(option)}</option>)}
               </select>
             ) : null}
             {field.type === "multiselect" ? (
               <div className="pi-custom-options">
                 {(field.options ?? []).map((option) => {
                   const selected = Array.isArray(answer) ? answer : [];
-                  return <label className="agree-row" key={option}><input type="checkbox" checked={selected.includes(option)} onChange={(event) => onChange(field.id, event.target.checked ? [...selected, option] : selected.filter((value) => value !== option))} /><span>{option}</span></label>;
+                  return <label className="agree-row" key={option.id}><input type="checkbox" checked={selected.includes(option.id)} onChange={(event) => onChange(field.id, event.target.checked ? [...selected, option.id] : selected.filter((value) => value !== option.id))} /><span>{bookingOptionLabel(option)}</span></label>;
                 })}
               </div>
             ) : null}

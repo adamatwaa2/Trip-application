@@ -1,6 +1,6 @@
 "use client";
 
-import type { BookingFormField, BookingFormFieldType } from "@/lib/booking-form";
+import type { BookingFormField, BookingFormFieldType, BookingFormOption } from "@/lib/booking-form";
 
 const TYPE_LABELS: Record<BookingFormFieldType, string> = {
   text: "Short text",
@@ -17,6 +17,10 @@ function nextField(): BookingFormField {
     type: "text",
     required: false,
   };
+}
+
+function nextOption(): BookingFormOption {
+  return { id: `option-${crypto.randomUUID().slice(0, 8)}`, label: "" };
 }
 
 export function BookingFormBuilder({
@@ -55,7 +59,7 @@ export function BookingFormBuilder({
                 const type = event.target.value as BookingFormFieldType;
                 update(index, {
                   type,
-                  ...(type === "select" || type === "multiselect" ? { options: field.options?.length ? field.options : [""] } : { options: undefined }),
+                  ...(type === "select" || type === "multiselect" ? { options: field.options?.length ? field.options : [nextOption()] } : { options: undefined }),
                 });
               }}>
                 {Object.entries(TYPE_LABELS).map(([value, label]) => <option value={value} key={value}>{label}</option>)}
@@ -67,15 +71,23 @@ export function BookingFormBuilder({
             <input maxLength={240} value={field.help ?? ""} onChange={(event) => update(index, { help: event.target.value })} />
           </label>
           {field.type === "select" || field.type === "multiselect" ? (
-            <label>
-              Choices — one per line
-              <textarea
-                required
-                value={(field.options ?? []).join("\n")}
-                onChange={(event) => update(index, { options: event.target.value.split("\n") })}
-                placeholder={"Standard meal\nVegetarian\nVegan"}
-              />
-            </label>
+            <div className="pi-admin-option-builder">
+              <p className="pi-admin-help">Add-ons can have a price. It is added to the booking total per guest.</p>
+              {(field.options ?? []).map((option, optionIndex) => (
+                <div className="pi-admin-form__grid pi-admin-form__grid--two" key={option.id}>
+                  <label>
+                    Choice
+                    <input required maxLength={120} value={option.label} placeholder="e.g. Pottery workshop" onChange={(event) => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, label: event.target.value } : current) })} />
+                  </label>
+                  <label>
+                    Extra price (EGP) <span className="opt">optional</span>
+                    <input type="number" min="0" step="1" value={option.priceEgp ?? ""} placeholder="0" onChange={(event) => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, priceEgp: event.target.value === "" ? undefined : Number(event.target.value) } : current) })} />
+                  </label>
+                  <button type="button" onClick={() => update(index, { options: (field.options ?? []).filter((_, currentIndex) => currentIndex !== optionIndex) })}>Remove choice</button>
+                </div>
+              ))}
+              <button type="button" onClick={() => update(index, { options: [...(field.options ?? []), nextOption()] })}>Add choice</button>
+            </div>
           ) : null}
           <label className="pi-admin-check">
             <input type="checkbox" checked={Boolean(field.required)} onChange={(event) => update(index, { required: event.target.checked })} />

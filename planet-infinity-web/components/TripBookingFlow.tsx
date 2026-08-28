@@ -10,12 +10,13 @@ import {
 } from "@/content/trips";
 import { BookingConfirmation } from "./BookingConfirmation";
 import { Button } from "./Button";
-import { SeatSelection } from "./SeatSelection";
 import { TripSelection, type SelectionState } from "./TripSelection";
 import { submitPublicRequest, submitPublicTripBooking } from "@/app/actions/requests";
 import { PolicyAcceptance } from "./PolicyAcceptance";
 import {
   bookingFormAnswersComplete,
+  bookingOptionLabel,
+  bookingOptionPrice,
   type BookingFormAnswer,
 } from "@/lib/booking-form";
 import { TripCustomQuestions } from "./TripCustomQuestions";
@@ -41,13 +42,13 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
   const [done, setDone] = useState(false);
 
   const [selection, setSelection] = useState<SelectionState>({});
-  const [seats, setSeats] = useState<number[]>([]);
   const [guestName, setGuestName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
   const [guestNotes, setGuestNotes] = useState("");
   const [guestCount, setGuestCount] = useState("1");
   const [customAnswers, setCustomAnswers] = useState<Record<string, BookingFormAnswer>>({});
+  const [songRequest, setSongRequest] = useState("");
   const [paymentProof, setPaymentProof] = useState<PaymentProofValue | null>(null);
   const [agreed, setAgreed] = useState(false);
   const [whatsappOptIn, setWhatsappOptIn] = useState(false);
@@ -78,15 +79,15 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
       if (choice?.priceEgp !== undefined) sum = choice.priceEgp;
       if (choice?.priceDeltaEgp) sum += choice.priceDeltaEgp;
     });
-    return sum * (Number(guestCount) || 1);
-  }, [trip, selection, guestCount]);
+    const guests = Number(guestCount) || 1;
+    return (sum + bookingOptionPrice(trip.bookingFormFields ?? [], customAnswers)) * guests;
+  }, [trip, selection, guestCount, customAnswers]);
 
   function canContinue(current: BookingStep): boolean {
     if (current === "selection") {
       const required = (trip.optionGroups ?? []).filter((g) => g.required !== false);
       return required.every((g) => Boolean(selection[g.id]));
     }
-    if (current === "seats") return seats.length === guestCountNumber;
     if (current === "custom") return bookingFormAnswersComplete(trip.bookingFormFields ?? [], customAnswers);
     if (current === "payment") return Boolean(paymentProof?.path);
     if (current === "guest") {
@@ -101,7 +102,7 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
         details={{
           tripTitle: trip.title,
           selections: selectionLabels,
-          seats: trip.seatBookingEnabled ? seats : undefined,
+          seats: undefined,
           guestName,
           guestEmail,
           guestPhone,
@@ -129,15 +130,20 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
         selections: {
           bookingMode: trip.bookingMode,
           selections: selectionLabels,
-          ...(trip.seatBookingEnabled ? { seats } : {}),
+          ...(trip.seatBookingEnabled ? { seatSelection: "after-full-payment" } : {}),
           guestCount: guestCountNumber,
           totalEgp: total ?? null,
           customAnswers,
           customResponses: (trip.bookingFormFields ?? []).map((field) => ({
             id: field.id,
             label: field.label,
-            answer: customAnswers[field.id] ?? null,
+            answer: (() => {
+              const answer = customAnswers[field.id];
+              const ids = Array.isArray(answer) ? answer : typeof answer === "string" ? [answer] : [];
+              return ids.length ? (field.options ?? []).filter((option) => ids.includes(option.id)).map(bookingOptionLabel) : answer ?? null;
+            })(),
           })),
+          ...(songRequest.trim() ? { songRequest: songRequest.trim() } : {}),
           paymentProof: paymentProof
             ? { method: paymentProof.method, path: paymentProof.path }
             : null,
@@ -196,47 +202,6 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
           </>
         ) : null}
 
-        {step === "seats" && trip.seat ? (
-          <>
-            <h2 className="pi-flow__title">{STEP_LABELS.seats}</h2>
-            <p className="pi-flow__hint">
-              Choose one seat for every guest. The same seats apply to the return
-              journey unless we confirm otherwise.
-            </p>
-            <label htmlFor="seatGuestCount">Number of guests</label>
-            <input
-              id="seatGuestCount"
-              type="number"
-              min="1"
-              max="14"
-              value={guestCount}
-              onChange={(event) => {
-                const next = Math.max(1, Number(event.target.value) || 1);
-                setGuestCount(String(next));
-                setSeats((current) => current.slice(0, next));
-              }}
-            />
-            <SeatSelection
-              config={trip.seat}
-              selected={seats}
-              onToggle={(seat) =>
-                setSeats((current) =>
-                  current.includes(seat)
-                    ? current.filter((value) => value !== seat)
-                    : current.length < guestCountNumber
-                      ? [...current, seat].sort((a, b) => a - b)
-                      : current,
-                )
-              }
-            />
-            <p className="pi-flow__selected">
-              {seats.length === 0
-                ? "No seats picked yet — tap the map above"
-                : `${seats.map((seat) => `Seat ${seat}`).join(" · ")} selected (${seats.length}/${guestCountNumber})`}
-            </p>
-          </>
-        ) : null}
-
         {step === "custom" && trip.bookingFormFields?.length ? (
           <>
             <h2 className="pi-flow__title">{STEP_LABELS.custom}</h2>
@@ -280,12 +245,11 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
               onChange={(e) => setGuestPhone(e.target.value)}
             />
 
-            {!trip.seatBookingEnabled ? (
-              <>
-                <label htmlFor="guestCount">Number of guests</label>
-                <input id="guestCount" type="number" min="1" value={guestCount} onChange={(e) => setGuestCount(e.target.value)} />
-              </>
-            ) : null}
+            <label htmlFor="guestCount">Number of guests</label>
+            <input id="guestCount" type="number" min="1" value={guestCount} onChange={(e) => setGuestCount(e.target.value)} />
+
+            {trip.songRequestEnabled ? <><label htmlFor="songRequest">Add a song to the trip playlist <span className="opt">(optional)</span></label>
+            <input id="songRequest" value={songRequest} maxLength={180} placeholder="Song name, artist, or a link" onChange={(e) => setSongRequest(e.target.value)} /></> : null}
 
             <label className="agree-row" htmlFor="whatsappOptIn">
               <input id="whatsappOptIn" type="checkbox" checked={whatsappOptIn} onChange={(e) => setWhatsappOptIn(e.target.checked)} />
@@ -318,22 +282,19 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
                   <dd>{selectionLabels.join(" · ")}</dd>
                 </div>
               ) : null}
-              {trip.seatBookingEnabled ? (
-                <div>
-                  <dt>{seats.length === 1 ? "Seat" : "Seats"}</dt>
-                  <dd>{seats.length ? seats.map((seat) => `Seat ${seat}`).join(" · ") : "—"}</dd>
-                </div>
-              ) : null}
+              {trip.seatBookingEnabled ? <div><dt>Seat selection</dt><dd>It unlocks after full payment is recorded.</dd></div> : null}
               {(trip.bookingFormFields ?? []).length ? (
                 <div>
                   <dt>Trip questions</dt>
                   <dd>{(trip.bookingFormFields ?? []).map((field) => {
                     const answer = customAnswers[field.id];
-                    const display = Array.isArray(answer) ? answer.join(", ") : answer === true ? "Yes" : answer === false ? "No" : answer || "—";
+                    const ids = Array.isArray(answer) ? answer : typeof answer === "string" ? [answer] : [];
+                    const display = ids.length ? (field.options ?? []).filter((option) => ids.includes(option.id)).map(bookingOptionLabel).join(", ") : answer === true ? "Yes" : answer === false ? "No" : "—";
                     return `${field.label}: ${display}`;
                   }).join(" · ")}</dd>
                 </div>
               ) : null}
+              {songRequest ? <div><dt>Playlist song</dt><dd>{songRequest}</dd></div> : null}
               <div>
                 <dt>Guest</dt>
                 <dd>{guestName || "—"}</dd>

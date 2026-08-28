@@ -55,6 +55,7 @@ type CatalogItemInput = {
   bookingMode: (typeof bookingModes)[number];
   applicationRequired: boolean;
   seatSelectionEnabled: boolean;
+  songRequestEnabled: boolean;
   seatConfig?: unknown;
   bookingFormFields: BookingFormField[];
   paymentProofRequired: boolean;
@@ -214,6 +215,7 @@ export async function createCatalogItem(input: CatalogItemInput): Promise<Action
           accommodation: text(input.accommodation, 1000) || null,
           transportation: text(input.transportation, 1000) || null,
           seat_selection_enabled: input.seatSelectionEnabled,
+          song_request_enabled: input.songRequestEnabled,
           seat_config: seatConfig,
           booking_form_fields: bookingFormFields ?? [],
           payment_proof_required: input.paymentProofRequired,
@@ -231,6 +233,7 @@ export async function createCatalogItem(input: CatalogItemInput): Promise<Action
           accommodation: text(input.accommodation, 1000) || null,
           transportation: text(input.transportation, 1000) || null,
           seat_selection_enabled: input.seatSelectionEnabled,
+          song_request_enabled: input.songRequestEnabled,
           seat_config: seatConfig,
           booking_form_fields: bookingFormFields ?? [],
           payment_proof_required: input.paymentProofRequired,

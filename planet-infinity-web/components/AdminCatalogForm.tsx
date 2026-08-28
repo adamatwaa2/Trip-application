@@ -51,6 +51,7 @@ export type CatalogEditorItem = {
   seat_config?: SeatConfig | null;
   booking_form_fields?: BookingFormField[] | null;
   payment_proof_required?: boolean;
+  song_request_enabled?: boolean;
   media: CatalogMedia | null;
   inclusions: string[] | null;
   exclusions: string[] | null;
@@ -154,6 +155,9 @@ export function AdminCatalogForm({
   const [seatSelectionEnabled, setSeatSelectionEnabled] = useState(
     item?.seat_selection_enabled ?? false,
   );
+  const [songRequestEnabled, setSongRequestEnabled] = useState(
+    item?.song_request_enabled ?? false,
+  );
   const [bookingFormFields, setBookingFormFields] = useState<BookingFormField[]>(
     item?.booking_form_fields ?? [],
   );
@@ -252,6 +256,7 @@ export function AdminCatalogForm({
     setBookingMode("booking");
     setApplicationRequired(false);
     setSeatSelectionEnabled(false);
+    setSongRequestEnabled(false);
     setBookingFormFields([]);
     setPaymentProofRequired(true);
     setInclusions("");
@@ -297,6 +302,7 @@ export function AdminCatalogForm({
             bookingMode,
             applicationRequired,
             seatSelectionEnabled: isTrip && seatSelectionEnabled,
+            songRequestEnabled: isTrip && songRequestEnabled,
             seatConfig: editorSeatConfig(item?.seat_config),
             bookingFormFields,
             paymentProofRequired: isTrip && paymentProofRequired,
@@ -395,6 +401,12 @@ export function AdminCatalogForm({
               value={meetingPoint}
               onChange={(event) => setMeetingPoint(event.target.value)}
             />
+          </label>
+        ) : null}
+        {isTrip ? (
+          <label className="pi-admin-check pi-admin-switch">
+            <input type="checkbox" checked={songRequestEnabled} onChange={(event) => setSongRequestEnabled(event.target.checked)} />
+            Let guests add one optional song to this trip&apos;s playlist
           </label>
         ) : null}
         <div className="pi-admin-form__grid">

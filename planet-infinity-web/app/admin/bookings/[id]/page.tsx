@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminShell } from "@/components/AdminShell";
 import { BookingConfirmationAdminActions } from "@/components/BookingConfirmationAdminActions";
+import { BookingMessagePanel } from "@/components/BookingMessagePanel";
 import { requireAdmin } from "@/lib/admin";
 import { getBooking } from "@/lib/admin-operations";
 import { formatDate, getPaymentProofUrl } from "@/lib/admin-requests";
@@ -75,7 +76,7 @@ export default async function BookingDetailPage({
             <div><dt>Customer</dt><dd>{booking.customer ? <Link href={`/admin/customers/${booking.customer.id}`}>{booking.customer.full_name}</Link> : "Unknown"}</dd></div>
             <div><dt>Email</dt><dd>{booking.customer?.email ?? "Not provided"}</dd></div>
             <div><dt>Mobile</dt><dd>{booking.customer?.phone ?? "Not provided"}</dd></div>
-            <div><dt>WhatsApp confirmation</dt><dd>{booking.whatsapp_opt_in ? "Customer opted in" : "Not requested"}</dd></div>
+            <div><dt>Automatic WhatsApp delivery</dt><dd>{booking.whatsapp_opt_in ? "Customer opted in" : "Not requested — manual messaging is still available"}</dd></div>
             <div><dt>Guests</dt><dd>{booking.guest_count}</dd></div>
             <div><dt>Scheduled</dt><dd>{formatDate(booking.scheduled_at)}</dd></div>
             <div><dt>Source</dt><dd>{booking.request ? <Link href={`/admin/requests/${booking.request.id}`}>{booking.request.request_number}</Link> : "Direct booking"}</dd></div>
@@ -139,6 +140,13 @@ export default async function BookingDetailPage({
             servicesConfirmed={Boolean(booking.services_confirmed_at)}
             fullyPaid={Number(booking.amount_paid) >= Number(booking.total_amount)}
             confirmationReady={Boolean(booking.confirmation_ready_at)}
+            confirmationIssued={Boolean(booking.confirmation_issued_at)}
+          />
+          <BookingMessagePanel
+            bookingNumber={booking.booking_number}
+            customerName={booking.customer?.full_name ?? "there"}
+            phone={booking.customer?.phone ?? null}
+            paymentUrl={`${process.env.NEXT_PUBLIC_SITE_URL ?? "https://planetinfinity.online"}/pay/${booking.payment_token}`}
             confirmationIssued={Boolean(booking.confirmation_issued_at)}
           />
         </section>
