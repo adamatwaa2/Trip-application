@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PaymobCheckoutButton } from "@/components/PaymobCheckoutButton";
@@ -10,7 +11,27 @@ import {
 import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Secure payment" };
+export const metadata: Metadata = {
+  title: "Secure payment",
+  description: "Review your Planet Infinity booking and secure payment status.",
+  robots: { index: false, follow: false },
+  openGraph: {
+    title: "Secure payment — Planet Infinity",
+    description: "Review your Planet Infinity booking and secure payment status.",
+    images: [{
+      url: "/opengraph-image?brand=20260829",
+      width: 1200,
+      height: 630,
+      alt: "Planet Infinity",
+    }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Secure payment — Planet Infinity",
+    description: "Review your Planet Infinity booking and secure payment status.",
+    images: ["/opengraph-image?brand=20260829"],
+  },
+};
 
 type PublicPaymentBooking = {
   id: string;

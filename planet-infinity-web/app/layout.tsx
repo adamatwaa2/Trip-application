@@ -27,6 +27,10 @@ export const metadata: Metadata = {
   creator: "Planet Infinity Entertainment",
   publisher: "Planet Infinity Entertainment",
   category: "entertainment",
+  icons: {
+    icon: [{ url: "/icon?brand=20260829", type: "image/png", sizes: "512x512" }],
+    apple: [{ url: "/apple-icon?brand=20260829", type: "image/png", sizes: "512x512" }],
+  },
   openGraph: {
     title: "Planet Infinity | Entertainment, Community & Experiences",
     description: "An entertainment and community platform for curated gatherings, events, experiences and selected trips in Egypt.",
@@ -34,13 +38,13 @@ export const metadata: Metadata = {
     locale: "en_EG",
     type: "website",
     url: "https://planetinfinity.online",
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Planet Infinity — entertainment, community and experiences" }],
+    images: [{ url: "/opengraph-image?brand=20260829", width: 1200, height: 630, alt: "Planet Infinity — entertainment, community and experiences" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Planet Infinity | Entertainment, Community & Experiences",
     description: "An entertainment and community platform for curated gatherings, events, experiences and selected trips in Egypt.",
-    images: ["/opengraph-image"],
+    images: ["/opengraph-image?brand=20260829"],
   },
   robots: { index: true, follow: true },
 };

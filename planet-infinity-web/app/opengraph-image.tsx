@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
-export const alt = "Planet Infinity — trips, experiences and events in Egypt";
+export const alt = "Planet Infinity — entertainment, community and experiences";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -17,7 +17,7 @@ export default async function OpenGraphImage() {
       </div>
       <div style={{ marginLeft: 64, display: "flex", flexDirection: "column", maxWidth: 570 }}>
         <div style={{ fontSize: 74, fontWeight: 800, lineHeight: 1 }}>Planet Infinity</div>
-        <div style={{ marginTop: 28, fontSize: 36, lineHeight: 1.25 }}>Trips, experiences and events across Egypt.</div>
+        <div style={{ marginTop: 28, fontSize: 36, lineHeight: 1.25 }}>Entertainment, community and curated experiences.</div>
         <div style={{ marginTop: 38, fontSize: 24, letterSpacing: 4 }}>PLANETINFINITY.ONLINE</div>
       </div>
     </div>,
