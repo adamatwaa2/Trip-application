@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Planet Infinity",
     short_name: "Planet Infinity",
-    description: "Trips, experiences and events across Egypt.",
+    description: "Entertainment, community, curated experiences, events and selected trips in Egypt.",
     start_url: "/",
     display: "standalone",
     background_color: "#d9f3fb",

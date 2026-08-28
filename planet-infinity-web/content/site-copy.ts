@@ -44,6 +44,12 @@ export const SITE_COPY_FIELDS = [
   { key: "event_questions_title", label: "Event questions heading", fallback: "Questions", multiline: false },
   { key: "event_cancellation_title", label: "Event cancellation heading", fallback: "Cancellation", multiline: false },
   { key: "footer_tagline", label: "Footer tagline", fallback: "Travel, experiences and events.\nOne brand, more than one world.", multiline: true },
+  { key: "contact_title", label: "Contact page headline", fallback: "Talk to us", multiline: false },
+  { key: "contact_lede", label: "Contact page introduction", fallback: "The person who answers is the person who will be there on the day.", multiline: true },
+  { key: "contact_whatsapp", label: "Contact WhatsApp", fallback: "+20 103 729 9464", multiline: false },
+  { key: "contact_email", label: "Contact email", fallback: "", multiline: false },
+  { key: "contact_office_hours", label: "Office hours", fallback: "", multiline: false },
+  { key: "contact_emergency", label: "Emergency contact", fallback: "", multiline: false },
 ] as const;
 
 export type SiteCopyKey = (typeof SITE_COPY_FIELDS)[number]["key"];

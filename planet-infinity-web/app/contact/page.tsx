@@ -6,6 +6,7 @@ import { Eyebrow } from "@/components/Eyebrow";
 import { Placeholder } from "@/components/Placeholder";
 import { Section } from "@/components/Section";
 import { CTA } from "@/content/cta";
+import { getSiteCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -19,16 +20,17 @@ export const metadata: Metadata = {
  * Unknown channels remain explicit placeholders. Confirmed business contact
  * details are rendered from content/placeholders.ts.
  */
-export default function ContactPage() {
+export default async function ContactPage() {
+  const copy = await getSiteCopy();
   return (
     <>
       <Section tone="ivory" className="pi-listing-hero">
         <Container size="read">
           <Breadcrumbs trail={[{ label: "Home", href: "/" }, { label: "Contact" }]} />
           <Eyebrow>Contact</Eyebrow>
-          <h1 className="pi-listing-hero__title">Talk to us</h1>
+          <h1 className="pi-listing-hero__title">{copy.contact_title}</h1>
           <p className="pi-listing-hero__lede">
-            The person who answers is the person who will be there on the day.
+            {copy.contact_lede}
           </p>
         </Container>
       </Section>
@@ -39,25 +41,25 @@ export default function ContactPage() {
             <div>
               <dt>WhatsApp</dt>
               <dd>
-                <Placeholder id="whatsapp" label="Not published yet" />
+                {copy.contact_whatsapp || <Placeholder id="whatsapp" label="Not published yet" />}
               </dd>
             </div>
             <div>
               <dt>Email</dt>
               <dd>
-                <Placeholder id="reservationsEmail" label="Not published yet" />
+                {copy.contact_email || <Placeholder id="reservationsEmail" label="Not published yet" />}
               </dd>
             </div>
             <div>
               <dt>Office hours</dt>
               <dd>
-                <Placeholder id="officeHours" label="Not published yet" />
+                {copy.contact_office_hours || <Placeholder id="officeHours" label="Not published yet" />}
               </dd>
             </div>
             <div>
               <dt>Emergency contact</dt>
               <dd>
-                <Placeholder id="emergencyContact" label="Not published yet" />
+                {copy.contact_emergency || <Placeholder id="emergencyContact" label="Not published yet" />}
               </dd>
             </div>
             <div>
