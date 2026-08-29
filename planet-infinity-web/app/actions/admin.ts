@@ -28,7 +28,7 @@ export type ActionResult = { ok: true } | { ok: false; error: string };
 type CatalogMediaInput = {
   hero?: string;
   heroAlt?: string;
-  gallery?: { src: string; alt: string }[];
+  gallery?: { src: string; alt: string; type?: "image" | "video"; poster?: string }[];
   video?: string;
 };
 
@@ -86,6 +86,8 @@ function normaliseMedia(media: CatalogMediaInput): CatalogMediaInput | null {
     .map((image) => ({
       src: text(image.src ?? "", 2000),
       alt: text(image.alt ?? "", 240),
+      ...(image.type === "video" ? { type: "video" as const } : {}),
+      ...(text(image.poster ?? "", 2000) ? { poster: text(image.poster ?? "", 2000) } : {}),
     }))
     .filter((image) => image.src)
     .slice(0, 20);

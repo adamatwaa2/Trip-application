@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
+import { HeroVideo } from "./HeroVideo";
 
 type MediaBlockProps = {
   /** Real Planet Infinity photography only. No stock, no AI imagery. */
@@ -48,16 +49,7 @@ export function MediaBlock({
   return (
     <div className={classNames}>
       {videoSrc ? (
-        <video
-          className="pi-media__video"
-          src={videoSrc}
-          poster={src}
-          controls
-          muted
-          playsInline
-          preload="metadata"
-          aria-label={alt || "Planet Infinity video"}
-        />
+        <HeroVideo src={videoSrc} poster={src} label={alt || "Planet Infinity video"} />
       ) : src ? (
         <Image
           className="pi-media__img"

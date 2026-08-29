@@ -56,7 +56,7 @@ export type TicketOption = {
   availableQuantity?: number;
 };
 
-export type EventGalleryImage = { src: string; alt: string };
+export type EventGalleryImage = { src: string; alt: string; type?: "image" | "video"; poster?: string };
 
 export type FaqItem = { question: string; answer: string };
 

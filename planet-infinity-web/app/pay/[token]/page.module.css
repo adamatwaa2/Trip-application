@@ -10,6 +10,9 @@
 .note { margin: 18px 0 0; color: #59707c; font-size: 12px; line-height: 1.55; }
 .note a { color: #028bb4; font-weight: 800; }
 .unavailable { padding: 14px; border-radius: 12px; background: #fee5e2; color: #9e3022; font-weight: 700; }
+.awaiting { display: grid; gap: 6px; padding: 16px; border: 1px solid #b9e6d0; border-radius: 14px; background: #effcf5; color: #176d45; line-height: 1.5; }
+.awaiting strong { font-weight: 900; }
+.awaiting span { color: #39755a; font-size: 14px; }
 .paymentOptions { display: grid; gap: 14px; }
 .option { display: grid; gap: 12px; padding: 18px; border: 1px solid #d8e1e5; border-radius: 16px; background: #fff; }
 .option p { margin: 0; color: #59707c; line-height: 1.55; }

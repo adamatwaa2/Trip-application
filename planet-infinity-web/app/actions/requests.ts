@@ -102,18 +102,20 @@ function publicError(message: string | undefined): string {
 }
 
 function publicBookingError(message: string | undefined): string {
-  if (!message) return "We could not complete your booking. Please try again.";
+  if (!message) return "We could not save your booking. Please try again.";
   if (message.includes("Please wait before submitting")) return "This booking was already received. Wait a few minutes before trying again.";
   if (message.includes("does not have enough availability")) return "There are not enough places left for this booking.";
-  if (message.includes("Payment receipt upload is missing")) return "The receipt upload is missing. Upload it again, then complete the booking.";
-  if (message.includes("Payment proof is required") || message.includes("Invalid payment proof")) return "Upload a valid payment receipt before completing the booking.";
+  if (message.includes("Payment receipt upload is missing")) return "The receipt upload is missing. Upload it again, then send the booking for verification.";
+  if (message.includes("Payment proof is required") || message.includes("Invalid payment proof")) return "Upload a valid payment receipt before sending the booking for verification.";
+  if (message.includes("Choose a departure date")) return "Choose a departure date before sending your booking.";
+  if (message.includes("Choose a valid departure date")) return "Choose one of the available departure dates before sending your booking.";
   if (message.includes("required trip question")) return "Answer all required trip questions.";
   if (message.includes("requires an application")) return "This trip requires an application before booking.";
   if (message.includes("Required policies are not published")) return "Bookings are paused while the final policies are being published.";
   if (message.includes("WhatsApp number is required")) return "Enter your WhatsApp number or turn off WhatsApp updates.";
   if (message.includes("seat was just taken") || message.includes("seats was just taken")) return "One of those seats was just taken. Please choose again.";
   if (message.includes("Choose one seat for every guest")) return "Choose one seat for every guest.";
-  return "We could not complete your booking. Please try again.";
+  return "We could not save your booking. Please try again.";
 }
 
 function validatePublicRequest(input: PublicRequestInput): string | null {

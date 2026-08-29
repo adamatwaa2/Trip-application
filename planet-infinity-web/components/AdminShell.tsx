@@ -1,7 +1,9 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { AdminSignOut } from "./AdminSignOut";
+import { AdminNotificationLink } from "./AdminNotificationLink";
 import type { AdminProfile } from "@/lib/admin";
+import { getAdminNotificationCount } from "@/lib/admin-notifications";
 
 const nav = [
   { href: "/admin", label: "Overview" },
@@ -15,7 +17,7 @@ const nav = [
   { href: "/admin/team", label: "Admin team" },
 ];
 
-export function AdminShell({
+export async function AdminShell({
   profile,
   current,
   children,
@@ -24,6 +26,7 @@ export function AdminShell({
   current: string;
   children: ReactNode;
 }) {
+  const unreadCount = await getAdminNotificationCount();
   return (
     <div className="pi-admin-shell">
       <aside className="pi-admin-sidebar">
@@ -33,7 +36,17 @@ export function AdminShell({
           <small>Admin</small>
         </Link>
         <nav aria-label="Admin navigation">
-          {nav.map((item) => (
+          {nav.slice(0, 4).map((item) => (
+            <Link
+              className={current === item.href ? "is-current" : undefined}
+              href={item.href}
+              key={item.href}
+            >
+              {item.label}
+            </Link>
+          ))}
+          <AdminNotificationLink current={current === "/admin/notifications"} initialUnreadCount={unreadCount} />
+          {nav.slice(4).map((item) => (
             <Link
               className={current === item.href ? "is-current" : undefined}
               href={item.href}

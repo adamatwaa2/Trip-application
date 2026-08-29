@@ -18,7 +18,7 @@ import type { BookingFormField } from "@/lib/booking-form";
 type CatalogMedia = {
   hero?: string;
   heroAlt?: string;
-  gallery?: { src: string; alt: string }[];
+  gallery?: { src: string; alt: string; type?: "image" | "video"; poster?: string }[];
   video?: string;
 };
 
@@ -595,14 +595,13 @@ export function AdminCatalogForm({
             label="Upload video"
             disabled={uploading}
             onFiles={(files) =>
-              uploadFiles(files.slice(0, 1), "video", (url) => setVideo(url))
+              uploadFiles(files.slice(0, 1), "video", (url, file) => {
+                setVideo(url);
+                setGallery((current) => current.some((item) => item.src === url) ? current : [...current, { src: url, alt: file.name.replace(/\.[^.]+$/, ""), type: "video" }]);
+              })
             }
           />
-          {video ? (
-            <button type="button" onClick={() => setVideo("")}>
-              Remove video
-            </button>
-          ) : null}
+          {video ? <><button type="button" onClick={() => setVideo("")}>Remove video from hero</button><video className="pi-admin-video-preview" src={video} controls muted playsInline /></> : null}
         </div>
 
         <div className="pi-admin-gallery-editor">
@@ -616,10 +615,17 @@ export function AdminCatalogForm({
               uploadFiles(files.slice(0, 12), "image", (url, file) =>
                 setGallery((current) => [
                   ...current,
-                  { src: url, alt: file.name.replace(/\.[^.]+$/, "") },
+                  { src: url, alt: file.name.replace(/\.[^.]+$/, ""), type: "image" },
                 ]),
               )
             }
+          />
+          <UploadControl
+            kind="video"
+            label="Upload gallery videos"
+            multiple
+            disabled={uploading}
+            onFiles={(files) => uploadFiles(files.slice(0, 6), "video", (url, file) => setGallery((current) => [...current, { src: url, alt: file.name.replace(/\.[^.]+$/, ""), type: "video" }]))}
           />
           <div className="pi-admin-inline-field">
             <input
@@ -647,9 +653,8 @@ export function AdminCatalogForm({
             <div className="pi-admin-gallery-list">
               {gallery.map((image, index) => (
                 <div key={`${image.src}-${index}`}>
-                  <a href={image.src} target="_blank" rel="noreferrer">
-                    Photo {index + 1}
-                  </a>
+                  {image.type === "video" ? <video className="pi-admin-gallery-preview" src={image.src} poster={image.poster} muted playsInline preload="metadata" /> : <img className="pi-admin-gallery-preview" src={image.src} alt="" />}
+                  <a href={image.src} target="_blank" rel="noreferrer">{image.type === "video" ? "Video" : "Photo"} {index + 1}</a>
                   <input
                     aria-label={`Description for gallery photo ${index + 1}`}
                     placeholder="Image description"
@@ -664,6 +669,19 @@ export function AdminCatalogForm({
                       )
                     }
                   />
+                  <button
+                    type="button"
+                    onClick={() => image.type === "video" ? setVideo(image.src) : setHero(image.src)}
+                  >
+                    {image.type === "video" ? "Use as hero video" : "Use as cover"}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={index === 0}
+                    onClick={() => setGallery((current) => current.map((entry, entryIndex) => entryIndex === index - 1 ? current[index] : entryIndex === index ? current[index - 1] : entry))}
+                  >
+                    Move up
+                  </button>
                   <button
                     type="button"
                     onClick={() =>

@@ -219,6 +219,9 @@
   object-fit: cover;
   background: var(--pi-ink);
 }
+.pi-media__video-controls { position: absolute; right: 18px; bottom: 18px; z-index: 3; display: flex; gap: 8px; }
+.pi-media__video-controls button { min-height: 34px; padding: 7px 11px; border: 1px solid rgba(255,255,255,.48); border-radius: 999px; background: rgba(15,30,40,.78); color: #fff; cursor: pointer; font: 800 11px var(--pi-body); }
+.pi-media__video-controls button:hover { background: rgba(15,30,40,.95); }
 /* No photography yet: brand type on an honest gradient, never stock imagery. */
 .pi-media--empty {
   display: flex;

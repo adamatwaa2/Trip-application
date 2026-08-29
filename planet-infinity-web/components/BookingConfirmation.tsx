@@ -31,12 +31,12 @@ export function BookingConfirmation({ details }: { details: ConfirmationDetails 
         ✓
       </div>
       <h2 className="pi-confirm__title">
-        {isRequest ? "Request received" : "Booking received"}
+        {isRequest ? "Request received" : "Payment received"}
       </h2>
       <p className="pi-confirm__lede">
         {isRequest
           ? "Nothing is confirmed yet. We check availability with our suppliers and come back to you — a request is not a booking until we issue a written confirmation."
-          : "Your booking and payment receipt are saved. We will issue the final Booking Confirmation after the receipt and trip services are verified."}
+          : "Your booking and payment receipt are saved and are waiting for verification. You do not need to do anything else right now."}
       </p>
 
       <dl className="pi-confirm__grid">
@@ -106,7 +106,7 @@ export function BookingConfirmation({ details }: { details: ConfirmationDetails 
       <p className="pi-confirm__preview">
         {isRequest
           ? "Your application has been saved for review."
-          : "Your booking is saved. The uploaded payment receipt is awaiting verification."}
+          : "Payment received — your uploaded receipt is awaiting verification."}
       </p>
     </div>
   );

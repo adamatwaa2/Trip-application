@@ -96,7 +96,7 @@ export type ItineraryStop = {
 
 export type FaqItem = { question: string; answer: string };
 
-export type GalleryImage = { src: string; alt: string };
+export type GalleryImage = { src: string; alt: string; type?: "image" | "video"; poster?: string };
 
 export type Trip = {
   id: string;

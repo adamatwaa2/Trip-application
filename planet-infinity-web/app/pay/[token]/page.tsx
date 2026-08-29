@@ -46,6 +46,7 @@ type PublicPaymentBooking = {
   scheduled_at: string | null;
   selections: { seats?: number[] };
   trip: { title: string; seat_selection_enabled?: boolean; seat_config?: import("@/content/trips").SeatConfig | null } | null;
+  payments: { status: string; payment_proof_path: string | null }[] | null;
 };
 
 export default async function PaymentPage({ params }: { params: Promise<{ token: string }> }) {
@@ -55,13 +56,16 @@ export default async function PaymentPage({ params }: { params: Promise<{ token:
   const supabase = createServiceClient();
   const { data } = await supabase
     .from("bookings")
-    .select("id, trip_id, booking_number, status, total_amount, amount_paid, currency, guest_count, scheduled_at, selections, trip:trips(title, seat_selection_enabled, seat_config), event:events(title)")
+    .select("id, trip_id, booking_number, status, total_amount, amount_paid, currency, guest_count, scheduled_at, selections, trip:trips(title, seat_selection_enabled, seat_config), event:events(title), payments(status, payment_proof_path)")
     .eq("payment_token", token)
     .maybeSingle();
   if (!data) notFound();
 
   const booking = data as unknown as PublicPaymentBooking;
   const balance = Math.max(0, Number(booking.total_amount) - Number(booking.amount_paid));
+  const proofAwaitingVerification = (booking.payments ?? []).some(
+    (payment) => payment.status === "pending" && Boolean(payment.payment_proof_path),
+  );
   const subject = booking.trip?.title ?? booking.event?.title ?? "Planet Infinity booking";
   const selectedSeats = Array.isArray(booking.selections?.seats) ? booking.selections.seats.map(Number).filter(Number.isInteger) : [];
   let seatConfig = booking.trip?.seat_config ?? null;
@@ -77,8 +81,8 @@ export default async function PaymentPage({ params }: { params: Promise<{ token:
     <main className={styles.page}>
       <section className={styles.card}>
         <p className={styles.kicker}>Planet Infinity · Secure checkout</p>
-        <h1>Pay your booking.</h1>
-        <p className={styles.intro}>Review the confirmed balance below. Use the available payment method and keep your booking number as the transfer reference.</p>
+        <h1>{proofAwaitingVerification ? "Payment received." : "Pay your booking."}</h1>
+        <p className={styles.intro}>{proofAwaitingVerification ? "We received your payment receipt. Your booking is waiting for verification — you do not need to submit or pay again." : "Review the confirmed balance below. Use the available payment method and keep your booking number as the transfer reference."}</p>
         <dl className={styles.details}>
           <div><dt>Booking</dt><dd>{booking.booking_number}</dd></div>
           <div><dt>Trip / event</dt><dd>{subject}</dd></div>
@@ -87,6 +91,8 @@ export default async function PaymentPage({ params }: { params: Promise<{ token:
         </dl>
         {booking.status === "cancelled" ? (
           <p className={styles.unavailable}>This booking has been cancelled.</p>
+        ) : proofAwaitingVerification ? (
+          <p className={styles.awaiting}><strong>Receipt awaiting verification</strong><span>Our team will confirm the payment after checking the receiving account. We will then update your booking.</span></p>
         ) : balance <= 0 ? (
           <>
             <p className={styles.unavailable}>This booking is already paid in full.</p>
