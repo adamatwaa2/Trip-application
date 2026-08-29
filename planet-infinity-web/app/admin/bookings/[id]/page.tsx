@@ -147,6 +147,9 @@ export default async function BookingDetailPage({
             customerName={booking.customer?.full_name ?? "there"}
             phone={booking.customer?.phone ?? null}
             paymentUrl={`${process.env.NEXT_PUBLIC_SITE_URL ?? "https://planetinfinity.online"}/pay/${booking.payment_token}?preview=pi-20260829`}
+            bookingTitle={booking.trip?.title ?? booking.event?.title ?? "Planet Infinity booking"}
+            guestCount={booking.guest_count}
+            totalAmount={Number(booking.total_amount)}
             confirmationIssued={Boolean(booking.confirmation_issued_at)}
           />
         </section>
