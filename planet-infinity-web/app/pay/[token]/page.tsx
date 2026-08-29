@@ -43,6 +43,7 @@ type PublicPaymentBooking = {
   currency: string;
   event: { title: string } | null;
   guest_count: number;
+  scheduled_at: string | null;
   selections: { seats?: number[] };
   trip: { title: string; seat_selection_enabled?: boolean; seat_config?: import("@/content/trips").SeatConfig | null } | null;
 };
@@ -54,7 +55,7 @@ export default async function PaymentPage({ params }: { params: Promise<{ token:
   const supabase = createServiceClient();
   const { data } = await supabase
     .from("bookings")
-    .select("id, trip_id, booking_number, status, total_amount, amount_paid, currency, guest_count, selections, trip:trips(title, seat_selection_enabled, seat_config), event:events(title)")
+    .select("id, trip_id, booking_number, status, total_amount, amount_paid, currency, guest_count, scheduled_at, selections, trip:trips(title, seat_selection_enabled, seat_config), event:events(title)")
     .eq("payment_token", token)
     .maybeSingle();
   if (!data) notFound();
@@ -65,7 +66,7 @@ export default async function PaymentPage({ params }: { params: Promise<{ token:
   const selectedSeats = Array.isArray(booking.selections?.seats) ? booking.selections.seats.map(Number).filter(Number.isInteger) : [];
   let seatConfig = booking.trip?.seat_config ?? null;
   if (seatConfig && booking.trip?.seat_selection_enabled) {
-    const { data: reservations } = await supabase.from("trip_seat_reservations").select("seat_number").eq("trip_id", booking.trip_id!).in("status", ["reserved", "held"]);
+    const { data: reservations } = await supabase.from("trip_seat_reservations").select("seat_number").eq("trip_id", booking.trip_id!).eq("scheduled_at", booking.scheduled_at).in("status", ["reserved", "held"]);
     seatConfig = { ...seatConfig, taken: (reservations ?? []).map((row: { seat_number: number }) => row.seat_number).filter((seat: number) => !selectedSeats.includes(seat)) };
   }
   const instapayAddress = process.env.NEXT_PUBLIC_INSTAPAY_ADDRESS?.trim() ?? "";

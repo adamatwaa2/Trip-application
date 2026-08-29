@@ -268,7 +268,12 @@ export async function recordPayment(input: { bookingId: string; amount: number; 
   if (input.receivedAt && Number.isNaN(receivedAt?.getTime())) return { ok: false, error: "Enter a valid payment date." };
   const supabase = await createClient();
   const { error } = await supabase.rpc("record_manual_payment", { p_booking_id: input.bookingId, p_amount: input.amount, p_method: input.method, p_status: input.status, p_received_at: receivedAt?.toISOString() ?? null, p_reference: text(input.reference ?? "", 200) || null, p_notes: text(input.notes ?? "") || null });
-  if (error) return { ok: false, error: "The payment could not be recorded." };
+  if (error) {
+    if (error.message.includes("Invalid payment method")) {
+      return { ok: false, error: "This payment method needs the latest database update. Publish the latest update, then try again." };
+    }
+    return { ok: false, error: "The payment could not be recorded." };
+  }
   revalidatePath("/admin/payments"); revalidatePath("/admin/bookings");
   return { ok: true };
 }

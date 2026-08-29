@@ -54,6 +54,7 @@ export function TripSelection({ groups, value, onChange }: TripSelectionProps) {
                     disabled={choice.soldOut}
                     onChange={() => onChange(group.id, choice.id)}
                   />
+                  <span className="pi-choice__indicator" aria-hidden="true" />
                   <span className="pi-choice__body">
                     <span className="pi-choice__label">{choice.label}</span>
                     {choice.detail ? (

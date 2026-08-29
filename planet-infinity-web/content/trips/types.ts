@@ -43,6 +43,8 @@ export type TripChoice = {
   label: string;
   /** One short clarifying line. Optional. */
   detail?: string;
+  /** ISO departure time for a date choice. It is validated again by the database. */
+  scheduledAt?: string;
   /** Absolute price for this choice, when the choice sets the price. */
   priceEgp?: number;
   /** Or an adjustment on the trip's base price. */

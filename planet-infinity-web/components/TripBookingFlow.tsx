@@ -248,8 +248,18 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
             <label htmlFor="guestCount">Number of guests</label>
             <input id="guestCount" type="number" min="1" value={guestCount} onChange={(e) => setGuestCount(e.target.value)} />
 
-            {trip.songRequestEnabled ? <><label htmlFor="songRequest">Add a song to the trip playlist <span className="opt">(optional)</span></label>
-            <input id="songRequest" value={songRequest} maxLength={180} placeholder="Song name, artist, or a link" onChange={(e) => setSongRequest(e.target.value)} /></> : null}
+            {trip.songRequestEnabled ? (
+              <section className="pi-song-request" aria-labelledby="songRequestLabel">
+                <div className="pi-song-request__heading">
+                  <span className="pi-song-request__icon" aria-hidden="true">♫</span>
+                  <div>
+                    <label id="songRequestLabel" htmlFor="songRequest">Add a song to the trip playlist <span className="opt">(optional)</span></label>
+                    <p>Every song joins the shared playlist for the road.</p>
+                  </div>
+                </div>
+                <input id="songRequest" value={songRequest} maxLength={180} placeholder="Song name, artist, or a link" onChange={(e) => setSongRequest(e.target.value)} />
+              </section>
+            ) : null}
 
             <label className="agree-row" htmlFor="whatsappOptIn">
               <input id="whatsappOptIn" type="checkbox" checked={whatsappOptIn} onChange={(e) => setWhatsappOptIn(e.target.checked)} />
