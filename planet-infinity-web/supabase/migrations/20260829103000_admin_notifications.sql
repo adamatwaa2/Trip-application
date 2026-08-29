@@ -17,6 +17,7 @@ create index if not exists admin_notifications_unread_idx
   where read_at is null;
 create index if not exists admin_notifications_booking_idx on public.admin_notifications (booking_id, created_at desc);
 create index if not exists admin_notifications_request_idx on public.admin_notifications (request_id, created_at desc);
+create index if not exists admin_notifications_payment_idx on public.admin_notifications (payment_id, created_at desc);
 
 revoke all on public.admin_notifications from public, anon, authenticated;
 grant select, update on public.admin_notifications to authenticated;
