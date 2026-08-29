@@ -42,9 +42,8 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
   const [done, setDone] = useState(false);
 
   const [selection, setSelection] = useState<SelectionState>({});
-  const [guestName, setGuestName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
-  const [guestPhone, setGuestPhone] = useState("");
+  const [guests, setGuests] = useState([{ name: "", phone: "" }]);
   const [guestNotes, setGuestNotes] = useState("");
   const [guestCount, setGuestCount] = useState("1");
   const [customAnswers, setCustomAnswers] = useState<Record<string, BookingFormAnswer>>({});
@@ -58,6 +57,22 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
 
   const step = steps[stepIndex];
   const guestCountNumber = Math.max(1, Number(guestCount) || 1);
+  const guestName = guests[0]?.name ?? "";
+  const guestPhone = guests[0]?.phone ?? "";
+
+  function resizeGuestList(value: string) {
+    const count = Math.max(1, Math.min(80, Number(value) || 1));
+    setGuestCount(value);
+    setGuests((current) => Array.from({ length: count }, (_, index) => current[index] ?? { name: "", phone: "" }));
+    setCustomAnswers((current) => Object.fromEntries(Object.entries(current).map(([fieldId, answer]) => {
+      if (!answer || typeof answer !== "object" || Array.isArray(answer)) return [fieldId, answer];
+      return [fieldId, Object.fromEntries(Object.entries(answer).map(([optionId, quantity]) => [optionId, Math.min(count, Number(quantity) || 0)]))];
+    })));
+  }
+
+  function updateGuest(index: number, patch: Partial<{ name: string; phone: string }>) {
+    setGuests((current) => current.map((guest, guestIndex) => guestIndex === index ? { ...guest, ...patch } : guest));
+  }
 
   /** Chosen labels, in the order the trip defines its groups. */
   const selectionLabels = useMemo(() => {
@@ -80,7 +95,7 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
       if (choice?.priceDeltaEgp) sum += choice.priceDeltaEgp;
     });
     const guests = Number(guestCount) || 1;
-    return (sum + bookingOptionPrice(trip.bookingFormFields ?? [], customAnswers)) * guests;
+    return sum * guests + bookingOptionPrice(trip.bookingFormFields ?? [], customAnswers, guests);
   }, [trip, selection, guestCount, customAnswers]);
 
   function canContinue(current: BookingStep): boolean {
@@ -91,7 +106,7 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
     if (current === "custom") return bookingFormAnswersComplete(trip.bookingFormFields ?? [], customAnswers);
     if (current === "payment") return Boolean(paymentProof?.path);
     if (current === "guest") {
-      return guestName.trim() !== "" && guestEmail.trim() !== "" && agreed && (!whatsappOptIn || guestPhone.trim() !== "");
+      return guests.length === guestCountNumber && guests.every((guest) => guest.name.trim().length >= 2 && guest.phone.trim().length >= 6) && guestEmail.trim() !== "" && agreed;
     }
     return true;
   }
@@ -132,13 +147,20 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
           selections: selectionLabels,
           ...(trip.seatBookingEnabled ? { seatSelection: "after-full-payment" } : {}),
           guestCount: guestCountNumber,
+          selected: selection,
           totalEgp: total ?? null,
           customAnswers,
+          guestRoster: guests.map((guest) => ({ name: guest.name.trim(), phone: guest.phone.trim() })),
           customResponses: (trip.bookingFormFields ?? []).map((field) => ({
             id: field.id,
             label: field.label,
             answer: (() => {
               const answer = customAnswers[field.id];
+              if (answer && typeof answer === "object" && !Array.isArray(answer)) {
+                return (field.options ?? [])
+                  .filter((option) => Number(answer[option.id]) > 0)
+                  .map((option) => `${option.label} × ${answer[option.id]}`);
+              }
               const ids = Array.isArray(answer) ? answer : typeof answer === "string" ? [answer] : [];
               return ids.length ? (field.options ?? []).filter((option) => ids.includes(option.id)).map(bookingOptionLabel) : answer ?? null;
             })(),
@@ -205,9 +227,12 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
         {step === "custom" && trip.bookingFormFields?.length ? (
           <>
             <h2 className="pi-flow__title">{STEP_LABELS.custom}</h2>
+            <label htmlFor="guestCountCustom">Number of guests</label>
+            <input id="guestCountCustom" type="number" min="1" max="80" value={guestCount} onChange={(e) => resizeGuestList(e.target.value)} />
             <TripCustomQuestions
               fields={trip.bookingFormFields}
               answers={customAnswers}
+              guestCount={guestCountNumber}
               onChange={(id, answer) => setCustomAnswers((current) => ({ ...current, [id]: answer }))}
             />
           </>
@@ -216,14 +241,6 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
         {step === "guest" ? (
           <>
             <h2 className="pi-flow__title">{STEP_LABELS.guest}</h2>
-            <label htmlFor="guestName">Full name</label>
-            <input
-              id="guestName"
-              type="text"
-              value={guestName}
-              onChange={(e) => setGuestName(e.target.value)}
-            />
-
             <label htmlFor="guestNotes">Anything we should know? <span className="opt">(optional)</span></label>
             <textarea id="guestNotes" value={guestNotes} onChange={(e) => setGuestNotes(e.target.value)} />
 
@@ -235,18 +252,25 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
               onChange={(e) => setGuestEmail(e.target.value)}
             />
 
-            <label htmlFor="guestPhone">
-              Mobile / WhatsApp <span className="opt">(required for WhatsApp updates)</span>
-            </label>
-            <input
-              id="guestPhone"
-              type="tel"
-              value={guestPhone}
-              onChange={(e) => setGuestPhone(e.target.value)}
-            />
+            {!trip.bookingFormFields?.length ? <><label htmlFor="guestCount">Number of guests</label><input id="guestCount" type="number" min="1" max="80" value={guestCount} onChange={(e) => resizeGuestList(e.target.value)} /></> : null}
 
-            <label htmlFor="guestCount">Number of guests</label>
-            <input id="guestCount" type="number" min="1" value={guestCount} onChange={(e) => setGuestCount(e.target.value)} />
+            <section className="pi-guest-roster" aria-labelledby="guestRosterTitle">
+              <div className="pi-guest-roster__head">
+                <div><h3 id="guestRosterTitle">Guest details</h3><p>Enter one name and mobile number for every guest. One booking email is enough.</p></div>
+                <span>{guestCountNumber} guest{guestCountNumber === 1 ? "" : "s"}</span>
+              </div>
+              <div className="pi-guest-roster__list">
+                {guests.map((guest, index) => (
+                  <fieldset className="pi-guest-card" key={index}>
+                    <legend>{index === 0 ? "Primary guest" : `Guest ${index + 1}`}</legend>
+                    <label htmlFor={`guestName-${index}`}>Full name</label>
+                    <input id={`guestName-${index}`} type="text" value={guest.name} onChange={(event) => updateGuest(index, { name: event.target.value })} />
+                    <label htmlFor={`guestPhone-${index}`}>Mobile / WhatsApp</label>
+                    <input id={`guestPhone-${index}`} type="tel" value={guest.phone} onChange={(event) => updateGuest(index, { phone: event.target.value })} />
+                  </fieldset>
+                ))}
+              </div>
+            </section>
 
             {trip.songRequestEnabled ? (
               <section className="pi-song-request" aria-labelledby="songRequestLabel">
@@ -299,19 +323,18 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
                   <dd>{(trip.bookingFormFields ?? []).map((field) => {
                     const answer = customAnswers[field.id];
                     const ids = Array.isArray(answer) ? answer : typeof answer === "string" ? [answer] : [];
-                    const display = ids.length ? (field.options ?? []).filter((option) => ids.includes(option.id)).map(bookingOptionLabel).join(", ") : answer === true ? "Yes" : answer === false ? "No" : "—";
+                    const quantities = answer && typeof answer === "object" && !Array.isArray(answer) ? answer : null;
+                    const display = quantities
+                      ? (field.options ?? []).filter((option) => Number(quantities[option.id]) > 0).map((option) => `${option.label} × ${quantities[option.id]}`).join(", ") || "None"
+                      : ids.length ? (field.options ?? []).filter((option) => ids.includes(option.id)).map(bookingOptionLabel).join(", ") : answer === true ? "Yes" : answer === false ? "No" : "—";
                     return `${field.label}: ${display}`;
                   }).join(" · ")}</dd>
                 </div>
               ) : null}
               {songRequest ? <div><dt>Playlist song</dt><dd>{songRequest}</dd></div> : null}
               <div>
-                <dt>Guest</dt>
-                <dd>{guestName || "—"}</dd>
-              </div>
-              <div>
                 <dt>Guests</dt>
-                <dd>{guestCount}</dd>
+                <dd>{guests.map((guest) => `${guest.name || "—"} · ${guest.phone || "—"}`).join(" | ")}</dd>
               </div>
               <div>
                 <dt>Contact</dt>

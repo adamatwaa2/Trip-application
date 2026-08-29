@@ -7,6 +7,7 @@ const TYPE_LABELS: Record<BookingFormFieldType, string> = {
   textarea: "Long text",
   select: "One choice",
   multiselect: "Multiple choices",
+  quantity: "Quantity per guest",
   checkbox: "Yes / no checkbox",
 };
 
@@ -59,7 +60,7 @@ export function BookingFormBuilder({
                 const type = event.target.value as BookingFormFieldType;
                 update(index, {
                   type,
-                  ...(type === "select" || type === "multiselect" ? { options: field.options?.length ? field.options : [nextOption()] } : { options: undefined }),
+                  ...(type === "select" || type === "multiselect" || type === "quantity" ? { options: field.options?.length ? field.options : [nextOption()] } : { options: undefined }),
                 });
               }}>
                 {Object.entries(TYPE_LABELS).map(([value, label]) => <option value={value} key={value}>{label}</option>)}
@@ -70,9 +71,10 @@ export function BookingFormBuilder({
             Help text <span className="opt">(optional)</span>
             <input maxLength={240} value={field.help ?? ""} onChange={(event) => update(index, { help: event.target.value })} />
           </label>
-          {field.type === "select" || field.type === "multiselect" ? (
+          {field.type === "select" || field.type === "multiselect" || field.type === "quantity" ? (
             <div className="pi-admin-option-builder">
-              <p className="pi-admin-help">Add-ons can have a price. It is added to the booking total per guest.</p>
+              <p className="pi-admin-help">{field.type === "quantity" ? "Guests choose how many people want each option. The price is charged only for that quantity." : "A selected add-on price is charged per guest."}</p>
+              {field.type === "quantity" ? <label>Quantity unit<input maxLength={24} value={field.quantityUnit ?? "person"} placeholder="person, tent, room…" onChange={(event) => update(index, { quantityUnit: event.target.value })} /></label> : null}
               {(field.options ?? []).map((option, optionIndex) => (
                 <div className="pi-admin-form__grid pi-admin-form__grid--two" key={option.id}>
                   <label>

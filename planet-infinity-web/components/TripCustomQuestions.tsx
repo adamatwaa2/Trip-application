@@ -6,10 +6,12 @@ export function TripCustomQuestions({
   fields,
   answers,
   onChange,
+  guestCount,
 }: {
   fields: BookingFormField[];
   answers: Record<string, BookingFormAnswer>;
   onChange: (id: string, answer: BookingFormAnswer) => void;
+  guestCount: number;
 }) {
   return (
     <div className="pi-custom-questions">
@@ -37,6 +39,27 @@ export function TripCustomQuestions({
                   const selected = Array.isArray(answer) ? answer : [];
                   return <label className="agree-row" key={option.id}><input type="checkbox" checked={selected.includes(option.id)} onChange={(event) => onChange(field.id, event.target.checked ? [...selected, option.id] : selected.filter((value) => value !== option.id))} /><span>{bookingOptionLabel(option)}</span></label>;
                 })}
+              </div>
+            ) : null}
+            {field.type === "quantity" ? (
+              <div className="pi-quantity-options">
+                {(field.options ?? []).map((option) => {
+                  const unit = field.quantityUnit?.trim() || "person";
+                  const quantities = answer && typeof answer === "object" && !Array.isArray(answer) ? answer : {};
+                  const quantity = Math.max(0, Math.min(guestCount, Math.floor(Number(quantities[option.id]) || 0)));
+                  const update = (next: number) => onChange(field.id, { ...quantities, [option.id]: Math.max(0, Math.min(guestCount, next)) });
+                  return (
+                    <div className="pi-quantity-option" key={option.id}>
+                      <div><strong>{option.label}</strong>{option.priceEgp ? <span>+{option.priceEgp.toLocaleString("en-EG")} EGP / {unit}</span> : null}</div>
+                      <div className="pi-stepper" aria-label={`${option.label} quantity`}>
+                        <button type="button" onClick={() => update(quantity - 1)} disabled={quantity === 0} aria-label={`Remove one ${option.label}`}>−</button>
+                        <output aria-live="polite">{quantity}</output>
+                        <button type="button" onClick={() => update(quantity + 1)} disabled={quantity === guestCount} aria-label={`Add one ${option.label}`}>+</button>
+                      </div>
+                    </div>
+                  );
+                })}
+                <p className="pi-flow__hint">Maximum per option: {guestCount}.</p>
               </div>
             ) : null}
             {field.type === "checkbox" ? (

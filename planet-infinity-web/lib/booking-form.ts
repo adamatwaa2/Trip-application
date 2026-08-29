@@ -3,6 +3,7 @@ export type BookingFormFieldType =
   | "textarea"
   | "select"
   | "multiselect"
+  | "quantity"
   | "checkbox";
 
 export type BookingFormField = {
@@ -11,6 +12,7 @@ export type BookingFormField = {
   type: BookingFormFieldType;
   required?: boolean;
   help?: string;
+  quantityUnit?: string;
   options?: BookingFormOption[];
 };
 
@@ -21,7 +23,7 @@ export type BookingFormOption = {
   priceEgp?: number;
 };
 
-export type BookingFormAnswer = string | string[] | boolean;
+export type BookingFormAnswer = string | string[] | boolean | Record<string, number>;
 
 const FIELD_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const FIELD_TYPES = new Set<BookingFormFieldType>([
@@ -29,6 +31,7 @@ const FIELD_TYPES = new Set<BookingFormFieldType>([
   "textarea",
   "select",
   "multiselect",
+  "quantity",
   "checkbox",
 ]);
 
@@ -69,7 +72,7 @@ export function normaliseBookingFormFields(value: unknown): BookingFormField[] |
           return [{ id, label, ...(price && price > 0 ? { priceEgp: Math.round(price) } : {}) }];
         }).slice(0, 30)
       : [];
-    if ((type === "select" || type === "multiselect") && options.length < 1) return null;
+    if ((type === "select" || type === "multiselect" || type === "quantity") && options.length < 1) return null;
 
     fields.push({
       id,
@@ -77,7 +80,8 @@ export function normaliseBookingFormFields(value: unknown): BookingFormField[] |
       type,
       required: Boolean(source.required),
       ...(clean(source.help, 240) ? { help: clean(source.help, 240) } : {}),
-      ...(type === "select" || type === "multiselect" ? { options } : {}),
+      ...(type === "quantity" && clean(source.quantityUnit, 24) ? { quantityUnit: clean(source.quantityUnit, 24) } : {}),
+      ...(type === "select" || type === "multiselect" || type === "quantity" ? { options } : {}),
     });
   }
 
@@ -91,13 +95,20 @@ export function bookingOptionLabel(option: BookingFormOption) {
 export function bookingOptionPrice(
   fields: BookingFormField[],
   answers: Record<string, BookingFormAnswer>,
+  guestCount = 1,
 ) {
   return fields.reduce((total, field) => {
     const answer = answers[field.id];
+    if (field.type === "quantity" && answer && typeof answer === "object" && !Array.isArray(answer)) {
+      return total + (field.options ?? []).reduce((sum, option) => {
+        const quantity = Math.max(0, Math.floor(Number(answer[option.id]) || 0));
+        return sum + (option.priceEgp ?? 0) * quantity;
+      }, 0);
+    }
     const ids = Array.isArray(answer) ? answer : typeof answer === "string" ? [answer] : [];
     return total + (field.options ?? [])
       .filter((option) => ids.includes(option.id))
-      .reduce((sum, option) => sum + (option.priceEgp ?? 0), 0);
+      .reduce((sum, option) => sum + (option.priceEgp ?? 0) * guestCount, 0);
   }, 0);
 }
 
@@ -106,8 +117,14 @@ export function bookingFormAnswersComplete(
   answers: Record<string, BookingFormAnswer>,
 ) {
   return fields.every((field) => {
-    if (!field.required) return true;
     const answer = answers[field.id];
+    if (field.type === "quantity") {
+      const quantity = answer && typeof answer === "object" && !Array.isArray(answer)
+        ? Object.values(answer).reduce((sum, value) => sum + Math.max(0, Math.floor(Number(value) || 0)), 0)
+        : 0;
+      return !field.required || quantity > 0;
+    }
+    if (!field.required) return true;
     if (field.type === "checkbox") return answer === true;
     if (Array.isArray(answer)) return answer.length > 0;
     return typeof answer === "string" && answer.trim().length > 0;

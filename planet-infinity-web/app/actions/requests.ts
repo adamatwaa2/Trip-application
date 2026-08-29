@@ -98,6 +98,8 @@ function publicError(message: string | undefined): string {
   if (message.includes("WhatsApp number is required")) return "Enter your WhatsApp number or turn off WhatsApp updates.";
   if (message.includes("Payment proof is required")) return "Upload the payment receipt before submitting.";
   if (message.includes("required trip question")) return "Answer all required trip questions.";
+  if (message.includes("every guest name and phone")) return "Enter a full name and mobile number for every guest.";
+  if (message.includes("Add-on quantity")) return "Check the number of guests selected for each add-on.";
   return "We could not save your request. Please try again.";
 }
 
@@ -128,6 +130,14 @@ function validatePublicRequest(input: PublicRequestInput): string | null {
   }
   if (input.requestType !== "application" && !cleanText(input.subjectTitle, 160)) {
     return "This request is missing its trip or event reference.";
+  }
+  const roster = input.selections?.guestRoster;
+  if (roster !== undefined) {
+    if (!Array.isArray(roster) || roster.length !== (input.guestCount ?? 1) || roster.some((guest) => {
+      if (!guest || typeof guest !== "object") return true;
+      const value = guest as { name?: unknown; phone?: unknown };
+      return typeof value.name !== "string" || cleanText(value.name, 120).length < 2 || typeof value.phone !== "string" || cleanText(value.phone, 40).length < 6;
+    })) return "Enter a full name and mobile number for every guest.";
   }
   try {
     if (JSON.stringify(input.selections ?? {}).length > 20_000) return "The selection details are too large.";

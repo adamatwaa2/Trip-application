@@ -50,9 +50,9 @@ export default async function BookingDetailPage({
   const seats = Array.isArray(booking.selections?.seats)
     ? booking.selections.seats.map(String)
     : [];
-  const additionalGuests = (booking.guests ?? []).filter((guest) => !guest.is_primary);
+  const bookingGuests = booking.guests ?? [];
   const hasTripAnswers =
-    additionalGuests.length > 0 ||
+    bookingGuests.length > 0 ||
     seats.length > 0 ||
     selectedOptions.length > 0 ||
     answers.length > 0 ||
@@ -89,10 +89,10 @@ export default async function BookingDetailPage({
 
         <section className="pi-admin-section">
           <h2>Trip answers</h2>
-          {additionalGuests.length > 0 ? (
+          {bookingGuests.length > 0 ? (
             <>
-              <h3>Additional guests</h3>
-              <ul>{additionalGuests.map((guest, index) => <li key={`${guest.full_name}-${index}`}>{guest.full_name}</li>)}</ul>
+              <h3>Guest roster</h3>
+              <ol>{bookingGuests.map((guest, index) => <li key={`${guest.full_name}-${index}`}><strong>{guest.full_name}</strong>{guest.phone ? ` · ${guest.phone}` : ""}{guest.is_primary ? " · Primary" : ""}</li>)}</ol>
             </>
           ) : null}
           {seats.length > 0 ? <p><strong>Seats:</strong> {seats.join(", ")}</p> : null}

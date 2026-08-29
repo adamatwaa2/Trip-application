@@ -845,6 +845,89 @@
   display: grid;
   gap: 8px;
 }
+.pi-quantity-options {
+  display: grid;
+  gap: 10px;
+}
+.pi-quantity-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pi-s2);
+  padding: 14px 16px;
+  border: 1px solid var(--pi-line);
+  border-radius: var(--pi-r-chip);
+  background: #fff;
+}
+.pi-quantity-option > div:first-child {
+  display: grid;
+  gap: 3px;
+}
+.pi-quantity-option span {
+  color: var(--pi-soft);
+  font-size: 0.86rem;
+}
+.pi-stepper {
+  display: grid;
+  grid-template-columns: 38px 34px 38px;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid var(--pi-line);
+  border-radius: 999px;
+  background: var(--pi-ivory);
+}
+.pi-stepper button {
+  min-height: 38px;
+  border: 0;
+  background: transparent;
+  color: var(--pi-ink);
+  font-size: 1.35rem;
+  cursor: pointer;
+}
+.pi-stepper button:disabled { opacity: .28; cursor: not-allowed; }
+.pi-stepper output { text-align: center; font-weight: 800; }
+.pi-guest-roster {
+  display: grid;
+  gap: var(--pi-s2);
+  margin: var(--pi-s2) 0;
+  padding: var(--pi-s3);
+  border-radius: var(--pi-r-card);
+  background: linear-gradient(135deg, #eefaff, #c5edf7);
+}
+.pi-guest-roster__head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--pi-s2);
+}
+.pi-guest-roster__head h3,
+.pi-guest-roster__head p { margin: 0; }
+.pi-guest-roster__head p { color: var(--pi-soft); margin-top: 4px; }
+.pi-guest-roster__head > span {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #fff;
+  font-weight: 800;
+}
+.pi-guest-roster__list { display: grid; gap: var(--pi-s2); }
+.pi-guest-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px var(--pi-s2);
+  margin: 0;
+  padding: var(--pi-s2);
+  border: 1px solid rgba(14, 39, 51, .12);
+  border-radius: var(--pi-r-chip);
+  background: rgba(255,255,255,.88);
+}
+.pi-guest-card legend { padding: 0 7px; font-weight: 800; }
+.pi-guest-card label { align-self: end; }
+@media (max-width: 640px) {
+  .pi-quantity-option { align-items: flex-start; }
+  .pi-guest-card { grid-template-columns: 1fr; }
+  .pi-guest-roster__head { flex-direction: column; }
+}
 .pi-payment-proof__details {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
