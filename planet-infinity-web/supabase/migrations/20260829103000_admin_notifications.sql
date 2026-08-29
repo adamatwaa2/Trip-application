@@ -109,8 +109,11 @@ $$;
 drop trigger if exists admin_notifications_booking_insert on public.bookings;
 create trigger admin_notifications_booking_insert after insert on public.bookings
   for each row execute function private.notify_admin_on_booking_insert();
-drop trigger if exists admin_notifications_payment_change on public.payments;
-create trigger admin_notifications_payment_change after insert or update of status on public.payments
+drop trigger if exists admin_notifications_payment_insert on public.payments;
+create trigger admin_notifications_payment_insert after insert on public.payments
+  for each row execute function private.notify_admin_on_payment_change();
+drop trigger if exists admin_notifications_payment_update on public.payments;
+create trigger admin_notifications_payment_update after update of status on public.payments
   for each row execute function private.notify_admin_on_payment_change();
 drop trigger if exists admin_notifications_request_insert on public.requests;
 create trigger admin_notifications_request_insert after insert on public.requests
