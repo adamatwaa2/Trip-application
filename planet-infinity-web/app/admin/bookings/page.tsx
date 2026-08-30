@@ -22,7 +22,7 @@ export default async function BookingsPage() {
           <>
             <div className="pi-admin-table-wrap pi-admin-desktop-list">
               <table className="pi-admin-table">
-                <thead><tr><th>Reference</th><th>Customer</th><th>Booking</th><th>Balance</th><th>Status</th></tr></thead>
+                <thead><tr><th>Reference</th><th>Customer</th><th>Booking</th><th>Remaining</th><th>Status</th></tr></thead>
                 <tbody>{result.items.map((item) => {
                   const subject = item.trip?.title ?? item.event?.title ?? item.booking_type;
                   const balance = Number(item.total_amount) - Number(item.amount_paid);
@@ -40,7 +40,7 @@ export default async function BookingsPage() {
                     <h2>{item.customer?.full_name ?? "Unknown"}</h2>
                     <p>{subject}</p>
                     <span>{formatDate(item.scheduled_at)}</span>
-                    <footer><span>{balance.toLocaleString("en-US")} EGP balance</span><b>Review booking →</b></footer>
+                    <footer><span>{balance.toLocaleString("en-US")} EGP remaining</span><b>Review booking →</b></footer>
                   </Link>
                 );
               })}

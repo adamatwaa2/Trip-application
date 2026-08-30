@@ -312,7 +312,7 @@ function BookingConfirmationDocument({ data }: { data: BookingConfirmationPdfDat
           <View style={styles.grid}>
             <View style={styles.field}><Text style={styles.label}>TOTAL</Text><Text style={styles.value}>{money(data.totalAmount, data.currency)}</Text></View>
             <View style={styles.field}><Text style={styles.label}>PAID</Text><Text style={styles.value}>{money(data.amountPaid, data.currency)}</Text></View>
-            <View style={styles.field}><Text style={styles.label}>BALANCE</Text><Text style={styles.value}>{money(balance, data.currency)}</Text></View>
+            <View style={styles.field}><Text style={styles.label}>REMAINING</Text><Text style={styles.value}>{money(balance, data.currency)}</Text></View>
             <View style={styles.field}><Text style={styles.label}>ISSUED</Text><Text style={styles.value}>{formatDate(data.issuedAt)}</Text></View>
           </View>
         </View>

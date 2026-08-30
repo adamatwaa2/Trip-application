@@ -45,6 +45,7 @@ type PublicPaymentBooking = {
   confirmation_pdf_path: string | null;
   currency: string;
   event: { title: string } | null;
+  customer: { full_name: string } | null;
   guest_count: number;
   scheduled_at: string | null;
   selections: { seats?: number[]; seatVehicleId?: string };
@@ -59,7 +60,7 @@ export default async function PaymentPage({ params }: { params: Promise<{ token:
   const supabase = createServiceClient();
   const { data } = await supabase
     .from("bookings")
-    .select("id, trip_id, booking_number, status, total_amount, amount_paid, confirmation_issued_at, confirmation_pdf_path, currency, guest_count, scheduled_at, selections, trip:trips(title, seat_selection_enabled, seat_config), event:events(title), payments(status, payment_proof_path)")
+    .select("id, trip_id, booking_number, status, total_amount, amount_paid, confirmation_issued_at, confirmation_pdf_path, currency, guest_count, scheduled_at, selections, customer:customers(full_name), trip:trips(title, seat_selection_enabled, seat_config), event:events(title), payments(status, payment_proof_path)")
     .eq("payment_token", token)
     .maybeSingle();
   if (!data) notFound();
@@ -93,12 +94,14 @@ export default async function PaymentPage({ params }: { params: Promise<{ token:
       <section className={styles.card}>
         <p className={styles.kicker}>Planet Infinity · Secure checkout</p>
         <h1>{confirmationIssued ? "Booking confirmed." : proofAwaitingVerification ? "Payment received." : balance <= 0 ? "Payment verified." : "Pay your booking."}</h1>
-        <p className={styles.intro}>{confirmationIssued ? "Everything is complete. Your final Booking Confirmation PDF is ready below." : proofAwaitingVerification ? "We received your payment receipt. Your booking is waiting for verification — you do not need to submit or pay again." : balance <= 0 ? "Your payment has been recorded. We are completing the final service confirmation." : "Review the confirmed balance below. Use the available payment method and keep your booking number as the transfer reference."}</p>
+        <p className={styles.intro}>{confirmationIssued ? "Everything is complete. Your final Booking Confirmation PDF is ready below." : proofAwaitingVerification ? "We received your payment receipt. Your booking is waiting for verification — you do not need to submit or pay again." : balance <= 0 ? "Your payment has been recorded. We are completing the final service confirmation." : "Review the remaining amount below. Use the available payment method and keep your booking number as the transfer reference."}</p>
         <dl className={styles.details}>
           <div><dt>Booking</dt><dd>{booking.booking_number}</dd></div>
+          <div><dt>Customer</dt><dd>{booking.customer?.full_name ?? "Guest"}</dd></div>
           <div><dt>Trip / event</dt><dd>{subject}</dd></div>
           <div><dt>Total</dt><dd>{Number(booking.total_amount).toLocaleString("en-US")} {booking.currency}</dd></div>
-          <div><dt>Balance</dt><dd>{balance.toLocaleString("en-US")} {booking.currency}</dd></div>
+          <div><dt>Paid</dt><dd>{Number(booking.amount_paid).toLocaleString("en-US")} {booking.currency}</dd></div>
+          <div><dt>Remaining</dt><dd>{balance.toLocaleString("en-US")} {booking.currency}</dd></div>
         </dl>
         {booking.status === "cancelled" ? (
           <p className={styles.unavailable}>This booking has been cancelled.</p>
@@ -135,7 +138,7 @@ export default async function PaymentPage({ params }: { params: Promise<{ token:
                   <div><dt>Address</dt><dd>{instapayAddress}</dd></div>
                   {vodafoneCashNumber ? <div><dt>Vodafone Cash</dt><dd>{vodafoneCashNumber}</dd></div> : null}
                   <div><dt>Account</dt><dd>{instapayAccountName}</dd></div>
-                  <div><dt>Exact amount</dt><dd>{balance.toLocaleString("en-US")} {booking.currency}</dd></div>
+                  <div><dt>Remaining to pay</dt><dd>{balance.toLocaleString("en-US")} {booking.currency}</dd></div>
                   <div><dt>Reference</dt><dd>{booking.booking_number}</dd></div>
                 </dl>
                 <p className={styles.manualNotice}>Your payment is confirmed after our team checks the receiving account. Never send an OTP, PIN, or card details.</p>

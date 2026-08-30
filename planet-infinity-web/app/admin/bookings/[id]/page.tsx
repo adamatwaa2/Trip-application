@@ -82,7 +82,7 @@ export default async function BookingDetailPage({
             <div><dt>Source</dt><dd>{booking.request ? <Link href={`/admin/requests/${booking.request.id}`}>{booking.request.request_number}</Link> : "Direct booking"}</dd></div>
             <div><dt>Total</dt><dd>{booking.total_amount} EGP</dd></div>
             <div><dt>Paid</dt><dd>{booking.amount_paid} EGP</dd></div>
-            <div><dt>Balance</dt><dd>{balance} EGP</dd></div>
+            <div><dt>Remaining</dt><dd>{balance} EGP</dd></div>
           </dl>
           <p><Link href={`/pay/${booking.payment_token}`}>Open customer payment page</Link></p>
         </section>

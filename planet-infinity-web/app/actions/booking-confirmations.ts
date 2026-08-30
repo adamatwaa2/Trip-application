@@ -180,7 +180,7 @@ function confirmationData(row: ConfirmationRow): BookingConfirmationPdfData {
   return {
     bookingNumber: row.booking_number,
     bookingStatus: "Confirmed",
-    paymentStatus: amountPaid >= totalAmount ? "Paid in full" : "Balance due",
+    paymentStatus: amountPaid >= totalAmount ? "Paid in full" : "Partially paid",
     issuedAt: new Date().toISOString(),
     guestName: row.customer?.full_name ?? "Guest",
     guestEmail: row.customer?.email ?? "Not provided",
