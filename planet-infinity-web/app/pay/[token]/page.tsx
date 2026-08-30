@@ -118,10 +118,7 @@ export default async function PaymentPage({ params }: { params: Promise<{ token:
         ) : proofAwaitingVerification ? (
           <p className={styles.awaiting}><strong>Receipt awaiting verification</strong><span>Our team will confirm the payment after checking the receiving account. We will then update your booking.</span></p>
         ) : balance <= 0 ? (
-          <>
-            <p className={styles.awaiting}><strong>Payment verified</strong><span>We are confirming the final trip services. Your Booking Confirmation PDF will appear here as soon as it is issued.</span></p>
-            {seatConfig && booking.trip?.seat_selection_enabled ? <PaidSeatSelection paymentToken={token} guestCount={booking.guest_count} config={seatConfig} currentSeats={selectedSeats} /> : null}
-          </>
+          <p className={styles.awaiting}><strong>Payment verified</strong><span>We are confirming the final trip services. Your Booking Confirmation PDF and seat selection will appear here as soon as the booking is issued.</span></p>
         ) : (
           <div className={styles.paymentOptions}>
             {isPaymobConfigured() ? (
