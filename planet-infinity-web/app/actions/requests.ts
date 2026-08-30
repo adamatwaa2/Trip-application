@@ -7,6 +7,7 @@ import {
   createServiceClient,
   isSupabaseServiceConfigured,
 } from "@/lib/supabase/service";
+import { DEFAULT_SEAT_VEHICLE_ID } from "@/content/trips";
 
 const REQUEST_STATUSES = ["pending", "accepted", "rejected", "confirmed"] as const;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -60,10 +61,18 @@ export async function choosePaidBookingSeats(input: { paymentToken: string; vehi
   }
   if (!isSupabaseServiceConfigured()) return { ok: false, error: "Seat selection is not configured yet." };
   const supabase = createServiceClient();
-  const { error } = await supabase.rpc("assign_paid_booking_seats", { p_payment_token: input.paymentToken, p_vehicle_id: input.vehicleId, p_seats: input.seats });
+  let { error } = await supabase.rpc("assign_paid_booking_seats", { p_payment_token: input.paymentToken, p_vehicle_id: input.vehicleId, p_seats: input.seats });
+  const missingVehicleFunction = Boolean(error?.message.match(/assign_paid_booking_seats.*p_vehicle_id|could not find the function/i));
+  if (error && missingVehicleFunction && input.vehicleId === DEFAULT_SEAT_VEHICLE_ID) {
+    ({ error } = await supabase.rpc("assign_paid_booking_seats", {
+      p_payment_token: input.paymentToken,
+      p_seats: input.seats,
+    }));
+  }
   if (!error) return { ok: true };
-  if (error.message.includes("after booking confirmation")) return { ok: false, error: "Seat selection unlocks after your booking is confirmed." };
+  if (error.message.includes("after booking confirmation") || error.message.includes("final Booking Confirmation")) return { ok: false, error: "Seat selection unlocks after your final Booking Confirmation is issued." };
   if (error.message.includes("just taken")) return { ok: false, error: "One of those seats was just taken. Choose another seat." };
+  if (missingVehicleFunction) return { ok: false, error: "The live seat map needs its latest database update before this vehicle can be booked." };
   return { ok: false, error: "We could not save those seats. Please try again." };
 }
 

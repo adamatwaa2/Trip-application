@@ -28,7 +28,7 @@ export function BookingMessagePanel({
   confirmationIssued: boolean;
 }) {
   const initial = confirmationIssued
-    ? `Hello ${customerName}, your Planet Infinity Booking Confirmation is ready.\n\nBooking: ${bookingNumber}\nExperience: ${bookingTitle}\nGuests: ${guestCount}\nAmount recorded: ${totalAmount.toLocaleString("en-EG")} EGP\nStatus: Confirmed\n\nReview your booking: ${paymentUrl}${confirmationUrl ? `\nDownload your Booking Confirmation PDF: ${confirmationUrl}` : ""}\n\nPlease keep the PDF for your records.\n\nThank you,\nPlanet Infinity`
+    ? `Hello ${customerName}, your Planet Infinity Booking Confirmation is ready.\n\nBooking: ${bookingNumber}\nExperience: ${bookingTitle}\nGuests: ${guestCount}\nAmount recorded: ${totalAmount.toLocaleString("en-EG")} EGP\nStatus: Confirmed\n\nReview your booking and choose your seat: ${paymentUrl}${confirmationUrl ? `\nDownload your Booking Confirmation PDF: ${confirmationUrl}` : ""}\n\nPlease keep the PDF for your records.\n\nThank you,\nPlanet Infinity`
     : `Hello ${customerName}, this is Planet Infinity regarding booking ${bookingNumber}. Your booking is awaiting payment verification. You can review the balance and payment instructions here: ${paymentUrl}`;
   const [message, setMessage] = useState(initial);
   const number = whatsappNumber(phone);

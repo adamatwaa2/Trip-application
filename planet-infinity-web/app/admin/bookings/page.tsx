@@ -16,6 +16,7 @@ export default async function BookingsPage() {
         <p className="pi-admin-kicker">Bookings</p>
         <h1>Bookings and payment review.</h1>
         <p>Direct bookings arrive here immediately. Open any booking to review its customer, seats, receipt, payment and confirmation.</p>
+        <p><a className="pi-admin-button pi-admin-download" href="/admin/export">Export all website data for Excel</a></p>
       </header>
       <section className="pi-admin-section">
         {result.error ? <p className="pi-admin-error">{result.error}</p> : result.items.length ? (
