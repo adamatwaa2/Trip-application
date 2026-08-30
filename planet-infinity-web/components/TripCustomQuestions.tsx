@@ -13,9 +13,22 @@ export function TripCustomQuestions({
   onChange: (id: string, answer: BookingFormAnswer) => void;
   guestCount: number;
 }) {
+  const quantityFieldsNeedGuestCount = guestCount < 1 && fields.some((field) => field.type === "quantity");
+
   return (
     <div className="pi-custom-questions">
+      {quantityFieldsNeedGuestCount ? (
+        <div className="pi-addons-gate" role="status">
+          <span>1</span>
+          <div>
+            <strong>Choose the number of guests first</strong>
+            <p>Then you can add extras and choose how many guests want each one.</p>
+          </div>
+        </div>
+      ) : null}
       {fields.map((field) => {
+        if (field.type === "quantity" && guestCount < 1) return null;
+
         const answer = answers[field.id];
         return (
           <fieldset className="pi-custom-question" key={field.id}>
@@ -49,17 +62,27 @@ export function TripCustomQuestions({
                   const quantity = Math.max(0, Math.min(guestCount, Math.floor(Number(quantities[option.id]) || 0)));
                   const update = (next: number) => onChange(field.id, { ...quantities, [option.id]: Math.max(0, Math.min(guestCount, next)) });
                   return (
-                    <div className="pi-quantity-option" key={option.id}>
-                      <div><strong>{option.label}</strong>{option.priceEgp ? <span>+{option.priceEgp.toLocaleString("en-EG")} EGP / {unit}</span> : null}</div>
-                      <div className="pi-stepper" aria-label={`${option.label} quantity`}>
-                        <button type="button" onClick={() => update(quantity - 1)} disabled={quantity === 0} aria-label={`Remove one ${option.label}`}>−</button>
-                        <output aria-live="polite">{quantity}</output>
-                        <button type="button" onClick={() => update(quantity + 1)} disabled={quantity === guestCount} aria-label={`Add one ${option.label}`}>+</button>
+                    <div className={`pi-quantity-option${quantity > 0 ? " pi-quantity-option--selected" : ""}`} key={option.id}>
+                      <div className="pi-quantity-option__details">
+                        <strong>{option.label}</strong>
+                        {option.priceEgp ? <span>+{option.priceEgp.toLocaleString("en-EG")} EGP / {unit}</span> : null}
                       </div>
+                      {quantity === 0 ? (
+                        <button type="button" className="pi-quantity-option__add" onClick={() => update(1)} aria-label={`Add ${option.label}`}>Add</button>
+                      ) : (
+                        <div className="pi-quantity-option__controls">
+                          <span className="pi-quantity-option__count" aria-live="polite">{quantity} of {guestCount} guest{guestCount === 1 ? "" : "s"}</span>
+                          <div className="pi-stepper" aria-label={`${option.label} quantity`}>
+                            <button type="button" onClick={() => update(quantity - 1)} aria-label={`Remove one ${option.label}`}>−</button>
+                            <output>{quantity}</output>
+                            <button type="button" onClick={() => update(quantity + 1)} disabled={quantity === guestCount} aria-label={`Add one ${option.label}`}>+</button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
-                <p className="pi-flow__hint">Maximum per option: {guestCount}.</p>
+                <p className="pi-flow__hint">Tap Add for the extras you want. You can assign each extra to up to {guestCount} guest{guestCount === 1 ? "" : "s"}.</p>
               </div>
             ) : null}
             {field.type === "checkbox" ? (

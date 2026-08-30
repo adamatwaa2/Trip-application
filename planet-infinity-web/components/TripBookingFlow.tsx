@@ -43,9 +43,9 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
 
   const [selection, setSelection] = useState<SelectionState>({});
   const [guestEmail, setGuestEmail] = useState("");
-  const [guests, setGuests] = useState([{ name: "", phone: "" }]);
+  const [guests, setGuests] = useState<{ name: string; phone: string }[]>([]);
   const [guestNotes, setGuestNotes] = useState("");
-  const [guestCount, setGuestCount] = useState("1");
+  const [guestCount, setGuestCount] = useState("");
   const [customAnswers, setCustomAnswers] = useState<Record<string, BookingFormAnswer>>({});
   const [songRequest, setSongRequest] = useState("");
   const [paymentProof, setPaymentProof] = useState<PaymentProofValue | null>(null);
@@ -56,13 +56,24 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
   const [isPending, startTransition] = useTransition();
 
   const step = steps[stepIndex];
-  const guestCountNumber = Math.max(1, Number(guestCount) || 1);
+  const parsedGuestCount = Number(guestCount);
+  const guestCountNumber = Number.isInteger(parsedGuestCount) && parsedGuestCount >= 1 && parsedGuestCount <= 80 ? parsedGuestCount : 0;
   const guestName = guests[0]?.name ?? "";
   const guestPhone = guests[0]?.phone ?? "";
 
   function resizeGuestList(value: string) {
-    const count = Math.max(1, Math.min(80, Number(value) || 1));
     setGuestCount(value);
+    const enteredCount = Number(value);
+    if (!Number.isInteger(enteredCount) || enteredCount < 1) {
+      setGuests([]);
+      setCustomAnswers((current) => Object.fromEntries(Object.entries(current).map(([fieldId, answer]) => {
+        if (!answer || typeof answer !== "object" || Array.isArray(answer)) return [fieldId, answer];
+        return [fieldId, {}];
+      })));
+      return;
+    }
+
+    const count = Math.min(80, enteredCount);
     setGuests((current) => Array.from({ length: count }, (_, index) => current[index] ?? { name: "", phone: "" }));
     setCustomAnswers((current) => Object.fromEntries(Object.entries(current).map(([fieldId, answer]) => {
       if (!answer || typeof answer !== "object" || Array.isArray(answer)) return [fieldId, answer];
@@ -94,19 +105,19 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
       if (choice?.priceEgp !== undefined) sum = choice.priceEgp;
       if (choice?.priceDeltaEgp) sum += choice.priceDeltaEgp;
     });
-    const guests = Number(guestCount) || 1;
+    const guests = guestCountNumber || 1;
     return sum * guests + bookingOptionPrice(trip.bookingFormFields ?? [], customAnswers, guests);
-  }, [trip, selection, guestCount, customAnswers]);
+  }, [trip, selection, guestCountNumber, customAnswers]);
 
   function canContinue(current: BookingStep): boolean {
     if (current === "selection") {
       const required = (trip.optionGroups ?? []).filter((g) => g.required !== false);
       return required.every((g) => Boolean(selection[g.id]));
     }
-    if (current === "custom") return bookingFormAnswersComplete(trip.bookingFormFields ?? [], customAnswers);
+    if (current === "custom") return guestCountNumber >= 1 && bookingFormAnswersComplete(trip.bookingFormFields ?? [], customAnswers);
     if (current === "payment") return Boolean(paymentProof?.path);
     if (current === "guest") {
-      return guests.length === guestCountNumber && guests.every((guest) => guest.name.trim().length >= 2 && guest.phone.trim().length >= 6) && guestEmail.trim() !== "" && agreed;
+      return guestCountNumber >= 1 && guests.length === guestCountNumber && guests.every((guest) => guest.name.trim().length >= 2 && guest.phone.trim().length >= 6) && guestEmail.trim() !== "" && agreed;
     }
     return true;
   }
@@ -121,7 +132,7 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
           guestName,
           guestEmail,
           guestPhone,
-          guestCount: Number(guestCount) || 1,
+          guestCount: guestCountNumber,
           totalEgp: total,
           mode: trip.bookingMode,
           requestNumber,
