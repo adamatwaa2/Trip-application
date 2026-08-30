@@ -5,7 +5,7 @@ import {
   createCatalogItem,
   createCatalogUploadTarget,
 } from "@/app/actions/admin";
-import { HIACE_14, type SeatConfig } from "@/content/trips";
+import { HIACE_14, seatConfigVehicles, type SeatConfig } from "@/content/trips";
 import {
   CATALOG_MEDIA_ACCEPT,
   type CatalogMediaKind,
@@ -75,6 +75,25 @@ function editorSeatConfig(value: SeatConfig | null | undefined): SeatConfig {
     return value;
   }
   return { layout: HIACE_14 };
+}
+
+function editorSeatConfigWithFleet(value: SeatConfig | null | undefined, requestedCount: number): SeatConfig {
+  const base = editorSeatConfig(value);
+  const existing = seatConfigVehicles(base);
+  const count = Math.min(8, Math.max(1, Math.floor(requestedCount) || 1));
+  return {
+    layout: base.layout,
+    ...(base.unavailable?.length ? { unavailable: base.unavailable } : {}),
+    vehicles: Array.from({ length: count }, (_, index) => {
+      const existingVehicle = existing[index];
+      return {
+        id: `hiace-${index + 1}`,
+        label: `Hiace ${index + 1}`,
+        layout: existingVehicle?.layout ?? base.layout,
+        ...(existingVehicle?.unavailable?.length ? { unavailable: existingVehicle.unavailable } : {}),
+      };
+    }),
+  };
 }
 
 function UploadControl({
@@ -155,6 +174,7 @@ export function AdminCatalogForm({
   const [seatSelectionEnabled, setSeatSelectionEnabled] = useState(
     item?.seat_selection_enabled ?? false,
   );
+  const [vehicleCount, setVehicleCount] = useState(() => seatConfigVehicles(editorSeatConfig(item?.seat_config)).length);
   const [songRequestEnabled, setSongRequestEnabled] = useState(
     item?.song_request_enabled ?? false,
   );
@@ -256,6 +276,7 @@ export function AdminCatalogForm({
     setBookingMode("booking");
     setApplicationRequired(false);
     setSeatSelectionEnabled(false);
+    setVehicleCount(1);
     setSongRequestEnabled(false);
     setBookingFormFields([]);
     setPaymentProofRequired(true);
@@ -303,7 +324,7 @@ export function AdminCatalogForm({
             applicationRequired,
             seatSelectionEnabled: isTrip && seatSelectionEnabled,
             songRequestEnabled: isTrip && songRequestEnabled,
-            seatConfig: editorSeatConfig(item?.seat_config),
+            seatConfig: editorSeatConfigWithFleet(item?.seat_config, vehicleCount),
             bookingFormFields,
             paymentProofRequired: isTrip && paymentProofRequired,
             inclusions: lines(inclusions),
@@ -487,10 +508,22 @@ export function AdminCatalogForm({
           </label>
         ) : null}
         {isTrip && seatSelectionEnabled ? (
-          <p className="pi-admin-help">
-            Uses the Toyota Hiace 14-seat layout. Existing availability is preserved
-            when this trip is edited.
-          </p>
+          <>
+            <label>
+              Number of Hiaces / vehicles
+              <input
+                type="number"
+                min="1"
+                max="8"
+                step="1"
+                value={vehicleCount}
+                onChange={(event) => setVehicleCount(Number(event.target.value))}
+              />
+            </label>
+            <p className="pi-admin-help">
+              Each Hiace gets its own 14-seat map. Guests choose a Hiace after their booking is confirmed, then choose exactly one seat per guest. Existing reservations stay with their original Hiace.
+            </p>
+          </>
         ) : null}
         {isTrip ? (
           <label className="pi-admin-check pi-admin-switch">

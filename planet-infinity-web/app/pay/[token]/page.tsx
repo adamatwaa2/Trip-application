@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PaymobCheckoutButton } from "@/components/PaymobCheckoutButton";
 import { PaidSeatSelection } from "@/components/PaidSeatSelection";
+import { DEFAULT_SEAT_VEHICLE_ID, seatConfigVehicles } from "@/content/trips";
 import { isPaymobConfigured } from "@/lib/paymob/config";
 import {
   createServiceClient,
@@ -46,7 +47,7 @@ type PublicPaymentBooking = {
   event: { title: string } | null;
   guest_count: number;
   scheduled_at: string | null;
-  selections: { seats?: number[] };
+  selections: { seats?: number[]; seatVehicleId?: string };
   trip: { title: string; seat_selection_enabled?: boolean; seat_config?: import("@/content/trips").SeatConfig | null } | null;
   payments: { status: string; payment_proof_path: string | null }[] | null;
 };
@@ -71,10 +72,17 @@ export default async function PaymentPage({ params }: { params: Promise<{ token:
   const subject = booking.trip?.title ?? booking.event?.title ?? "Planet Infinity booking";
   const confirmationIssued = Boolean(booking.confirmation_issued_at && booking.confirmation_pdf_path);
   const selectedSeats = Array.isArray(booking.selections?.seats) ? booking.selections.seats.map(Number).filter(Number.isInteger) : [];
+  const selectedVehicleId = typeof booking.selections?.seatVehicleId === "string" ? booking.selections.seatVehicleId : DEFAULT_SEAT_VEHICLE_ID;
   let seatConfig = booking.trip?.seat_config ?? null;
   if (seatConfig && booking.trip?.seat_selection_enabled) {
-    const { data: reservations } = await supabase.from("trip_seat_reservations").select("seat_number").eq("trip_id", booking.trip_id!).eq("scheduled_at", booking.scheduled_at).in("status", ["reserved", "held"]);
-    seatConfig = { ...seatConfig, taken: (reservations ?? []).map((row: { seat_number: number }) => row.seat_number).filter((seat: number) => !selectedSeats.includes(seat)) };
+    const { data: reservations } = await supabase.from("trip_seat_reservations").select("seat_number, vehicle_id, booking_id").eq("trip_id", booking.trip_id!).eq("scheduled_at", booking.scheduled_at).in("status", ["reserved", "held"]);
+    const vehicles = seatConfigVehicles(seatConfig).map((vehicle) => ({
+      ...vehicle,
+      taken: (reservations ?? [])
+        .filter((row: { vehicle_id: string; booking_id: string | null }) => row.vehicle_id === vehicle.id && row.booking_id !== booking.id)
+        .map((row: { seat_number: number }) => row.seat_number),
+    }));
+    seatConfig = { ...seatConfig, vehicles };
   }
   const instapayAddress = process.env.NEXT_PUBLIC_INSTAPAY_ADDRESS?.trim() ?? "";
   const instapayAccountName = process.env.NEXT_PUBLIC_INSTAPAY_ACCOUNT_NAME?.trim() || "Planet Infinity";
@@ -95,12 +103,15 @@ export default async function PaymentPage({ params }: { params: Promise<{ token:
         {booking.status === "cancelled" ? (
           <p className={styles.unavailable}>This booking has been cancelled.</p>
         ) : confirmationIssued ? (
-          <section className={styles.confirmed} aria-label="Booking confirmation ready">
-            <p><strong>✓ Payment verified</strong></p>
-            <p><strong>✓ Services confirmed</strong></p>
-            <p><strong>✓ Booking Confirmation issued</strong></p>
-            <a className={styles.downloadButton} href={`/pay/${token}/confirmation`} download={`${booking.booking_number}-confirmation.pdf`}>Download Booking Confirmation PDF</a>
-          </section>
+          <>
+            <section className={styles.confirmed} aria-label="Booking confirmation ready">
+              <p><strong>✓ Payment verified</strong></p>
+              <p><strong>✓ Services confirmed</strong></p>
+              <p><strong>✓ Booking Confirmation issued</strong></p>
+              <a className={styles.downloadButton} href={`/pay/${token}/confirmation`} download={`${booking.booking_number}-confirmation.pdf`}>Download Booking Confirmation PDF</a>
+            </section>
+            {seatConfig && booking.trip?.seat_selection_enabled ? <PaidSeatSelection paymentToken={token} guestCount={booking.guest_count} config={seatConfig} currentSeats={selectedSeats} currentVehicleId={selectedVehicleId} /> : null}
+          </>
         ) : proofAwaitingVerification ? (
           <p className={styles.awaiting}><strong>Receipt awaiting verification</strong><span>Our team will confirm the payment after checking the receiving account. We will then update your booking.</span></p>
         ) : balance <= 0 ? (

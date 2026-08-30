@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import {
   bookingSteps,
@@ -60,6 +60,10 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
   const guestCountNumber = Number.isInteger(parsedGuestCount) && parsedGuestCount >= 1 && parsedGuestCount <= 80 ? parsedGuestCount : 0;
   const guestName = guests[0]?.name ?? "";
   const guestPhone = guests[0]?.phone ?? "";
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [stepIndex]);
 
   function resizeGuestList(value: string) {
     setGuestCount(value);

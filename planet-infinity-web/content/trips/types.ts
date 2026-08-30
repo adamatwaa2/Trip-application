@@ -89,7 +89,47 @@ export type SeatConfig = {
   taken?: number[];
   /** Seats that exist but are not sellable on this departure. */
   unavailable?: number[];
+  /**
+   * Optional fleet configuration. Older trips with only `layout` keep working
+   * as a single vehicle called Hiace 1.
+   */
+  vehicles?: SeatVehicle[];
 };
+
+export type SeatVehicle = {
+  id: string;
+  label: string;
+  layout: SeatLayout;
+  unavailable?: number[];
+  /** Runtime availability only; it is never required in saved trip data. */
+  taken?: number[];
+};
+
+export const DEFAULT_SEAT_VEHICLE_ID = "hiace-1";
+
+/** Returns a safe fleet for both legacy one-Hiace trips and new multi-Hiace trips. */
+export function seatConfigVehicles(config: SeatConfig): SeatVehicle[] {
+  const vehicles = Array.isArray(config.vehicles)
+    ? config.vehicles.filter((vehicle) =>
+      Boolean(vehicle)
+      && typeof vehicle.id === "string"
+      && Boolean(vehicle.id.trim())
+      && typeof vehicle.label === "string"
+      && Boolean(vehicle.label.trim())
+      && Boolean(vehicle.layout)
+      && Array.isArray(vehicle.layout.rows),
+    )
+    : [];
+
+  if (vehicles.length) return vehicles;
+  return [{
+    id: DEFAULT_SEAT_VEHICLE_ID,
+    label: "Hiace 1",
+    layout: config.layout,
+    unavailable: config.unavailable,
+    taken: config.taken,
+  }];
+}
 
 export type ItineraryStop = {
   /** e.g. "Day 1" — written as supplied. */

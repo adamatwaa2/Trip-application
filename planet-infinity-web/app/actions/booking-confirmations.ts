@@ -41,6 +41,7 @@ type ConfirmationRow = {
     accommodation: string | null;
     transportation: string | null;
     options: unknown;
+    booking_form_fields: unknown;
   } | null;
   event: {
     title: string;
@@ -98,6 +99,63 @@ function selectedTripDates(options: unknown, selections: Record<string, unknown>
   return null;
 }
 
+type PaidExtra = { label: string; amount: number };
+
+function normaliseServiceLabel(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function selectedPaidExtras(
+  fields: unknown,
+  selections: Record<string, unknown>,
+  guestCount: number,
+): { extras: PaidExtra[]; selectedLabels: string[] } {
+  const answers = asRecord(selections.customAnswers);
+  const extras: PaidExtra[] = [];
+  const selectedLabels: string[] = [];
+
+  for (const field of Array.isArray(fields) ? fields.map(asRecord) : []) {
+    const fieldId = typeof field.id === "string" ? field.id : "";
+    const fieldType = typeof field.type === "string" ? field.type : "";
+    if (!fieldId) continue;
+    const options = Array.isArray(field.options) ? field.options.map(asRecord) : [];
+    const answer = answers[fieldId];
+
+    if (fieldType === "quantity") {
+      const quantities = asRecord(answer);
+      for (const option of options) {
+        const optionId = typeof option.id === "string" ? option.id : "";
+        const label = typeof option.label === "string" ? option.label.trim() : "";
+        const quantity = Math.max(0, Math.floor(Number(quantities[optionId]) || 0));
+        if (!optionId || !label || quantity < 1) continue;
+        selectedLabels.push(label);
+        const price = Math.max(0, Number(option.priceEgp) || 0);
+        if (price > 0) extras.push({ label: `${label} × ${quantity}`, amount: price * quantity });
+      }
+      continue;
+    }
+
+    const selectedIds = Array.isArray(answer)
+      ? answer.filter((value): value is string => typeof value === "string")
+      : typeof answer === "string" ? [answer] : [];
+    for (const option of options) {
+      const optionId = typeof option.id === "string" ? option.id : "";
+      const label = typeof option.label === "string" ? option.label.trim() : "";
+      if (!optionId || !label || !selectedIds.includes(optionId)) continue;
+      selectedLabels.push(label);
+      const price = Math.max(0, Number(option.priceEgp) || 0);
+      if (price > 0) {
+        extras.push({
+          label: guestCount > 1 ? `${label} × ${guestCount}` : label,
+          amount: price * Math.max(1, guestCount),
+        });
+      }
+    }
+  }
+
+  return { extras, selectedLabels };
+}
+
 function confirmationData(row: ConfirmationRow): BookingConfirmationPdfData {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const trip = row.trip;
@@ -106,6 +164,18 @@ function confirmationData(row: ConfirmationRow): BookingConfirmationPdfData {
   const totalAmount = Number(row.total_amount);
   const selectedDates = selectedTripDates(trip?.options, row.selections ?? {});
   const pickupPoint = selectedResponse(row.selections ?? {}, "pickup-point");
+  const paidSelections = selectedPaidExtras(
+    trip?.booking_form_fields,
+    row.selections ?? {},
+    row.guest_count,
+  );
+  const exclusions = (trip?.exclusions ?? event?.exclusions ?? []).filter((item) => {
+    const exclusion = normaliseServiceLabel(item);
+    return !paidSelections.selectedLabels.some((selected) => {
+      const service = normaliseServiceLabel(selected);
+      return service && (exclusion.includes(service) || service.includes(exclusion));
+    });
+  });
 
   return {
     bookingNumber: row.booking_number,
@@ -129,7 +199,8 @@ function confirmationData(row: ConfirmationRow): BookingConfirmationPdfData {
     returnPoint: trip?.return_point,
     packageLabel: trip?.package_label,
     inclusions: trip?.inclusions ?? event?.inclusions ?? [],
-    exclusions: trip?.exclusions ?? event?.exclusions ?? [],
+    exclusions,
+    paidExtras: paidSelections.extras,
     accommodation: trip?.accommodation,
     transportation: trip?.transportation,
     seatNumbers: asSeatNumbers(row.selections ?? {}),
@@ -175,7 +246,7 @@ export async function generateBookingConfirmation(
       customer:customers(full_name, email, phone),
       trip:trips(title, destination, duration_label, return_at, meeting_point,
         departure_point, return_point, package_label, inclusions, exclusions,
-        accommodation, transportation, options),
+        accommodation, transportation, options, booking_form_fields),
       event:events(title, venue, ends_at, inclusions, exclusions),
       guests:booking_guests(full_name, is_primary)
     `)

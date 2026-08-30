@@ -31,6 +31,7 @@ export type BookingConfirmationPdfData = {
   packageLabel?: string | null;
   inclusions: string[];
   exclusions: string[];
+  paidExtras: { label: string; amount: number }[];
   accommodation?: string | null;
   transportation?: string | null;
   seatNumbers?: number[];
@@ -125,6 +126,16 @@ const styles = StyleSheet.create({
   listItem: { flexDirection: "row", gap: 6, marginBottom: 5 },
   bulletIn: { color: colors.green, fontFamily: "Helvetica-Bold" },
   bulletOut: { color: colors.flame, fontFamily: "Helvetica-Bold" },
+  paidExtra: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 12,
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.line,
+  },
+  paidExtraLast: { borderBottomWidth: 0 },
+  paidExtraAmount: { color: colors.green, fontFamily: "Helvetica-Bold" },
   notice: {
     marginTop: 10,
     padding: 11,
@@ -252,6 +263,19 @@ function BookingConfirmationDocument({ data }: { data: BookingConfirmationPdfDat
           <Text style={styles.referenceValue}>{data.bookingNumber}</Text>
         </View>
 
+        {data.paidExtras.length ? (
+          <View style={styles.section} wrap={false}>
+            <Text style={styles.sectionKicker}>PAID EXTRAS</Text>
+            <Text style={styles.sectionTitle}>Included in your booking</Text>
+            {data.paidExtras.map((item, index) => (
+              <View key={`${item.label}-${index}`} style={[styles.paidExtra, index === data.paidExtras.length - 1 ? styles.paidExtraLast : {}]}>
+                <Text>{item.label}</Text>
+                <Text style={styles.paidExtraAmount}>{money(item.amount, data.currency)}</Text>
+              </View>
+            ))}
+          </View>
+        ) : null}
+
         <View style={styles.section} wrap={false}>
           <View style={styles.columns}>
             <View style={styles.column}>
@@ -263,7 +287,7 @@ function BookingConfirmationDocument({ data }: { data: BookingConfirmationPdfDat
             </View>
             <View style={styles.column}>
               <Text style={styles.sectionKicker}>NOT INCLUDED</Text>
-              <Text style={styles.sectionTitle}>Guest responsibility</Text>
+              <Text style={styles.sectionTitle}>Not selected</Text>
               {data.exclusions.length ? data.exclusions.map((item) => (
                 <View key={item} style={styles.listItem}><Text style={styles.bulletOut}>—</Text><Text>{item}</Text></View>
               )) : <Text>Anything not expressly listed as included.</Text>}
