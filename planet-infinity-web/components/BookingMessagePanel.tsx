@@ -11,6 +11,7 @@ export function BookingMessagePanel({
   customerName,
   phone,
   paymentUrl,
+  confirmationUrl,
   bookingTitle,
   guestCount,
   totalAmount,
@@ -20,13 +21,14 @@ export function BookingMessagePanel({
   customerName: string;
   phone: string | null;
   paymentUrl: string;
+  confirmationUrl: string | null;
   bookingTitle: string;
   guestCount: number;
   totalAmount: number;
   confirmationIssued: boolean;
 }) {
   const initial = confirmationIssued
-    ? `Hello ${customerName}, your Planet Infinity Booking Confirmation is ready.\n\nBooking: ${bookingNumber}\nExperience: ${bookingTitle}\nGuests: ${guestCount}\nAmount recorded: ${totalAmount.toLocaleString("en-EG")} EGP\nStatus: Confirmed\n\nYour Booking Confirmation PDF is attached to this message. Please keep it for your records.\n\nThank you,\nPlanet Infinity`
+    ? `Hello ${customerName}, your Planet Infinity Booking Confirmation is ready.\n\nBooking: ${bookingNumber}\nExperience: ${bookingTitle}\nGuests: ${guestCount}\nAmount recorded: ${totalAmount.toLocaleString("en-EG")} EGP\nStatus: Confirmed\n\nReview your booking: ${paymentUrl}${confirmationUrl ? `\nDownload your Booking Confirmation PDF: ${confirmationUrl}` : ""}\n\nPlease keep the PDF for your records.\n\nThank you,\nPlanet Infinity`
     : `Hello ${customerName}, this is Planet Infinity regarding booking ${bookingNumber}. Your booking is awaiting payment verification. You can review the balance and payment instructions here: ${paymentUrl}`;
   const [message, setMessage] = useState(initial);
   const number = whatsappNumber(phone);
@@ -40,7 +42,7 @@ export function BookingMessagePanel({
       <h3>Message this customer</h3>
       <p className="pi-admin-help">
         {confirmationIssued
-          ? "This is the final confirmation message. Download the PDF above, attach it in WhatsApp, then send this message."
+          ? "This final message already includes the customer's secure booking page and PDF download link. You may also download the PDF above and attach it directly."
           : "Manual messages are available for every booking. WhatsApp opt-in only affects automatic template delivery; it does not block your team from opening a chat."}
       </p>
       <textarea aria-label="WhatsApp message" value={message} onChange={(event) => setMessage(event.target.value)} maxLength={1500} />

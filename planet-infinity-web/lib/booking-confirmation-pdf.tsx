@@ -55,19 +55,19 @@ const colors = {
 
 const styles = StyleSheet.create({
   page: {
-    padding: 38,
-    paddingBottom: 54,
+    padding: 28,
+    paddingBottom: 40,
     backgroundColor: colors.ivory,
     color: colors.ink,
     fontFamily: "Helvetica",
-    fontSize: 10,
-    lineHeight: 1.5,
+    fontSize: 9,
+    lineHeight: 1.35,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 30,
+    marginBottom: 16,
   },
   brand: { flexDirection: "row", alignItems: "center", gap: 9 },
   mark: {
@@ -86,16 +86,16 @@ const styles = StyleSheet.create({
   referenceLabel: { color: colors.soft, fontSize: 7, letterSpacing: 1.2 },
   referenceValue: { fontFamily: "Helvetica-Bold", fontSize: 12 },
   hero: {
-    padding: 24,
+    padding: 18,
     borderRadius: 18,
     backgroundColor: colors.ink,
     color: colors.white,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   kicker: { color: colors.orange, fontSize: 8, letterSpacing: 1.5, marginBottom: 8 },
-  title: { fontFamily: "Helvetica-Bold", fontSize: 30, lineHeight: 1.02, maxWidth: 410 },
-  lede: { color: "#DCE8EC", fontSize: 11, marginTop: 12, maxWidth: 430 },
-  statusRow: { flexDirection: "row", gap: 8, marginTop: 18 },
+  title: { fontFamily: "Helvetica-Bold", fontSize: 24, lineHeight: 1.02, maxWidth: 410 },
+  lede: { color: "#DCE8EC", fontSize: 9, marginTop: 8, maxWidth: 430 },
+  statusRow: { flexDirection: "row", gap: 8, marginTop: 10 },
   status: {
     borderRadius: 99,
     paddingVertical: 5,
@@ -106,18 +106,18 @@ const styles = StyleSheet.create({
     fontSize: 8,
   },
   section: {
-    marginTop: 14,
-    padding: 18,
+    marginTop: 8,
+    padding: 12,
     borderRadius: 14,
     borderWidth: 1,
     borderColor: colors.line,
     backgroundColor: colors.white,
   },
   sectionKicker: { color: colors.flame, fontSize: 7, letterSpacing: 1.2, marginBottom: 4 },
-  sectionTitle: { fontFamily: "Helvetica-Bold", fontSize: 17, marginBottom: 12 },
-  grid: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
-  field: { width: "47%", minHeight: 38 },
-  wideField: { width: "100%", minHeight: 38 },
+  sectionTitle: { fontFamily: "Helvetica-Bold", fontSize: 14, marginBottom: 8 },
+  grid: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  field: { width: "48%", minHeight: 28 },
+  wideField: { width: "100%", minHeight: 28 },
   label: { color: colors.soft, fontSize: 7, letterSpacing: 0.8, marginBottom: 3 },
   value: { fontFamily: "Helvetica-Bold", fontSize: 10 },
   columns: { flexDirection: "row", gap: 12 },
@@ -126,8 +126,8 @@ const styles = StyleSheet.create({
   bulletIn: { color: colors.green, fontFamily: "Helvetica-Bold" },
   bulletOut: { color: colors.flame, fontFamily: "Helvetica-Bold" },
   notice: {
-    marginTop: 16,
-    padding: 14,
+    marginTop: 10,
+    padding: 11,
     borderRadius: 12,
     backgroundColor: "#E7F5FA",
     color: colors.ink,
@@ -136,9 +136,9 @@ const styles = StyleSheet.create({
   legalLink: { color: colors.cyan, textDecoration: "none" },
   footer: {
     position: "absolute",
-    bottom: 24,
-    left: 38,
-    right: 38,
+    bottom: 16,
+    left: 28,
+    right: 28,
     flexDirection: "row",
     justifyContent: "space-between",
     color: colors.soft,
@@ -186,7 +186,7 @@ function BookingConfirmationDocument({ data }: { data: BookingConfirmationPdfDat
       creator="Planet Infinity Admin"
     >
       <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
+        <View style={styles.header} wrap={false}>
           <View style={styles.brand}>
             <Text style={styles.mark}>∞</Text>
             <View>
@@ -200,7 +200,7 @@ function BookingConfirmationDocument({ data }: { data: BookingConfirmationPdfDat
           </View>
         </View>
 
-        <View style={styles.hero}>
+        <View style={styles.hero} wrap={false}>
           <Text style={styles.kicker}>BOOKING CONFIRMATION</Text>
           <Text style={styles.title}>Your {data.productType.toLowerCase()} is confirmed.</Text>
           <Text style={styles.lede}>
@@ -213,7 +213,7 @@ function BookingConfirmationDocument({ data }: { data: BookingConfirmationPdfDat
           </View>
         </View>
 
-        <View style={styles.section}>
+        <View style={styles.section} wrap={false}>
           <Text style={styles.sectionKicker}>GUEST DETAILS</Text>
           <Text style={styles.sectionTitle}>Who is travelling</Text>
           <View style={styles.grid}>
@@ -230,7 +230,7 @@ function BookingConfirmationDocument({ data }: { data: BookingConfirmationPdfDat
           </View>
         </View>
 
-        <View style={styles.section}>
+        <View style={styles.section} wrap={false}>
           <Text style={styles.sectionKicker}>{data.productType.toUpperCase()} DETAILS</Text>
           <Text style={styles.sectionTitle}>{data.productTitle}</Text>
           <View style={styles.grid}>
@@ -247,12 +247,12 @@ function BookingConfirmationDocument({ data }: { data: BookingConfirmationPdfDat
       </Page>
 
       <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
+        <View style={styles.header} wrap={false}>
           <View><Text style={styles.sectionKicker}>PACKAGE SCOPE</Text><Text style={styles.sectionTitle}>What your booking contains</Text></View>
           <Text style={styles.referenceValue}>{data.bookingNumber}</Text>
         </View>
 
-        <View style={styles.section}>
+        <View style={styles.section} wrap={false}>
           <View style={styles.columns}>
             <View style={styles.column}>
               <Text style={styles.sectionKicker}>INCLUDED</Text>
@@ -271,7 +271,7 @@ function BookingConfirmationDocument({ data }: { data: BookingConfirmationPdfDat
           </View>
         </View>
 
-        <View style={styles.section}>
+        <View style={styles.section} wrap={false}>
           <Text style={styles.sectionKicker}>TRAVEL SERVICES</Text>
           <Text style={styles.sectionTitle}>Confirmed arrangements</Text>
           <View style={styles.grid}>
@@ -282,7 +282,7 @@ function BookingConfirmationDocument({ data }: { data: BookingConfirmationPdfDat
           </View>
         </View>
 
-        <View style={styles.section}>
+        <View style={styles.section} wrap={false}>
           <Text style={styles.sectionKicker}>PAYMENT</Text>
           <Text style={styles.sectionTitle}>Payment summary</Text>
           <View style={styles.grid}>
@@ -296,12 +296,12 @@ function BookingConfirmationDocument({ data }: { data: BookingConfirmationPdfDat
       </Page>
 
       <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
+        <View style={styles.header} wrap={false}>
           <View><Text style={styles.sectionKicker}>BEFORE YOU TRAVEL</Text><Text style={styles.sectionTitle}>Important information</Text></View>
           <Text style={styles.referenceValue}>{data.bookingNumber}</Text>
         </View>
 
-        <View style={styles.section}>
+        <View style={styles.section} wrap={false}>
           <Text style={styles.sectionTitle}>Please arrive early</Text>
           <Text>
             Arrive at the confirmed meeting point at least 15 minutes before the
@@ -310,7 +310,7 @@ function BookingConfirmationDocument({ data }: { data: BookingConfirmationPdfDat
           </Text>
         </View>
 
-        <View style={styles.section}>
+        <View style={styles.section} wrap={false}>
           <Text style={styles.sectionTitle}>Your accepted policies</Text>
           <Text>
             This booking is governed by the policy versions accepted with the
@@ -322,7 +322,7 @@ function BookingConfirmationDocument({ data }: { data: BookingConfirmationPdfDat
           </Text>
         </View>
 
-        <View style={styles.notice}>
+        <View style={styles.notice} wrap={false}>
           <Text style={styles.noticeTitle}>Keep the booking reference with you</Text>
           <Text>
             Quote {data.bookingNumber} whenever you contact Planet Infinity.
@@ -331,7 +331,7 @@ function BookingConfirmationDocument({ data }: { data: BookingConfirmationPdfDat
           </Text>
         </View>
 
-        <View style={styles.section}>
+        <View style={styles.section} wrap={false}>
           <Text style={styles.sectionKicker}>FINAL CONFIRMATION</Text>
           <Text style={styles.sectionTitle}>You are booked.</Text>
           <Text>

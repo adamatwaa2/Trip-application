@@ -236,6 +236,7 @@ export async function submitPublicTripBooking(input: PublicTripBookingInput): Pr
   });
 
   if (error || !data?.[0]?.booking_number) {
+    console.error("[submitPublicTripBooking]", error);
     return { ok: false, error: publicBookingError(error?.message) };
   }
   return { ok: true, bookingNumber: data[0].booking_number };

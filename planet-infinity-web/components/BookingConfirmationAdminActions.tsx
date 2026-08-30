@@ -9,12 +9,14 @@ import {
 
 export function BookingConfirmationAdminActions({
   bookingId,
+  bookingNumber,
   servicesConfirmed,
   fullyPaid,
   confirmationReady,
   confirmationIssued,
 }: {
   bookingId: string;
+  bookingNumber: string;
   servicesConfirmed: boolean;
   fullyPaid: boolean;
   confirmationReady: boolean;
@@ -64,8 +66,8 @@ export function BookingConfirmationAdminActions({
       ) : null}
 
       {confirmationIssued ? (
-        <a className="pi-admin-download" href={`/admin/bookings/${bookingId}/confirmation`}>
-          Download current Booking Confirmation
+        <a className="pi-admin-button pi-admin-download" href={`/admin/bookings/${bookingId}/confirmation`} download={`${bookingNumber}-confirmation.pdf`}>
+          Download Booking Confirmation PDF
         </a>
       ) : null}
 

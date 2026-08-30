@@ -40,7 +40,7 @@ body:has(.pi-admin) > main { min-height: 100vh; }
 .pi-admin-checklist p span { display: inline-grid; width: 24px; height: 24px; place-items: center; border: 1px solid var(--pi-line); border-radius: 999px; font-size: 12px; font-weight: 800; }
 .pi-admin-checklist p.is-done { color: #1d6d43; font-weight: 700; }
 .pi-admin-button--secondary { background: var(--pi-ink); }
-.pi-admin-download { font-weight: 800; color: var(--pi-cyan); }
+.pi-admin-download { background: #168fb5; color: #fff; text-decoration: none; }
 .pi-admin-switch { padding: 12px 14px; border: 1px solid var(--pi-line); border-radius: 12px; background: #fff; }
 .pi-admin-switch input { accent-color: var(--pi-orange); }
 .pi-admin-upload { position: relative; display: inline-flex !important; width: fit-content; min-height: 40px; margin: 0 !important; padding: 10px 15px; align-items: center; justify-content: center; border: 1px solid var(--pi-ink); border-radius: 12px; background: #fff; cursor: pointer; font-size: 13px !important; font-weight: 800 !important; }

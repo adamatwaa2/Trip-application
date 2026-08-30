@@ -922,6 +922,8 @@
   border: 1px solid var(--pi-line);
   border-radius: 999px;
   background: var(--pi-ivory);
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .pi-stepper button {
   min-height: 38px;
@@ -939,7 +941,8 @@
   margin: var(--pi-s2) 0;
   padding: var(--pi-s3);
   border-radius: var(--pi-r-card);
-  background: linear-gradient(135deg, #eefaff, #c5edf7);
+  border: 1px solid #f2b33b;
+  background: linear-gradient(135deg, #fff8df, #ffd464);
 }
 .pi-guest-roster__head {
   display: flex;
@@ -971,8 +974,11 @@
 .pi-guest-card legend { padding: 0 7px; font-weight: 800; }
 .pi-guest-card label { align-self: end; }
 @media (max-width: 640px) {
-  .pi-quantity-option { align-items: flex-start; }
-  .pi-quantity-option__controls { justify-items: start; }
+  .pi-quantity-option { min-width: 0; align-items: stretch; flex-direction: column; }
+  .pi-quantity-option__details,
+  .pi-quantity-option__controls { width: 100%; min-width: 0; }
+  .pi-quantity-option__controls { justify-items: stretch; }
+  .pi-stepper { width: 100%; grid-template-columns: minmax(44px, 1fr) 52px minmax(44px, 1fr); }
   .pi-guest-card { grid-template-columns: 1fr; }
   .pi-guest-roster__head { flex-direction: column; }
 }

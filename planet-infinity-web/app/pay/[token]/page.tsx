@@ -40,6 +40,8 @@ type PublicPaymentBooking = {
   status: string;
   total_amount: number;
   amount_paid: number;
+  confirmation_issued_at: string | null;
+  confirmation_pdf_path: string | null;
   currency: string;
   event: { title: string } | null;
   guest_count: number;
@@ -56,7 +58,7 @@ export default async function PaymentPage({ params }: { params: Promise<{ token:
   const supabase = createServiceClient();
   const { data } = await supabase
     .from("bookings")
-    .select("id, trip_id, booking_number, status, total_amount, amount_paid, currency, guest_count, scheduled_at, selections, trip:trips(title, seat_selection_enabled, seat_config), event:events(title), payments(status, payment_proof_path)")
+    .select("id, trip_id, booking_number, status, total_amount, amount_paid, confirmation_issued_at, confirmation_pdf_path, currency, guest_count, scheduled_at, selections, trip:trips(title, seat_selection_enabled, seat_config), event:events(title), payments(status, payment_proof_path)")
     .eq("payment_token", token)
     .maybeSingle();
   if (!data) notFound();
@@ -67,6 +69,7 @@ export default async function PaymentPage({ params }: { params: Promise<{ token:
     (payment) => payment.status === "pending" && Boolean(payment.payment_proof_path),
   );
   const subject = booking.trip?.title ?? booking.event?.title ?? "Planet Infinity booking";
+  const confirmationIssued = Boolean(booking.confirmation_issued_at && booking.confirmation_pdf_path);
   const selectedSeats = Array.isArray(booking.selections?.seats) ? booking.selections.seats.map(Number).filter(Number.isInteger) : [];
   let seatConfig = booking.trip?.seat_config ?? null;
   if (seatConfig && booking.trip?.seat_selection_enabled) {
@@ -81,8 +84,8 @@ export default async function PaymentPage({ params }: { params: Promise<{ token:
     <main className={styles.page}>
       <section className={styles.card}>
         <p className={styles.kicker}>Planet Infinity · Secure checkout</p>
-        <h1>{proofAwaitingVerification ? "Payment received." : "Pay your booking."}</h1>
-        <p className={styles.intro}>{proofAwaitingVerification ? "We received your payment receipt. Your booking is waiting for verification — you do not need to submit or pay again." : "Review the confirmed balance below. Use the available payment method and keep your booking number as the transfer reference."}</p>
+        <h1>{confirmationIssued ? "Booking confirmed." : proofAwaitingVerification ? "Payment received." : balance <= 0 ? "Payment verified." : "Pay your booking."}</h1>
+        <p className={styles.intro}>{confirmationIssued ? "Everything is complete. Your final Booking Confirmation PDF is ready below." : proofAwaitingVerification ? "We received your payment receipt. Your booking is waiting for verification — you do not need to submit or pay again." : balance <= 0 ? "Your payment has been recorded. We are completing the final service confirmation." : "Review the confirmed balance below. Use the available payment method and keep your booking number as the transfer reference."}</p>
         <dl className={styles.details}>
           <div><dt>Booking</dt><dd>{booking.booking_number}</dd></div>
           <div><dt>Trip / event</dt><dd>{subject}</dd></div>
@@ -91,11 +94,18 @@ export default async function PaymentPage({ params }: { params: Promise<{ token:
         </dl>
         {booking.status === "cancelled" ? (
           <p className={styles.unavailable}>This booking has been cancelled.</p>
+        ) : confirmationIssued ? (
+          <section className={styles.confirmed} aria-label="Booking confirmation ready">
+            <p><strong>✓ Payment verified</strong></p>
+            <p><strong>✓ Services confirmed</strong></p>
+            <p><strong>✓ Booking Confirmation issued</strong></p>
+            <a className={styles.downloadButton} href={`/pay/${token}/confirmation`} download={`${booking.booking_number}-confirmation.pdf`}>Download Booking Confirmation PDF</a>
+          </section>
         ) : proofAwaitingVerification ? (
           <p className={styles.awaiting}><strong>Receipt awaiting verification</strong><span>Our team will confirm the payment after checking the receiving account. We will then update your booking.</span></p>
         ) : balance <= 0 ? (
           <>
-            <p className={styles.unavailable}>This booking is already paid in full.</p>
+            <p className={styles.awaiting}><strong>Payment verified</strong><span>We are confirming the final trip services. Your Booking Confirmation PDF will appear here as soon as it is issued.</span></p>
             {seatConfig && booking.trip?.seat_selection_enabled ? <PaidSeatSelection paymentToken={token} guestCount={booking.guest_count} config={seatConfig} currentSeats={selectedSeats} /> : null}
           </>
         ) : (

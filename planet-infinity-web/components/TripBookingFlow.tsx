@@ -401,7 +401,7 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
             {isPending
               ? "Sending…"
               : trip.bookingMode === "booking"
-                ? "Send booking for payment verification"
+                ? "Complete booking"
                 : "Send for confirmation"}
           </Button>
         )}

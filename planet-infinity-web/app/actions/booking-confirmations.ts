@@ -40,6 +40,7 @@ type ConfirmationRow = {
     exclusions: string[];
     accommodation: string | null;
     transportation: string | null;
+    options: unknown;
   } | null;
   event: {
     title: string;
@@ -69,12 +70,42 @@ function asSeatNumbers(selections: Record<string, unknown>): number[] {
     .sort((a, b) => a - b);
 }
 
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
+}
+
+function selectedResponse(selections: Record<string, unknown>, id: string): string | null {
+  const responses = Array.isArray(selections.customResponses) ? selections.customResponses : [];
+  const match = responses.map(asRecord).find((response) => response.id === id);
+  const answer = match?.answer;
+  if (Array.isArray(answer)) return answer.filter((item): item is string => typeof item === "string").join(" · ") || null;
+  return typeof answer === "string" && answer.trim() ? answer.trim() : null;
+}
+
+function selectedTripDates(options: unknown, selections: Record<string, unknown>) {
+  const selected = asRecord(selections.selected);
+  const groups = Array.isArray(options) ? options.map(asRecord) : [];
+  for (const group of groups) {
+    if (group.kind !== "date" || typeof group.id !== "string") continue;
+    const choiceId = selected[group.id];
+    const choices = Array.isArray(group.choices) ? group.choices.map(asRecord) : [];
+    const choice = choices.find((item) => item.id === choiceId);
+    if (choice) return {
+      returnAt: typeof choice.returnAt === "string" ? choice.returnAt : null,
+      duration: typeof choice.duration === "string" ? choice.duration : null,
+    };
+  }
+  return null;
+}
+
 function confirmationData(row: ConfirmationRow): BookingConfirmationPdfData {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const trip = row.trip;
   const event = row.event;
   const amountPaid = Number(row.amount_paid);
   const totalAmount = Number(row.total_amount);
+  const selectedDates = selectedTripDates(trip?.options, row.selections ?? {});
+  const pickupPoint = selectedResponse(row.selections ?? {}, "pickup-point");
 
   return {
     bookingNumber: row.booking_number,
@@ -91,10 +122,10 @@ function confirmationData(row: ConfirmationRow): BookingConfirmationPdfData {
     productTitle: trip?.title ?? event?.title ?? "Planet Infinity booking",
     destination: trip?.destination ?? event?.venue,
     scheduledAt: row.scheduled_at,
-    returnAt: trip?.return_at ?? event?.ends_at,
-    duration: trip?.duration_label,
-    meetingPoint: trip?.meeting_point ?? event?.venue,
-    departurePoint: trip?.departure_point,
+    returnAt: selectedDates?.returnAt ?? trip?.return_at ?? event?.ends_at,
+    duration: selectedDates?.duration ?? (trip ? "2 days / 1 night" : undefined),
+    meetingPoint: pickupPoint ?? (trip ? "Pickup point not recorded — confirm with Planet Infinity" : event?.venue),
+    departurePoint: pickupPoint ?? trip?.departure_point,
     returnPoint: trip?.return_point,
     packageLabel: trip?.package_label,
     inclusions: trip?.inclusions ?? event?.inclusions ?? [],
@@ -144,7 +175,7 @@ export async function generateBookingConfirmation(
       customer:customers(full_name, email, phone),
       trip:trips(title, destination, duration_label, return_at, meeting_point,
         departure_point, return_point, package_label, inclusions, exclusions,
-        accommodation, transportation),
+        accommodation, transportation, options),
       event:events(title, venue, ends_at, inclusions, exclusions),
       guests:booking_guests(full_name, is_primary)
     `)
