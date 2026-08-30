@@ -144,6 +144,7 @@ export default async function BookingDetailPage({
             confirmationIssued={Boolean(booking.confirmation_issued_at)}
           />
           <BookingMessagePanel
+            key={booking.confirmation_issued_at ?? "pending"}
             bookingNumber={booking.booking_number}
             customerName={booking.customer?.full_name ?? "there"}
             phone={booking.customer?.phone ?? null}
