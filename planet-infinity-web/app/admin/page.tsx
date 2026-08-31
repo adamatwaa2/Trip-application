@@ -2,23 +2,30 @@ import Link from "next/link";
 import { AdminRequestTable } from "@/components/AdminRequestTable";
 import { AdminShell } from "@/components/AdminShell";
 import { getOverview, getRequests } from "@/lib/admin-requests";
+import { getBookings, getPayments } from "@/lib/admin-operations";
 import { requireAdmin } from "@/lib/admin";
 
 export const metadata = { title: "Admin overview" };
 
 export default async function AdminOverviewPage() {
   const profile = await requireAdmin();
-  const [overview, latest] = await Promise.all([getOverview(), getRequests()]);
+  const [overview, latest, payments, bookings] = await Promise.all([getOverview(), getRequests(), getPayments(), getBookings()]);
+  const recordedPayments = payments.items
+    .filter((payment) => payment.status === "recorded")
+    .reduce((sum, payment) => sum + Number(payment.amount || 0), 0);
+  const remainingToCollect = bookings.items
+    .filter((booking) => booking.status !== "cancelled")
+    .reduce((sum, booking) => sum + Math.max(0, Number(booking.total_amount || 0) - Number(booking.amount_paid || 0)), 0);
   const cards = [
-    ["All requests", overview.all, "/admin/requests"],
-    ["Pending", overview.pending, "/admin/requests?status=pending"],
-    ["Accepted", overview.accepted, "/admin/requests?status=accepted"],
+    ["New requests", overview.pending, "/admin/requests?status=pending"],
     ["Bookings", overview.bookings, "/admin/bookings"],
+    ["Payments recorded", `${recordedPayments.toLocaleString("en-US")} EGP`, "/admin/payments"],
+    ["Remaining to collect", `${remainingToCollect.toLocaleString("en-US")} EGP`, "/admin/payments"],
   ];
   return (
     <AdminShell profile={profile} current="/admin">
-      <header className="pi-admin-page-head"><p className="pi-admin-kicker">Overview</p><h1>The operation at a glance.</h1><p>Requests, bookings and payments remain connected without exposing customer data publicly.</p></header>
-      <section className="pi-admin-stats" aria-label="Request counts">
+      <header className="pi-admin-page-head"><p className="pi-admin-kicker">Overview</p><h1>The operation at a glance.</h1><p>Bookings, customer activity and money recorded — all in one private dashboard.</p></header>
+      <section className="pi-admin-stats" aria-label="Operational and payment summary">
         {cards.map(([label, count, href]) => <Link href={href as string} key={label as string}><span>{label}</span><strong>{count}</strong></Link>)}
       </section>
       <section className="pi-admin-section">

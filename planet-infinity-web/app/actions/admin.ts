@@ -9,6 +9,7 @@ import {
   validateCatalogMedia,
 } from "@/lib/catalog-media";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient, isSupabaseServiceConfigured } from "@/lib/supabase/service";
 import {
   normaliseBookingFormFields,
   type BookingFormField,
@@ -24,6 +25,39 @@ const CATALOG_MEDIA_BUCKET = "catalog-media";
 
 function text(value: string, max = 2000) { return value.trim().slice(0, max); }
 export type ActionResult = { ok: true } | { ok: false; error: string };
+
+export async function inviteAdmin(input: { fullName: string; email: string }): Promise<ActionResult> {
+  await requireAdmin();
+  const fullName = text(input.fullName, 120);
+  const email = text(input.email, 254).toLowerCase();
+  if (fullName.length < 2 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    return { ok: false, error: "Enter a name and a valid email address." };
+  }
+  if (!isSupabaseServiceConfigured()) {
+    return { ok: false, error: "Administrator invitations need the Supabase server key to be configured." };
+  }
+
+  const supabase = createServiceClient();
+  const appUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://planetinfinity.online").replace(/\/$/, "");
+  const { data, error } = await supabase.auth.admin.inviteUserByEmail(email, {
+    data: { full_name: fullName },
+    redirectTo: `${appUrl}/admin`,
+  });
+  if (error || !data.user?.id) {
+    return { ok: false, error: error?.message || "The administrator invitation could not be sent." };
+  }
+  const { error: profileError } = await supabase.from("admin_users").upsert({
+    id: data.user.id,
+    full_name: fullName,
+    role: "admin",
+    is_active: true,
+  });
+  if (profileError) {
+    return { ok: false, error: "The invitation was created, but access could not be granted. Please try again." };
+  }
+  revalidatePath("/admin/team");
+  return { ok: true };
+}
 
 type CatalogMediaInput = {
   hero?: string;

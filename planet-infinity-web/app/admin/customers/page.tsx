@@ -26,8 +26,8 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
     return (!query || searchable.includes(query)) && (!stage || customerStage(item) === stage);
   });
   const totalValue = result.items.reduce((sum, item) => sum + customerTotals(item).value, 0);
-  const qualifiedCount = result.items.filter((item) => ["qualified", "booked", "returning"].includes(customerStage(item))).length;
-  const bookedCount = result.items.filter((item) => item.bookings.some((booking) => booking.status !== "cancelled")).length;
+  const totalPaid = result.items.reduce((sum, item) => sum + customerTotals(item).paid, 0);
+  const totalRemaining = Math.max(0, totalValue - totalPaid);
 
   return (
     <AdminShell profile={profile} current="/admin/customers">
@@ -40,8 +40,8 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
       <section className="pi-admin-stats pi-admin-stats--crm" aria-label="CRM summary">
         <Link href="/admin/customers"><span>Total customers</span><strong>{result.items.length}</strong></Link>
         <Link href="/admin/customers?stage=lead"><span>Open leads</span><strong>{result.items.filter((item) => customerStage(item) === "lead").length}</strong></Link>
-        <Link href="/admin/customers?stage=qualified"><span>Qualified or booked</span><strong>{qualifiedCount}</strong></Link>
-        <Link href="/admin/customers?stage=booked"><span>Customers booked</span><strong>{bookedCount}</strong></Link>
+        <Link href="/admin/payments"><span>Payments recorded</span><strong>{totalPaid.toLocaleString("en-US")} EGP</strong></Link>
+        <Link href="/admin/payments"><span>Still to collect</span><strong>{totalRemaining.toLocaleString("en-US")} EGP</strong></Link>
       </section>
 
       <form className="pi-admin-filters pi-admin-filters--crm" action="/admin/customers">
@@ -55,12 +55,12 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
       </form>
 
       <section className="pi-admin-section">
-        <div className="pi-admin-section__head"><h2>{items.length} customer{items.length === 1 ? "" : "s"}</h2><span className="pi-admin-count">{totalValue.toLocaleString("en-US")} EGP lifetime booking value</span></div>
+        <div className="pi-admin-section__head"><h2>{items.length} customer{items.length === 1 ? "" : "s"}</h2><span className="pi-admin-count">{totalValue.toLocaleString("en-US")} EGP total booking value</span></div>
         {result.error ? <p className="pi-admin-error">{result.error}</p> : items.length ? (
           <>
-            <div className="pi-admin-table-wrap pi-admin-desktop-list"><table className="pi-admin-table"><thead><tr><th>Customer</th><th>Stage</th><th>Latest interest</th><th>Requests</th><th>Bookings</th><th>Value</th><th>Last activity</th></tr></thead><tbody>{items.map((item) => {
+            <div className="pi-admin-table-wrap pi-admin-desktop-list"><table className="pi-admin-table"><thead><tr><th>Customer</th><th>Stage</th><th>Latest interest</th><th>Requests</th><th>Bookings</th><th>Booked / paid</th><th>Remaining</th><th>Last activity</th></tr></thead><tbody>{items.map((item) => {
               const totals = customerTotals(item); const itemStage = customerStage(item);
-              return <tr key={item.id}><td><Link href={`/admin/customers/${item.id}`}>{item.full_name}</Link><span>{item.email}<br />{item.phone ?? "No phone"}</span></td><td><span className={`pi-admin-status pi-admin-status--crm-${itemStage}`}>{itemStage}</span></td><td>{customerSubject(item)}</td><td>{item.requests.length}</td><td>{item.bookings.length}</td><td>{totals.value.toLocaleString("en-US")} EGP<span>{totals.paid.toLocaleString("en-US")} paid</span></td><td>{formatDate(customerLastActivity(item))}</td></tr>;
+              return <tr key={item.id}><td><Link href={`/admin/customers/${item.id}`}>{item.full_name}</Link><span>{item.email}<br />{item.phone ?? "No phone"}</span></td><td><span className={`pi-admin-status pi-admin-status--crm-${itemStage}`}>{itemStage}</span></td><td>{customerSubject(item)}</td><td>{item.requests.length}</td><td>{item.bookings.length}</td><td>{totals.value.toLocaleString("en-US")} EGP<span>{totals.paid.toLocaleString("en-US")} paid</span></td><td>{Math.max(0, totals.value - totals.paid).toLocaleString("en-US")} EGP</td><td>{formatDate(customerLastActivity(item))}</td></tr>;
             })}</tbody></table></div>
             <div className="pi-admin-mobile-list" aria-label="Customers">{items.map((item) => {
               const totals = customerTotals(item); const itemStage = customerStage(item);

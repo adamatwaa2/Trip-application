@@ -1,6 +1,8 @@
 "use server";
 
+import { after } from "next/server";
 import { requireAdmin } from "@/lib/admin";
+import { sendAdminPush } from "@/lib/admin-push";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import {
@@ -208,6 +210,13 @@ export async function submitPublicRequest(input: PublicRequestInput): Promise<Re
   if (error || !data?.[0]?.request_number) {
     return { ok: false, error: publicError(error?.message) };
   }
+  after(async () => {
+    await sendAdminPush({
+      title: "New customer request",
+      body: `${data[0].request_number} is ready to review in the admin panel.`,
+      url: "/admin/requests",
+    });
+  });
   return { ok: true, requestNumber: data[0].request_number };
 }
 
@@ -239,6 +248,13 @@ export async function submitPublicTripBooking(input: PublicTripBookingInput): Pr
     console.error("[submitPublicTripBooking]", error);
     return { ok: false, error: publicBookingError(error?.message) };
   }
+  after(async () => {
+    await sendAdminPush({
+      title: "New booking awaiting verification",
+      body: `${data[0].booking_number} has a payment receipt to review.`,
+      url: "/admin/bookings",
+    });
+  });
   return { ok: true, bookingNumber: data[0].booking_number };
 }
 
