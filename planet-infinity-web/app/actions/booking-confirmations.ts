@@ -100,6 +100,7 @@ function selectedTripDates(options: unknown, selections: Record<string, unknown>
 }
 
 type PaidExtra = { label: string; amount: number };
+type BookingQuestion = { label: string; answer: string };
 
 function normaliseServiceLabel(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
@@ -156,6 +157,32 @@ function selectedPaidExtras(
   return { extras, selectedLabels };
 }
 
+function bookingQuestions(fields: unknown, selections: Record<string, unknown>): BookingQuestion[] {
+  const answers = asRecord(selections.customAnswers);
+  const output: BookingQuestion[] = [];
+  for (const field of Array.isArray(fields) ? fields.map(asRecord) : []) {
+    const id = typeof field.id === "string" ? field.id : "";
+    const label = typeof field.label === "string" ? field.label.trim() : "";
+    if (!id || !label) continue;
+    const options = Array.isArray(field.options) ? field.options.map(asRecord) : [];
+    const answer = answers[id];
+    if (field.type === "quantity") {
+      const quantities = asRecord(answer);
+      const text = options.map((option) => {
+        const optionId = typeof option.id === "string" ? option.id : "";
+        const optionLabel = typeof option.label === "string" ? option.label.trim() : optionId;
+        return `${optionLabel}: ${Math.max(0, Math.floor(Number(quantities[optionId]) || 0))}`;
+      }).join(" · ");
+      output.push({ label, answer: text || "0" });
+      continue;
+    }
+    const selectedIds = Array.isArray(answer) ? answer.filter((item): item is string => typeof item === "string") : typeof answer === "string" ? [answer] : [];
+    const selectedLabels = options.filter((option) => selectedIds.includes(String(option.id))).map((option) => String(option.label ?? option.id));
+    output.push({ label, answer: selectedLabels.join(", ") || (typeof answer === "string" && !options.length ? answer : "Not selected") });
+  }
+  return output;
+}
+
 function confirmationData(row: ConfirmationRow): BookingConfirmationPdfData {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const trip = row.trip;
@@ -201,6 +228,7 @@ function confirmationData(row: ConfirmationRow): BookingConfirmationPdfData {
     inclusions: trip?.inclusions ?? event?.inclusions ?? [],
     exclusions,
     paidExtras: paidSelections.extras,
+    bookingQuestions: bookingQuestions(trip?.booking_form_fields, row.selections ?? {}),
     accommodation: trip?.accommodation,
     transportation: trip?.transportation,
     seatNumbers: asSeatNumbers(row.selections ?? {}),

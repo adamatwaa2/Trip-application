@@ -32,6 +32,7 @@ export type BookingConfirmationPdfData = {
   inclusions: string[];
   exclusions: string[];
   paidExtras: { label: string; amount: number }[];
+  bookingQuestions: { label: string; answer: string }[];
   accommodation?: string | null;
   transportation?: string | null;
   seatNumbers?: number[];
@@ -271,6 +272,19 @@ function BookingConfirmationDocument({ data }: { data: BookingConfirmationPdfDat
               <View key={`${item.label}-${index}`} style={[styles.paidExtra, index === data.paidExtras.length - 1 ? styles.paidExtraLast : {}]}>
                 <Text>{item.label}</Text>
                 <Text style={styles.paidExtraAmount}>{money(item.amount, data.currency)}</Text>
+              </View>
+            ))}
+          </View>
+        ) : null}
+
+        {data.bookingQuestions.length ? (
+          <View style={styles.section} wrap={false}>
+            <Text style={styles.sectionKicker}>YOUR SELECTIONS</Text>
+            <Text style={styles.sectionTitle}>Trip questions and add-ons</Text>
+            {data.bookingQuestions.map((item, index) => (
+              <View key={`${item.label}-${index}`} style={[styles.paidExtra, index === data.bookingQuestions.length - 1 ? styles.paidExtraLast : {}]}>
+                <Text>{item.label}</Text>
+                <Text style={styles.value}>{item.answer}</Text>
               </View>
             ))}
           </View>

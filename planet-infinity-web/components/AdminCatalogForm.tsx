@@ -15,6 +15,11 @@ import { createClient } from "@/lib/supabase/client";
 import { BookingFormBuilder } from "@/components/BookingFormBuilder";
 import type { BookingFormField } from "@/lib/booking-form";
 
+const GUIDE_SEAT = 1;
+function withGuideSeatReserved(seats: number[] | undefined) {
+  return Array.from(new Set([GUIDE_SEAT, ...(seats ?? [])])).sort((a, b) => a - b);
+}
+
 type CatalogMedia = {
   hero?: string;
   heroAlt?: string;
@@ -72,9 +77,9 @@ function lines(value: string): string[] {
 
 function editorSeatConfig(value: SeatConfig | null | undefined): SeatConfig {
   if (value?.layout && Array.isArray(value.layout.rows) && value.layout.rows.length) {
-    return value;
+    return { ...value, unavailable: withGuideSeatReserved(value.unavailable) };
   }
-  return { layout: HIACE_14 };
+  return { layout: HIACE_14, unavailable: [GUIDE_SEAT] };
 }
 
 function editorSeatConfigWithFleet(value: SeatConfig | null | undefined, requestedCount: number): SeatConfig {
@@ -83,14 +88,14 @@ function editorSeatConfigWithFleet(value: SeatConfig | null | undefined, request
   const count = Math.min(8, Math.max(1, Math.floor(requestedCount) || 1));
   return {
     layout: base.layout,
-    ...(base.unavailable?.length ? { unavailable: base.unavailable } : {}),
+    unavailable: withGuideSeatReserved(base.unavailable),
     vehicles: Array.from({ length: count }, (_, index) => {
       const existingVehicle = existing[index];
       return {
         id: `hiace-${index + 1}`,
         label: `Hiace ${index + 1}`,
         layout: existingVehicle?.layout ?? base.layout,
-        ...(existingVehicle?.unavailable?.length ? { unavailable: existingVehicle.unavailable } : {}),
+        unavailable: withGuideSeatReserved(existingVehicle?.unavailable ?? base.unavailable),
       };
     }),
   };
@@ -521,7 +526,7 @@ export function AdminCatalogForm({
               />
             </label>
             <p className="pi-admin-help">
-              Each Hiace gets its own 14-seat map. Guests choose a Hiace after their booking is confirmed, then choose exactly one seat per guest. Existing reservations stay with their original Hiace.
+              Seat 1 beside the driver is permanently reserved for your guide, so each Hiace sells 13 seats. Guests are sent automatically to the next Hiace with enough free seats; they only choose their seat numbers.
             </p>
           </>
         ) : null}

@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { SeatConfig } from "@/content/trips";
+import { seatConfigVehicles, seatNumbers, type SeatConfig } from "@/content/trips";
 import type { BookingFormField } from "@/lib/booking-form";
 import { createClient } from "@/lib/supabase/server";
 
@@ -83,6 +83,7 @@ export type AdminProductDetail = Omit<AdminProduct, "updated_at"> & {
 };
 export type AdminPolicy = { id: string; slug: string; title: string; version: string; body: string; is_active: boolean; updated_at: string };
 export type AdminTeamUser = { id: string; full_name: string | null; role: string; is_active: boolean; created_at: string };
+export type AdminSeatOverview = { scheduledAt: string; vehicleId: string; vehicleLabel: string; sellableSeats: number; reservedSeats: number; remainingSeats: number };
 
 const adminBookingSelect = "id, booking_number, booking_type, status, total_amount, amount_paid, scheduled_at, created_at, payment_token, guest_count, selections, notes, whatsapp_opt_in, whatsapp_opted_in_at, services_confirmed_at, confirmation_ready_at, confirmation_issued_at, confirmation_pdf_path, confirmation_version, customer:customers(id, full_name, email, phone), trip:trips(id, title), event:events(id, title), request:requests(id, request_number)";
 
@@ -101,6 +102,21 @@ export async function getBookingsForProduct(bookingType: "trip" | "event", produ
     .eq(column, productId)
     .order("created_at", { ascending: false });
   return { items: (data ?? []) as unknown as AdminBooking[], error: error ? "Bookings could not be loaded." : null };
+}
+export async function getTripSeatOverview(tripId: string, scheduledAts: string[] = []): Promise<AdminSeatOverview[]> {
+  const supabase = await createClient();
+  const [{ data: trip }, { data: reservations }] = await Promise.all([
+    supabase.from("trips").select("seat_selection_enabled, seat_config").eq("id", tripId).maybeSingle(),
+    supabase.from("trip_seat_reservations").select("scheduled_at, vehicle_id, seat_number").eq("trip_id", tripId).in("status", ["reserved", "held"]),
+  ]);
+  if (!trip?.seat_selection_enabled || !trip.seat_config) return [];
+  const vehicles = seatConfigVehicles(trip.seat_config as SeatConfig);
+  const dates = Array.from(new Set([...scheduledAts, ...(reservations ?? []).map((reservation) => reservation.scheduled_at)].filter((value): value is string => Boolean(value))));
+  return dates.flatMap((scheduledAt) => vehicles.map((vehicle) => {
+    const sellableSeats = seatNumbers(vehicle.layout).filter((seat) => !(vehicle.unavailable ?? (trip.seat_config as SeatConfig).unavailable ?? []).includes(seat));
+    const reservedSeats = (reservations ?? []).filter((reservation) => reservation.scheduled_at === scheduledAt && reservation.vehicle_id === vehicle.id).length;
+    return { scheduledAt, vehicleId: vehicle.id, vehicleLabel: vehicle.label, sellableSeats: sellableSeats.length, reservedSeats, remainingSeats: Math.max(0, sellableSeats.length - reservedSeats) };
+  }));
 }
 export async function getBooking(id: string) {
   const supabase = await createClient();
