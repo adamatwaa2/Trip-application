@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminShell } from "@/components/AdminShell";
 import { formatDate } from "@/lib/admin-requests";
-import { getBookingsForProduct, getTripSeatOverview } from "@/lib/admin-operations";
+import { getBookingsForProduct, getTripDepartureDates, getTripSeatOverview } from "@/lib/admin-operations";
 import { requireAdmin } from "@/lib/admin";
 
 export const metadata = { title: "Experience bookings" };
@@ -21,6 +21,11 @@ function departureDay(value: string | null) {
   };
 }
 
+function normaliseScheduledAt(value: string) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : date.toISOString();
+}
+
 export default async function ExperienceBookingsPage({ params }: { params: Promise<{ bookingType: string; productId: string }> }) {
   const profile = await requireAdmin();
   const { bookingType, productId } = await params;
@@ -31,12 +36,20 @@ export default async function ExperienceBookingsPage({ params }: { params: Promi
   const title = bookingType === "trip" ? first?.trip?.title : first?.event?.title;
   const paid = result.items.reduce((sum, item) => sum + Number(item.amount_paid), 0);
   const total = result.items.reduce((sum, item) => sum + Number(item.total_amount), 0);
+  const scheduledDepartureDates = bookingType === "trip" ? await getTripDepartureDates(productId) : [];
   const departures = new Map<string, DepartureGroup<(typeof result.items)[number]>>();
   for (const item of result.items) {
     const departure = departureDay(item.scheduled_at);
     const group = departures.get(departure.key) ?? { label: departure.label, scheduledAts: [], items: [] };
     group.items.push(item);
-    if (item.scheduled_at && !group.scheduledAts.includes(item.scheduled_at)) group.scheduledAts.push(item.scheduled_at);
+    const scheduledAt = item.scheduled_at ? normaliseScheduledAt(item.scheduled_at) : null;
+    if (scheduledAt && !group.scheduledAts.includes(scheduledAt)) group.scheduledAts.push(scheduledAt);
+    departures.set(departure.key, group);
+  }
+  for (const scheduledAt of scheduledDepartureDates) {
+    const departure = departureDay(scheduledAt);
+    const group = departures.get(departure.key) ?? { label: departure.label, scheduledAts: [], items: [] };
+    if (!group.scheduledAts.includes(scheduledAt)) group.scheduledAts.push(scheduledAt);
     departures.set(departure.key, group);
   }
   const seatOverview = bookingType === "trip" ? await getTripSeatOverview(productId, Array.from(departures.values()).flatMap((group) => group.scheduledAts)) : [];
@@ -44,7 +57,11 @@ export default async function ExperienceBookingsPage({ params }: { params: Promi
   return <AdminShell profile={profile} current="/admin/bookings">
     <header className="pi-admin-page-head pi-admin-detail-head"><div><p className="pi-admin-kicker">{bookingType} bookings</p><h1>{title ?? "Experience"}</h1><p>{result.items.length} booking{result.items.length === 1 ? "" : "s"} · {paid.toLocaleString("en-US")} EGP paid · {Math.max(0, total - paid).toLocaleString("en-US")} EGP remaining</p></div><Link href="/admin/bookings">Back to experiences</Link></header>
     {result.error ? <section className="pi-admin-section"><p className="pi-admin-error">{result.error}</p></section> : Array.from(departures.entries()).map(([dayKey, group]) => {
-      const seatsForDeparture = seatOverview.filter((seat) => departureDay(seat.scheduledAt).key === dayKey);
+      const seatsForDeparture = Array.from(seatOverview.filter((seat) => departureDay(seat.scheduledAt).key === dayKey).reduce((vehicles, seat) => {
+        const current = vehicles.get(seat.vehicleId);
+        vehicles.set(seat.vehicleId, current ? { ...current, reservedSeats: current.reservedSeats + seat.reservedSeats, remainingSeats: Math.max(0, current.sellableSeats - current.reservedSeats - seat.reservedSeats) } : seat);
+        return vehicles;
+      }, new Map<string, (typeof seatOverview)[number]>()).values());
       const exportQuery = group.scheduledAts.map((scheduledAt) => `scheduledAt=${encodeURIComponent(scheduledAt)}`).join("&");
       const exportHref = exportQuery ? `/admin/bookings/${bookingType}/${productId}/export?${exportQuery}` : `/admin/bookings/${bookingType}/${productId}/export`;
       return <section className="pi-admin-section" key={dayKey}>

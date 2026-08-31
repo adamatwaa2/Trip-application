@@ -30,10 +30,9 @@ export function PaidSeatSelection({ paymentToken, guestCount, config, currentSea
     taken: vehicle.taken ?? [],
   };
   const isNewVehicle = !vehicles.some((item) => item.id === vehicle.id);
-  const displayVehicleLabel = isNewVehicle ? `${vehicle.label} · opened for this departure` : vehicle.label;
   return <div>
     <h2>Choose your seat{guestCount > 1 ? "s" : ""}</h2>
-    <p className="pi-flow__hint">Your booking is confirmed. You have been placed in <strong>{displayVehicleLabel}</strong>. Choose {guestCount} available seat{guestCount > 1 ? "s" : ""} now.</p>
+    <p className="pi-flow__hint">Your booking is confirmed. You have been placed in a <strong>Hiace</strong>{isNewVehicle ? " that has just opened for this departure" : ""}. Choose {guestCount} available seat{guestCount > 1 ? "s" : ""} now.</p>
     <SeatSelection config={vehicleConfig} selected={seats} onToggle={(seat) => setSeats((current) => current.includes(seat) ? current.filter((value) => value !== seat) : current.length < guestCount ? [...current, seat].sort((a,b) => a-b) : current)} />
     <button className="pi-btn" type="button" disabled={!complete || pending} onClick={() => startTransition(async () => { const result = await choosePaidBookingSeats({ paymentToken, vehicleId, seats }); setMessage(result.ok ? "Your seat selection is saved." : result.error); })}>{pending ? "Saving…" : currentSeats.length ? "Update seat selection" : "Save seat selection"}</button>
     {message ? <p className={message.includes("saved") ? "pi-flow__success" : "pi-flow__error"}>{message}</p> : null}
