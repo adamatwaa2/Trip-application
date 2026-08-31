@@ -88,6 +88,11 @@ body:has(.pi-admin) > main { min-height: 100vh; }
 .pi-admin-mobile-card p,.pi-admin-mobile-card > span,.pi-admin-mobile-card footer { margin: 0; color: var(--pi-soft); font-size: 12px; line-height: 1.45; }
 .pi-admin-mobile-card footer { margin-top: 6px; padding-top: 10px; border-top: 1px solid var(--pi-line); }
 .pi-admin-mobile-card footer b { color: var(--pi-cyan); }
+.pi-admin-booking-groups { display: grid; gap: 12px; }
+.pi-admin-booking-group { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 22px; align-items: center; padding: 20px; border: 1px solid var(--pi-line); border-radius: 17px; color: var(--pi-ink); background: var(--pi-ivory); text-decoration: none; }
+.pi-admin-booking-group:hover { border-color: var(--pi-gold); background: #fffdf8; }
+.pi-admin-booking-group h2 { margin: 4px 0; font-size: 24px; }.pi-admin-booking-group p:not(.pi-admin-kicker) { margin: 0; color: var(--pi-soft); font-size: 13px; }
+.pi-admin-booking-group dl { display: grid; grid-template-columns: repeat(2, auto); gap: 14px; margin: 0; }.pi-admin-booking-group dt { color: var(--pi-soft); font: 800 10px var(--pi-mono); letter-spacing: .08em; text-transform: uppercase; }.pi-admin-booking-group dd { margin: 4px 0 0; font-size: 13px; font-weight: 800; }.pi-admin-booking-group b { color: var(--pi-cyan); font-size: 13px; }
 .pi-admin-quick-actions,.pi-admin-contact-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .pi-admin-quick-actions button,.pi-admin-contact-actions a { min-height: 42px; display: grid; place-items: center; padding: 9px 10px; border: 1px solid var(--pi-line); border-radius: 11px; background: #fff; color: var(--pi-ink); cursor: pointer; font: 800 12px var(--pi-body); text-decoration: none; text-align: center; }
 .pi-admin-quick-actions button:first-child { background: #dff6e7; border-color: #b4dec3; color: #237443; }
@@ -113,6 +118,7 @@ body:has(.pi-admin) > main { min-height: 100vh; }
   .pi-admin-quick-actions,.pi-admin-contact-actions { grid-template-columns: 1fr; }
   .pi-admin-filters--crm { grid-template-columns: 1fr; }
   .pi-admin-crm-timeline > a { grid-template-columns: minmax(0, 1fr) auto; gap: 12px; }
+  .pi-admin-booking-group { grid-template-columns: 1fr; gap: 14px; }.pi-admin-booking-group dl { justify-content: start; }.pi-admin-booking-group b { justify-self: start; }
 }
 
 .pi-admin-notifications { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }

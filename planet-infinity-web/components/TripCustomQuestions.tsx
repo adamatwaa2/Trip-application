@@ -30,6 +30,8 @@ export function TripCustomQuestions({
         if (field.type === "quantity" && guestCount < 1) return null;
 
         const answer = answers[field.id];
+        const fieldUnit = field.quantityUnit?.trim() || "person";
+        const personBasedQuantity = fieldUnit.toLowerCase() === "person" || fieldUnit.toLowerCase() === "guest";
         return (
           <fieldset className="pi-custom-question" key={field.id}>
             <legend>{field.label}{field.required ? " *" : ""}</legend>
@@ -57,10 +59,11 @@ export function TripCustomQuestions({
             {field.type === "quantity" ? (
               <div className="pi-quantity-options">
                 {(field.options ?? []).map((option) => {
-                  const unit = field.quantityUnit?.trim() || "person";
+                  const unit = fieldUnit;
+                  const maxQuantity = personBasedQuantity ? guestCount : 20;
                   const quantities = answer && typeof answer === "object" && !Array.isArray(answer) ? answer : {};
-                  const quantity = Math.max(0, Math.min(guestCount, Math.floor(Number(quantities[option.id]) || 0)));
-                  const update = (next: number) => onChange(field.id, { ...quantities, [option.id]: Math.max(0, Math.min(guestCount, next)) });
+                  const quantity = Math.max(0, Math.min(maxQuantity, Math.floor(Number(quantities[option.id]) || 0)));
+                  const update = (next: number) => onChange(field.id, { ...quantities, [option.id]: Math.max(0, Math.min(maxQuantity, next)) });
                   return (
                     <div className={`pi-quantity-option${quantity > 0 ? " pi-quantity-option--selected" : ""}`} key={option.id}>
                       <div className="pi-quantity-option__details">
@@ -71,18 +74,18 @@ export function TripCustomQuestions({
                         <button type="button" className="pi-quantity-option__add" onClick={() => update(1)} aria-label={`Add ${option.label}`}>Add</button>
                       ) : (
                         <div className="pi-quantity-option__controls">
-                          <span className="pi-quantity-option__count" aria-live="polite">{quantity} of {guestCount} guest{guestCount === 1 ? "" : "s"}</span>
+                          <span className="pi-quantity-option__count" aria-live="polite">{personBasedQuantity ? `${quantity} of ${guestCount} guest${guestCount === 1 ? "" : "s"}` : `${quantity} ${unit}${quantity === 1 ? "" : "s"}`}</span>
                           <div className="pi-stepper" aria-label={`${option.label} quantity`}>
                             <button type="button" onClick={() => update(quantity - 1)} aria-label={`Remove one ${option.label}`}>−</button>
                             <output>{quantity}</output>
-                            <button type="button" onClick={() => update(quantity + 1)} disabled={quantity === guestCount} aria-label={`Add one ${option.label}`}>+</button>
+                            <button type="button" onClick={() => update(quantity + 1)} disabled={quantity === maxQuantity} aria-label={`Add one ${option.label}`}>+</button>
                           </div>
                         </div>
                       )}
                     </div>
                   );
                 })}
-                <p className="pi-flow__hint">Tap Add for the extras you want. You can assign each extra to up to {guestCount} guest{guestCount === 1 ? "" : "s"}.</p>
+                <p className="pi-flow__hint">{personBasedQuantity ? `Tap Add for the extras you want. You can assign each extra to up to ${guestCount} guest${guestCount === 1 ? "" : "s"}.` : `Tap Add to choose the number of ${fieldUnit}s you need.`}</p>
               </div>
             ) : null}
             {field.type === "checkbox" ? (

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { AdminShell } from "@/components/AdminShell";
-import { formatDate } from "@/lib/admin-requests";
 import { getBookings } from "@/lib/admin-operations";
 import { requireAdmin } from "@/lib/admin";
 
@@ -9,43 +8,36 @@ export const metadata = { title: "Admin bookings" };
 export default async function BookingsPage() {
   const profile = await requireAdmin();
   const result = await getBookings();
+  const groups = new Map<string, { kind: "trip" | "event"; id: string; title: string; items: typeof result.items }>();
+  for (const item of result.items) {
+    const product = item.booking_type === "trip" ? item.trip : item.event;
+    if (!product) continue;
+    const key = `${item.booking_type}:${product.id}`;
+    const group = groups.get(key) ?? { kind: item.booking_type, id: product.id, title: product.title, items: [] };
+    group.items.push(item);
+    groups.set(key, group);
+  }
 
   return (
     <AdminShell profile={profile} current="/admin/bookings">
       <header className="pi-admin-page-head">
         <p className="pi-admin-kicker">Bookings</p>
-        <h1>Bookings and payment review.</h1>
-        <p>Direct bookings arrive here immediately. Open any booking to review its customer, seats, receipt, payment and confirmation.</p>
+        <h1>Bookings, sorted by experience.</h1>
+        <p>Each trip and event has its own operational list, customer details and Excel export.</p>
       </header>
       <section className="pi-admin-section">
-        {result.error ? <p className="pi-admin-error">{result.error}</p> : result.items.length ? (
-          <>
-            <div className="pi-admin-table-wrap pi-admin-desktop-list">
-              <table className="pi-admin-table">
-                <thead><tr><th>Reference</th><th>Customer</th><th>Booking</th><th>Remaining</th><th>Status</th></tr></thead>
-                <tbody>{result.items.map((item) => {
-                  const subject = item.trip?.title ?? item.event?.title ?? item.booking_type;
-                  const balance = Number(item.total_amount) - Number(item.amount_paid);
-                  return <tr key={item.id}><td><Link href={`/admin/bookings/${item.id}`}>{item.booking_number}</Link></td><td><strong>{item.customer?.full_name ?? "Unknown"}</strong><span>{item.customer?.email}</span></td><td><strong>{subject}</strong><span>{formatDate(item.scheduled_at)}</span></td><td>{balance.toLocaleString("en-US")} EGP</td><td><span className={`pi-admin-status pi-admin-status--${item.status}`}>{item.status}</span></td></tr>;
-                })}</tbody>
-              </table>
-            </div>
-            <div className="pi-admin-mobile-list" aria-label="Bookings">
-              {result.items.map((item) => {
-                const subject = item.trip?.title ?? item.event?.title ?? item.booking_type;
-                const balance = Number(item.total_amount) - Number(item.amount_paid);
-                return (
-                  <Link className="pi-admin-mobile-card" href={`/admin/bookings/${item.id}`} key={item.id}>
-                    <div className="pi-admin-mobile-card__head"><strong>{item.booking_number}</strong><span className={`pi-admin-status pi-admin-status--${item.status}`}>{item.status}</span></div>
-                    <h2>{item.customer?.full_name ?? "Unknown"}</h2>
-                    <p>{subject}</p>
-                    <span>{formatDate(item.scheduled_at)}</span>
-                    <footer><span>{balance.toLocaleString("en-US")} EGP remaining</span><b>Review booking →</b></footer>
-                  </Link>
-                );
-              })}
-            </div>
-          </>
+        {result.error ? <p className="pi-admin-error">{result.error}</p> : groups.size ? (
+          <div className="pi-admin-booking-groups">
+            {Array.from(groups.values()).map((group) => {
+              const paid = group.items.reduce((sum, item) => sum + Number(item.amount_paid), 0);
+              const total = group.items.reduce((sum, item) => sum + Number(item.total_amount), 0);
+              return <Link className="pi-admin-booking-group" href={`/admin/bookings/${group.kind}/${group.id}`} key={`${group.kind}-${group.id}`}>
+                <div><p className="pi-admin-kicker">{group.kind}</p><h2>{group.title}</h2><p>{group.items.length} booking{group.items.length === 1 ? "" : "s"}</p></div>
+                <dl><div><dt>Paid</dt><dd>{paid.toLocaleString("en-US")} EGP</dd></div><div><dt>Remaining</dt><dd>{Math.max(0, total - paid).toLocaleString("en-US")} EGP</dd></div></dl>
+                <b>Open bookings →</b>
+              </Link>;
+            })}
+          </div>
         ) : <div className="pi-admin-empty">No bookings yet. A direct booking will appear here as soon as the guest completes checkout.</div>}
       </section>
     </AdminShell>

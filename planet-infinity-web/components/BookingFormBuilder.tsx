@@ -7,7 +7,7 @@ const TYPE_LABELS: Record<BookingFormFieldType, string> = {
   textarea: "Long text",
   select: "One choice",
   multiselect: "Multiple choices",
-  quantity: "Quantity per guest",
+  quantity: "Quantity add-on",
   checkbox: "Yes / no checkbox",
 };
 
@@ -73,7 +73,7 @@ export function BookingFormBuilder({
           </label>
           {field.type === "select" || field.type === "multiselect" || field.type === "quantity" ? (
             <div className="pi-admin-option-builder">
-              <p className="pi-admin-help">{field.type === "quantity" ? "Guests choose how many people want each option. The price is charged only for that quantity." : "A selected add-on price is charged per guest."}</p>
+              <p className="pi-admin-help">{field.type === "quantity" ? "Choose a unit such as person, tent or room. Person quantities are capped at the guest count; other units can be counted separately." : "A selected add-on price is charged per guest."}</p>
               {field.type === "quantity" ? <label>Quantity unit<input maxLength={24} value={field.quantityUnit ?? "person"} placeholder="person, tent, room…" onChange={(event) => update(index, { quantityUnit: event.target.value })} /></label> : null}
               {(field.options ?? []).map((option, optionIndex) => (
                 <div className="pi-admin-form__grid pi-admin-form__grid--two" key={option.id}>

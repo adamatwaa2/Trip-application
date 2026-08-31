@@ -4,7 +4,7 @@ import type { SeatConfig } from "@/content/trips";
 import type { BookingFormField } from "@/lib/booking-form";
 import { createClient } from "@/lib/supabase/server";
 
-export type AdminBooking = { id: string; booking_number: string; booking_type: "trip" | "event"; status: "pending" | "confirmed" | "cancelled"; total_amount: number; amount_paid: number; scheduled_at: string | null; created_at: string; payment_token: string; guest_count: number; selections: Record<string, unknown>; notes: string | null; whatsapp_opt_in: boolean; whatsapp_opted_in_at: string | null; services_confirmed_at: string | null; confirmation_ready_at: string | null; confirmation_issued_at: string | null; confirmation_pdf_path: string | null; confirmation_version: number; customer: { id: string; full_name: string; email: string; phone: string | null } | null; trip: { title: string } | null; event: { title: string } | null; request: { id: string; request_number: string } | null; guests?: { full_name: string; phone: string | null; is_primary: boolean }[] };
+export type AdminBooking = { id: string; booking_number: string; booking_type: "trip" | "event"; status: "pending" | "confirmed" | "cancelled"; total_amount: number; amount_paid: number; scheduled_at: string | null; created_at: string; payment_token: string; guest_count: number; selections: Record<string, unknown>; notes: string | null; whatsapp_opt_in: boolean; whatsapp_opted_in_at: string | null; services_confirmed_at: string | null; confirmation_ready_at: string | null; confirmation_issued_at: string | null; confirmation_pdf_path: string | null; confirmation_version: number; customer: { id: string; full_name: string; email: string; phone: string | null } | null; trip: { id: string; title: string } | null; event: { id: string; title: string } | null; request: { id: string; request_number: string } | null; guests?: { full_name: string; phone: string | null; is_primary: boolean }[] };
 export type AdminPayment = { id: string; amount: number; payment_method: string; status: "pending" | "recorded" | "void"; received_at: string | null; reference: string | null; payment_proof_path: string | null; created_at: string; booking: { id: string; booking_number: string; customer: { full_name: string; email: string } | null } | null };
 export type CustomerRequestSummary = {
   id: string;
@@ -84,14 +84,27 @@ export type AdminProductDetail = Omit<AdminProduct, "updated_at"> & {
 export type AdminPolicy = { id: string; slug: string; title: string; version: string; body: string; is_active: boolean; updated_at: string };
 export type AdminTeamUser = { id: string; full_name: string | null; role: string; is_active: boolean; created_at: string };
 
+const adminBookingSelect = "id, booking_number, booking_type, status, total_amount, amount_paid, scheduled_at, created_at, payment_token, guest_count, selections, notes, whatsapp_opt_in, whatsapp_opted_in_at, services_confirmed_at, confirmation_ready_at, confirmation_issued_at, confirmation_pdf_path, confirmation_version, customer:customers(id, full_name, email, phone), trip:trips(id, title), event:events(id, title), request:requests(id, request_number)";
+
 export async function getBookings() {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("bookings").select("id, booking_number, booking_type, status, total_amount, amount_paid, scheduled_at, created_at, payment_token, guest_count, selections, notes, whatsapp_opt_in, whatsapp_opted_in_at, services_confirmed_at, confirmation_ready_at, confirmation_issued_at, confirmation_pdf_path, confirmation_version, customer:customers(id, full_name, email, phone), trip:trips(title), event:events(title), request:requests(id, request_number)").order("created_at", { ascending: false });
+  const { data, error } = await supabase.from("bookings").select(adminBookingSelect).order("created_at", { ascending: false });
+  return { items: (data ?? []) as unknown as AdminBooking[], error: error ? "Bookings could not be loaded." : null };
+}
+export async function getBookingsForProduct(bookingType: "trip" | "event", productId: string) {
+  const supabase = await createClient();
+  const column = bookingType === "trip" ? "trip_id" : "event_id";
+  const { data, error } = await supabase
+    .from("bookings")
+    .select(adminBookingSelect)
+    .eq("booking_type", bookingType)
+    .eq(column, productId)
+    .order("created_at", { ascending: false });
   return { items: (data ?? []) as unknown as AdminBooking[], error: error ? "Bookings could not be loaded." : null };
 }
 export async function getBooking(id: string) {
   const supabase = await createClient();
-  const { data } = await supabase.from("bookings").select("id, booking_number, booking_type, status, total_amount, amount_paid, scheduled_at, created_at, payment_token, guest_count, selections, notes, whatsapp_opt_in, whatsapp_opted_in_at, services_confirmed_at, confirmation_ready_at, confirmation_issued_at, confirmation_pdf_path, confirmation_version, customer:customers(id, full_name, email, phone), trip:trips(title), event:events(title), request:requests(id, request_number), guests:booking_guests(full_name, phone, is_primary), payments(id, amount, payment_method, status, received_at, reference, payment_proof_path, created_at)").eq("id", id).maybeSingle();
+  const { data } = await supabase.from("bookings").select(`${adminBookingSelect}, guests:booking_guests(full_name, phone, is_primary), payments(id, amount, payment_method, status, received_at, reference, payment_proof_path, created_at)`).eq("id", id).maybeSingle();
   return data as unknown as (AdminBooking & { payments: { id: string; amount: number; payment_method: string; status: string; received_at: string | null; reference: string | null; payment_proof_path: string | null; created_at: string }[] }) | null;
 }
 export async function getPayments() {
