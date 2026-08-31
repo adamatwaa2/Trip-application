@@ -24,9 +24,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ book
   const productQuery = bookingType === "trip" ? "title, booking_form_fields" : "title";
   const { data: product } = await supabase.from(productTable).select(productQuery).eq("id", productId).maybeSingle();
   if (!product) return new NextResponse("Not found", { status: 404 });
-  const scheduledAt = new URL(request.url).searchParams.get("scheduledAt");
+  const scheduledAts = new URL(request.url).searchParams.getAll("scheduledAt").filter(Boolean);
   let query = supabase.from("bookings").select("id, booking_number, status, total_amount, amount_paid, guest_count, scheduled_at, created_at, selections, notes, customer:customers(full_name, phone)").eq("booking_type", bookingType).eq(productColumn, productId).order("created_at", { ascending: false });
-  if (scheduledAt) query = query.eq("scheduled_at", scheduledAt);
+  if (scheduledAts.length) query = query.in("scheduled_at", scheduledAts);
   const { data: bookings, error } = await query;
   if (error) return new NextResponse("Bookings could not be exported.", { status: 500 });
   const bookingRows = (bookings ?? []) as unknown as Array<RecordValue & { id: string; booking_number: string }>;
@@ -57,7 +57,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ book
   for (const item of ((paymentsResult.data ?? []) as Array<RecordValue>)) paymentRows.push([referenceById.get(String(item.booking_id)), item.amount, item.payment_method, item.status, item.reference, item.received_at ?? item.created_at]);
   for (const item of ((seatsResult.data ?? []) as Array<RecordValue>)) seatRows.push([referenceById.get(String(item.booking_id)), item.vehicle_id, item.seat_number, item.status]);
   const workbook = `<?xml version="1.0" encoding="UTF-8"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">${worksheet("Bookings", summaries)}${worksheet("Guests", guestRows)}${worksheet("Payments", paymentRows)}${worksheet("Seats", seatRows)}${worksheet("Questions", answerRows)}</Workbook>`;
-  const dateSuffix = scheduledAt ? `-${scheduledAt.slice(0, 10)}` : "";
+  const dateSuffix = scheduledAts[0] ? `-${scheduledAts[0].slice(0, 10)}` : "";
   const filename = `${title.toLowerCase().replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || "experience"}-bookings${dateSuffix}.xls`;
   return new NextResponse(workbook, { headers: { "Content-Type": "application/vnd.ms-excel; charset=utf-8", "Content-Disposition": `attachment; filename="${filename}"`, "Cache-Control": "no-store" } });
 }
