@@ -75,7 +75,7 @@ function dateParts(value: string | null) {
   if (!value) return {};
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return {};
-  return { date: new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" }).format(date), time: new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit" }).format(date) };
+  return { date: new Intl.DateTimeFormat("en-GB", { timeZone: "Africa/Cairo", day: "numeric", month: "short", year: "numeric" }).format(date), time: new Intl.DateTimeFormat("en-GB", { timeZone: "Africa/Cairo", hour: "2-digit", minute: "2-digit" }).format(date) };
 }
 function mapTrip(row: DatabaseTrip): Trip {
   const departure = dateParts(row.departure_at);

@@ -68,6 +68,10 @@ export function TripSelection({ groups, value, onChange }: TripSelectionProps) {
                       <span className="pi-choice__delta">
                         +{choice.priceDeltaEgp.toLocaleString("en-US")} EGP
                       </span>
+                    ) : choice.priceEgp !== undefined ? (
+                      <span className="pi-choice__delta">
+                        {choice.priceEgp.toLocaleString("en-US")} EGP
+                      </span>
                     ) : null}
                   </span>
                 </label>
