@@ -19,6 +19,7 @@ const META_PIXEL_BOOTSTRAP = `
   'https://connect.facebook.net/en_US/fbevents.js');
   fbq('init', '${META_PIXEL_ID}');
   fbq('track', 'PageView');
+  window.dispatchEvent(new Event('meta-pixel-ready'));
 `;
 
 export const metadata: Metadata = {

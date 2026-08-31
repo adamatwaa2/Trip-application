@@ -14,12 +14,24 @@ declare global {
   }
 }
 
-export function trackMetaEvent(eventName: string, parameters?: MetaPixelParameters) {
+function dispatchMetaEvent(
+  action: "track" | "trackCustom",
+  eventName: string,
+  parameters?: MetaPixelParameters,
+) {
   if (typeof window === "undefined") return;
-  window.fbq?.("track", eventName, parameters);
+  const send = () => window.fbq?.(action, eventName, parameters);
+  if (window.fbq) {
+    send();
+    return;
+  }
+  window.addEventListener("meta-pixel-ready", send, { once: true });
+}
+
+export function trackMetaEvent(eventName: string, parameters?: MetaPixelParameters) {
+  dispatchMetaEvent("track", eventName, parameters);
 }
 
 export function trackMetaCustomEvent(eventName: string, parameters?: MetaPixelParameters) {
-  if (typeof window === "undefined") return;
-  window.fbq?.("trackCustom", eventName, parameters);
+  dispatchMetaEvent("trackCustom", eventName, parameters);
 }
