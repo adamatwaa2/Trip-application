@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import {
   bookingSteps,
@@ -21,6 +21,7 @@ import {
 } from "@/lib/booking-form";
 import { TripCustomQuestions } from "./TripCustomQuestions";
 import { PaymentProofStep, type PaymentProofValue } from "./PaymentProofStep";
+import { trackMetaCustomEvent, trackMetaEvent } from "@/lib/meta-pixel";
 
 /**
  * Trip checkout flow. Direct trips create a booking immediately; the rare
@@ -54,6 +55,7 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
   const [requestNumber, setRequestNumber] = useState<string | undefined>();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const checkoutTracked = useRef(false);
 
   const step = steps[stepIndex];
   const parsedGuestCount = Number(guestCount);
@@ -64,6 +66,18 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [stepIndex]);
+
+  useEffect(() => {
+    if (checkoutTracked.current) return;
+    checkoutTracked.current = true;
+    trackMetaEvent("InitiateCheckout", {
+      content_ids: [trip.id],
+      content_name: trip.title,
+      content_type: "product",
+      currency: "EGP",
+      value: trip.priceEgp,
+    });
+  }, [trip.id, trip.priceEgp, trip.title]);
 
   function resizeGuestList(value: string) {
     setGuestCount(value);
@@ -199,7 +213,20 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
         setSubmitError(result.error);
         return;
       }
-      setRequestNumber("bookingNumber" in result ? result.bookingNumber : result.requestNumber);
+      const completedNumber = "bookingNumber" in result ? result.bookingNumber : result.requestNumber;
+      const eventParameters = {
+        content_ids: [trip.id],
+        content_name: trip.title,
+        content_type: "product",
+        currency: "EGP",
+        value: total,
+      };
+      trackMetaEvent("Lead", eventParameters);
+      trackMetaCustomEvent("BookingSubmitted", {
+        ...eventParameters,
+        booking_number: completedNumber,
+      });
+      setRequestNumber(completedNumber);
       setDone(true);
     });
   }
