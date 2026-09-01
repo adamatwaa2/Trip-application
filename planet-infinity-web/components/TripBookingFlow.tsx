@@ -96,8 +96,9 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
     setCustomAnswers((current) => Object.fromEntries(Object.entries(current).map(([fieldId, answer]) => {
       const field = (trip.bookingFormFields ?? []).find((item) => item.id === fieldId);
       if (field?.type === "quantity" && field.quantityUnit?.trim().toLowerCase() === "accommodation" && answer && typeof answer === "object" && !Array.isArray(answer)) {
-        const selected = (field.options ?? []).flatMap((option) => Array.from({ length: Math.max(0, Math.floor(Number(answer[option.id]) || 0)) }, () => option.id)).slice(0, count);
-        return [fieldId, Object.fromEntries((field.options ?? []).map((option) => [option.id, selected.filter((id) => id === option.id).length]))];
+        const selected = (field.options ?? []).find((option) => Number(answer[option.id]) > 0);
+        const stillFits = selected && count >= (selected.minGuests ?? 1) && count <= (selected.maxGuests ?? 80);
+        return [fieldId, stillFits && selected ? { [selected.id]: 1 } : {}];
       }
       if (!answer || typeof answer !== "object" || Array.isArray(answer)) return [fieldId, answer];
       return [fieldId, Object.fromEntries(Object.entries(answer).map(([optionId, quantity]) => [optionId, Math.min(count, Number(quantity) || 0)]))];
@@ -372,8 +373,9 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
                     const answer = customAnswers[field.id];
                     const ids = Array.isArray(answer) ? answer : typeof answer === "string" ? [answer] : [];
                     const quantities = answer && typeof answer === "object" && !Array.isArray(answer) ? answer : null;
+                    const isAccommodation = field.type === "quantity" && field.quantityUnit?.trim().toLowerCase() === "accommodation";
                     const display = quantities
-                      ? (field.options ?? []).filter((option) => Number(quantities[option.id]) > 0).map((option) => `${option.label} × ${quantities[option.id]}`).join(", ") || "None"
+                      ? (field.options ?? []).filter((option) => Number(quantities[option.id]) > 0).map((option) => isAccommodation ? `${option.label} · ${guestCountNumber} guests` : `${option.label} × ${quantities[option.id]}`).join(", ") || "None"
                       : ids.length ? (field.options ?? []).filter((option) => ids.includes(option.id)).map(bookingOptionLabel).join(", ") : answer === true ? "Yes" : answer === false ? "No" : "—";
                     return `${field.label}: ${display}`;
                   }).join(" · ")}</dd>

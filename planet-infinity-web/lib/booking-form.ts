@@ -23,6 +23,13 @@ export type BookingFormOption = {
   detail?: string;
   image?: string;
   priceEgp?: number;
+  /** Accommodation-only grouping fields. They are ignored for normal add-ons. */
+  stayId?: string;
+  stayLabel?: string;
+  stayDetail?: string;
+  stayGallery?: string[];
+  minGuests?: number;
+  maxGuests?: number;
 };
 
 export type BookingFormAnswer = string | string[] | boolean | Record<string, number>;
@@ -78,12 +85,30 @@ export function normaliseBookingFormFields(value: unknown): BookingFormField[] |
           optionIds.add(id);
           const detail = option ? clean(option.detail, 240) : "";
           const image = option ? safeOptionImage(option.image) : "";
+          const stayId = option ? clean(option.stayId, 60) : "";
+          const stayLabel = option ? clean(option.stayLabel, 120) : "";
+          const stayDetail = option ? clean(option.stayDetail, 240) : "";
+          const stayGallery = option && Array.isArray(option.stayGallery)
+            ? option.stayGallery.map(safeOptionImage).filter(Boolean).slice(0, 24)
+            : [];
+          const minGuests = option?.minGuests === undefined ? undefined : Math.floor(Number(option.minGuests));
+          const maxGuests = option?.maxGuests === undefined ? undefined : Math.floor(Number(option.maxGuests));
+          if ((stayId && !FIELD_ID.test(stayId))
+            || (minGuests !== undefined && (!Number.isFinite(minGuests) || minGuests < 1 || minGuests > 80))
+            || (maxGuests !== undefined && (!Number.isFinite(maxGuests) || maxGuests < 1 || maxGuests > 80))
+            || (minGuests !== undefined && maxGuests !== undefined && minGuests > maxGuests)) return [];
           return [{
             id,
             label,
             ...(detail ? { detail } : {}),
             ...(image ? { image } : {}),
             ...(price && price > 0 ? { priceEgp: Math.round(price) } : {}),
+            ...(stayId ? { stayId } : {}),
+            ...(stayLabel ? { stayLabel } : {}),
+            ...(stayDetail ? { stayDetail } : {}),
+            ...(stayGallery.length ? { stayGallery } : {}),
+            ...(minGuests !== undefined ? { minGuests } : {}),
+            ...(maxGuests !== undefined ? { maxGuests } : {}),
           }];
         }).slice(0, 30)
       : [];
@@ -117,7 +142,8 @@ export function bookingOptionPrice(
     if (field.type === "quantity" && answer && typeof answer === "object" && !Array.isArray(answer)) {
       return total + (field.options ?? []).reduce((sum, option) => {
         const quantity = Math.max(0, Math.floor(Number(answer[option.id]) || 0));
-        return sum + (option.priceEgp ?? 0) * quantity;
+        const isAccommodation = field.quantityUnit?.trim().toLowerCase() === "accommodation";
+        return sum + (option.priceEgp ?? 0) * quantity * (isAccommodation ? guestCount : 1);
       }, 0);
     }
     const ids = Array.isArray(answer) ? answer : typeof answer === "string" ? [answer] : [];
@@ -139,7 +165,7 @@ export function bookingFormAnswersComplete(
         ? Object.values(answer).reduce((sum, value) => sum + Math.max(0, Math.floor(Number(value) || 0)), 0)
         : 0;
       const isAccommodation = field.quantityUnit?.trim().toLowerCase() === "accommodation";
-      return !field.required || (isAccommodation ? quantity === guestCount : quantity > 0);
+      return !field.required || (isAccommodation ? quantity === 1 : quantity > 0);
     }
     if (!field.required) return true;
     if (field.type === "checkbox") return answer === true;

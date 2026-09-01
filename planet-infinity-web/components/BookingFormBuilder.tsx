@@ -78,7 +78,7 @@ export function BookingFormBuilder({
           </label>
           {field.type === "select" || field.type === "multiselect" || field.type === "quantity" ? (
             <div className="pi-admin-option-builder">
-              <p className="pi-admin-help">{field.type === "quantity" ? field.quantityUnit?.trim().toLowerCase() === "accommodation" ? "Each guest chooses one accommodation. The final total is calculated from the accommodation picked for every guest." : "Choose a unit such as person, tent or room. Person quantities are capped at the guest count; other units can be counted separately." : "A selected add-on price is charged per guest."}</p>
+              <p className="pi-admin-help">{field.type === "quantity" ? field.quantityUnit?.trim().toLowerCase() === "accommodation" ? "Guests choose one hotel and one room type for their whole group. The room price is charged per person, then multiplied by the guest count." : "Choose a unit such as person, tent or room. Person quantities are capped at the guest count; other units can be counted separately." : "A selected add-on price is charged per guest."}</p>
               {field.type === "quantity" ? <label>Quantity unit<input maxLength={24} value={field.quantityUnit ?? "person"} placeholder="person, tent, room…" onChange={(event) => update(index, { quantityUnit: event.target.value })} /></label> : null}
               {(field.options ?? []).map((option, optionIndex) => (
                 <div className="pi-admin-form__grid pi-admin-form__grid--two" key={option.id}>
@@ -91,16 +91,28 @@ export function BookingFormBuilder({
                     <input type="number" min="0" step="1" value={option.priceEgp ?? ""} placeholder="0" onChange={(event) => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, priceEgp: event.target.value === "" ? undefined : Number(event.target.value) } : current) })} />
                   </label>
                   {field.type === "quantity" && field.quantityUnit?.trim().toLowerCase() === "accommodation" ? <label>
-                    Short detail <span className="opt">optional</span>
+                    Room detail <span className="opt">optional</span>
                     <input maxLength={240} value={option.detail ?? ""} placeholder="e.g. Al Mamsha · breakfast included" onChange={(event) => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, detail: event.target.value } : current) })} />
                   </label> : null}
                   {field.type === "quantity" && field.quantityUnit?.trim().toLowerCase() === "accommodation" ? <label>
-                    Photo link <span className="opt">optional</span>
-                    <input type="url" value={option.image ?? ""} placeholder="https://… or /images/…" onChange={(event) => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, image: event.target.value } : current) })} />
+                    Hotel name
+                    <input maxLength={120} value={option.stayLabel ?? ""} placeholder="e.g. Hakuna Matata" onChange={(event) => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, stayLabel: event.target.value } : current) })} />
+                  </label> : null}
+                  {field.type === "quantity" && field.quantityUnit?.trim().toLowerCase() === "accommodation" ? <label>
+                    Hotel detail <span className="opt">optional</span>
+                    <input maxLength={240} value={option.stayDetail ?? ""} placeholder="e.g. El Mamsha · breakfast included" onChange={(event) => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, stayDetail: event.target.value } : current) })} />
+                  </label> : null}
+                  {field.type === "quantity" && field.quantityUnit?.trim().toLowerCase() === "accommodation" ? <label>
+                    Minimum guests for this room
+                    <input type="number" min="1" max="80" value={option.minGuests ?? ""} placeholder="e.g. 2" onChange={(event) => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, minGuests: event.target.value === "" ? undefined : Number(event.target.value) } : current) })} />
+                  </label> : null}
+                  {field.type === "quantity" && field.quantityUnit?.trim().toLowerCase() === "accommodation" ? <label>
+                    Maximum guests for this room
+                    <input type="number" min="1" max="80" value={option.maxGuests ?? ""} placeholder="e.g. 6" onChange={(event) => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, maxGuests: event.target.value === "" ? undefined : Number(event.target.value) } : current) })} />
                   </label> : null}
                   {field.type === "quantity" && field.quantityUnit?.trim().toLowerCase() === "accommodation" ? <div className="pi-admin-asset-actions">
                     <label className="pi-admin-upload">
-                      <span>{uploading ? "Uploading…" : "Upload accommodation photo"}</span>
+                      <span>{uploading ? "Uploading…" : "Add hotel gallery photo"}</span>
                       <input
                         type="file"
                         accept={CATALOG_MEDIA_ACCEPT.image}
@@ -112,7 +124,7 @@ export function BookingFormBuilder({
                         }}
                       />
                     </label>
-                    {option.image ? <><img className="pi-admin-gallery-preview" src={option.image} alt="" /><button type="button" onClick={() => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, image: undefined } : current) })}>Remove photo</button></> : null}
+                    {(option.stayGallery ?? []).map((image) => <span className="pi-admin-gallery-preview" key={image}><img src={image} alt="" /><button type="button" onClick={() => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, stayGallery: (current.stayGallery ?? []).filter((value) => value !== image) } : current) })}>Remove photo</button></span>)}
                   </div> : null}
                   <button type="button" onClick={() => update(index, { options: (field.options ?? []).filter((_, currentIndex) => currentIndex !== optionIndex) })}>Remove choice</button>
                 </div>

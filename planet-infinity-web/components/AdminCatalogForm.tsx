@@ -263,7 +263,7 @@ export function AdminCatalogForm({
   async function uploadAccommodationOptionPhoto(fieldId: string, optionId: string, files: File[]) {
     await uploadFiles(files.slice(0, 1), "image", (url) => {
       setBookingFormFields((current) => current.map((field) => field.id === fieldId
-        ? { ...field, options: (field.options ?? []).map((option) => option.id === optionId ? { ...option, image: url } : option) }
+        ? { ...field, options: (field.options ?? []).map((option) => option.id === optionId ? { ...option, stayGallery: Array.from(new Set([...(option.stayGallery ?? []), url])) } : option) }
         : field));
     });
   }
