@@ -61,6 +61,7 @@ export function catalogMediaExtension(mimeType: string): string | null {
 
 export function isSafeCatalogUrl(value: string): boolean {
   if (!value) return true;
+  if (value.startsWith("/") && !value.startsWith("//")) return true;
 
   try {
     const url = new URL(value);

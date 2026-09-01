@@ -20,6 +20,8 @@ export type BookingFormField = {
 export type BookingFormOption = {
   id: string;
   label: string;
+  detail?: string;
+  image?: string;
   priceEgp?: number;
 };
 
@@ -37,6 +39,11 @@ const FIELD_TYPES = new Set<BookingFormFieldType>([
 
 function clean(value: unknown, max: number) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
+}
+
+function safeOptionImage(value: unknown) {
+  const image = clean(value, 2000);
+  return image.startsWith("/") || /^https:\/\//i.test(image) ? image : "";
 }
 
 export function normaliseBookingFormFields(value: unknown): BookingFormField[] | null {
@@ -69,7 +76,15 @@ export function normaliseBookingFormFields(value: unknown): BookingFormField[] |
           const price = option?.priceEgp;
           if (!label || !id || !FIELD_ID.test(id) || optionIds.has(id) || (price !== undefined && (!Number.isFinite(price) || price < 0))) return [];
           optionIds.add(id);
-          return [{ id, label, ...(price && price > 0 ? { priceEgp: Math.round(price) } : {}) }];
+          const detail = option ? clean(option.detail, 240) : "";
+          const image = option ? safeOptionImage(option.image) : "";
+          return [{
+            id,
+            label,
+            ...(detail ? { detail } : {}),
+            ...(image ? { image } : {}),
+            ...(price && price > 0 ? { priceEgp: Math.round(price) } : {}),
+          }];
         }).slice(0, 30)
       : [];
     if ((type === "select" || type === "multiselect" || type === "quantity") && options.length < 1) return null;
@@ -115,6 +130,7 @@ export function bookingOptionPrice(
 export function bookingFormAnswersComplete(
   fields: BookingFormField[],
   answers: Record<string, BookingFormAnswer>,
+  guestCount = 1,
 ) {
   return fields.every((field) => {
     const answer = answers[field.id];
@@ -122,7 +138,8 @@ export function bookingFormAnswersComplete(
       const quantity = answer && typeof answer === "object" && !Array.isArray(answer)
         ? Object.values(answer).reduce((sum, value) => sum + Math.max(0, Math.floor(Number(value) || 0)), 0)
         : 0;
-      return !field.required || quantity > 0;
+      const isAccommodation = field.quantityUnit?.trim().toLowerCase() === "accommodation";
+      return !field.required || (isAccommodation ? quantity === guestCount : quantity > 0);
     }
     if (!field.required) return true;
     if (field.type === "checkbox") return answer === true;

@@ -241,7 +241,19 @@ export async function submitPublicTripBooking(input: PublicTripBookingInput): Pr
   if (!isSupabaseConfigured()) return { ok: false, error: "Booking service is not configured yet." };
 
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("submit_public_trip_booking", {
+  const { data: trip } = await supabase
+    .from("trips")
+    .select("booking_form_fields")
+    .eq("id", input.productId)
+    .eq("is_published", true)
+    .maybeSingle();
+  const accommodationBooking = Array.isArray(trip?.booking_form_fields)
+    && trip.booking_form_fields.some((field) => {
+      if (!field || typeof field !== "object") return false;
+      const value = field as { type?: unknown; quantityUnit?: unknown };
+      return value.type === "quantity" && typeof value.quantityUnit === "string" && value.quantityUnit.toLowerCase() === "accommodation";
+    });
+  const { data, error } = await supabase.rpc(accommodationBooking ? "submit_public_accommodation_trip_booking" : "submit_public_trip_booking", {
     p_trip_id: input.productId,
     p_full_name: cleanText(input.fullName, 120),
     p_email: cleanText(input.email, 254),

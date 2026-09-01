@@ -3,13 +3,13 @@ import { requireAdmin } from "@/lib/admin";
 import { createClient } from "@/lib/supabase/server";
 
 type RecordValue = Record<string, unknown>;
-type BookingFormField = { id?: string; label?: string; options?: { id?: string; label?: string }[] };
+type BookingFormField = { id?: string; label?: string; type?: string; options?: { id?: string; label?: string }[] };
 const asRecord = (value: unknown): RecordValue => value && typeof value === "object" && !Array.isArray(value) ? value as RecordValue : {};
 const xml = (value: unknown) => String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&apos;");
 const cell = (value: unknown) => `<Cell><Data ss:Type="String">${xml(value)}</Data></Cell>`;
 const worksheet = (name: string, rows: unknown[][]) => `<Worksheet ss:Name="${xml(name)}"><Table>${rows.map((row) => `<Row>${row.map(cell).join("")}</Row>`).join("")}</Table></Worksheet>`;
 function answerText(answer: unknown, field?: BookingFormField) {
-  if (Array.isArray(answer)) return answer.join(", ");
+  if (Array.isArray(answer)) return answer.map((id) => field?.options?.find((item) => item.id === id)?.label ?? String(id)).join(", ");
   if (!answer || typeof answer !== "object") return String(answer ?? "");
   return Object.entries(asRecord(answer)).filter(([, value]) => Number(value) > 0).map(([id, quantity]) => `${field?.options?.find((item) => item.id === id)?.label ?? id} × ${quantity}`).join(", ");
 }

@@ -40,6 +40,7 @@ type ConfirmationRow = {
     exclusions: string[];
     accommodation: string | null;
     transportation: string | null;
+    price_egp: number | null;
     options: unknown;
     booking_form_fields: unknown;
   } | null;
@@ -123,6 +124,9 @@ function selectedPaidExtras(
     const answer = answers[fieldId];
 
     if (fieldType === "quantity") {
+      // Accommodation is included in the booking total as a per-guest package,
+      // not as an optional extra line.
+      if (typeof field.quantityUnit === "string" && field.quantityUnit.toLowerCase() === "accommodation") continue;
       const quantities = asRecord(answer);
       for (const option of options) {
         const optionId = typeof option.id === "string" ? option.id : "";
@@ -157,7 +161,7 @@ function selectedPaidExtras(
   return { extras, selectedLabels };
 }
 
-function bookingQuestions(fields: unknown, selections: Record<string, unknown>): BookingQuestion[] {
+function bookingQuestions(fields: unknown, selections: Record<string, unknown>, basePrice = 0): BookingQuestion[] {
   const answers = asRecord(selections.customAnswers);
   const output: BookingQuestion[] = [];
   for (const field of Array.isArray(fields) ? fields.map(asRecord) : []) {
@@ -168,10 +172,16 @@ function bookingQuestions(fields: unknown, selections: Record<string, unknown>):
     const answer = answers[id];
     if (field.type === "quantity") {
       const quantities = asRecord(answer);
-      const text = options.map((option) => {
+      const accommodation = typeof field.quantityUnit === "string" && field.quantityUnit.toLowerCase() === "accommodation";
+      const text = options.flatMap((option) => {
         const optionId = typeof option.id === "string" ? option.id : "";
         const optionLabel = typeof option.label === "string" ? option.label.trim() : optionId;
-        return `${optionLabel}: ${Math.max(0, Math.floor(Number(quantities[optionId]) || 0))}`;
+        const quantity = Math.max(0, Math.floor(Number(quantities[optionId]) || 0));
+        if (!quantity) return [];
+        const price = Math.max(0, Number(option.priceEgp) || 0);
+        return [accommodation
+          ? `${optionLabel} × ${quantity} (${(basePrice + price).toLocaleString("en-EG")} EGP each)`
+          : `${optionLabel}: ${quantity}`];
       }).join(" · ");
       output.push({ label, answer: text || "0" });
       continue;
@@ -228,7 +238,7 @@ function confirmationData(row: ConfirmationRow): BookingConfirmationPdfData {
     inclusions: trip?.inclusions ?? event?.inclusions ?? [],
     exclusions,
     paidExtras: paidSelections.extras,
-    bookingQuestions: bookingQuestions(trip?.booking_form_fields, row.selections ?? {}),
+    bookingQuestions: bookingQuestions(trip?.booking_form_fields, row.selections ?? {}, Number(trip?.price_egp) || 0),
     accommodation: trip?.accommodation,
     transportation: trip?.transportation,
     seatNumbers: asSeatNumbers(row.selections ?? {}),
@@ -274,7 +284,7 @@ export async function generateBookingConfirmation(
       customer:customers(full_name, email, phone),
       trip:trips(title, destination, duration_label, return_at, meeting_point,
         departure_point, return_point, package_label, inclusions, exclusions,
-        accommodation, transportation, options, booking_form_fields),
+        accommodation, transportation, price_egp, options, booking_form_fields),
       event:events(title, venue, ends_at, inclusions, exclusions),
       guests:booking_guests(full_name, is_primary)
     `)

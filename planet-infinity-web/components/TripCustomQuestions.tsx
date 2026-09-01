@@ -7,22 +7,24 @@ export function TripCustomQuestions({
   answers,
   onChange,
   guestCount,
+  basePrice = 0,
 }: {
   fields: BookingFormField[];
   answers: Record<string, BookingFormAnswer>;
   onChange: (id: string, answer: BookingFormAnswer) => void;
   guestCount: number;
+  basePrice?: number;
 }) {
-  const quantityFieldsNeedGuestCount = guestCount < 1 && fields.some((field) => field.type === "quantity");
+  const guestCountRequired = guestCount < 1 && fields.some((field) => field.type === "quantity");
 
   return (
     <div className="pi-custom-questions">
-      {quantityFieldsNeedGuestCount ? (
+      {guestCountRequired ? (
         <div className="pi-addons-gate" role="status">
           <span>1</span>
           <div>
             <strong>Choose the number of guests first</strong>
-            <p>Then you can add extras and choose how many guests want each one.</p>
+          <p>Then you can add extras and choose the right accommodation for each guest.</p>
           </div>
         </div>
       ) : null}
@@ -32,6 +34,7 @@ export function TripCustomQuestions({
         const answer = answers[field.id];
         const fieldUnit = field.quantityUnit?.trim() || "person";
         const personBasedQuantity = fieldUnit.toLowerCase() === "person" || fieldUnit.toLowerCase() === "guest";
+        const perGuestAccommodation = field.type === "quantity" && fieldUnit.toLowerCase() === "accommodation";
         return (
           <fieldset className="pi-custom-question" key={field.id}>
             <legend>{field.label}{field.required ? " *" : ""}</legend>
@@ -56,7 +59,7 @@ export function TripCustomQuestions({
                 })}
               </div>
             ) : null}
-            {field.type === "quantity" ? (
+            {field.type === "quantity" && !perGuestAccommodation ? (
               <div className="pi-quantity-options">
                 {(field.options ?? []).map((option) => {
                   const unit = fieldUnit;
@@ -86,6 +89,41 @@ export function TripCustomQuestions({
                   );
                 })}
                 <p className="pi-flow__hint">{personBasedQuantity ? `Tap Add for the extras you want. You can assign each extra to up to ${guestCount} guest${guestCount === 1 ? "" : "s"}.` : `Tap Add to choose the number of ${fieldUnit}s you need.`}</p>
+              </div>
+            ) : null}
+            {perGuestAccommodation ? (
+              <div className="pi-guest-accommodation-list">
+                {Array.from({ length: guestCount }, (_, guestIndex) => {
+                  const quantities = answer && typeof answer === "object" && !Array.isArray(answer) ? answer : {};
+                  const selected = (field.options ?? []).flatMap((option) => Array.from({ length: Math.max(0, Math.floor(Number(quantities[option.id]) || 0)) }, () => option.id)).slice(0, guestCount);
+                  const selectedId = selected[guestIndex] ?? "";
+                  const update = (optionId: string) => {
+                    const next = Array.from({ length: guestCount }, (_, index) => selected[index] ?? "");
+                    next[guestIndex] = optionId;
+                    onChange(field.id, Object.fromEntries((field.options ?? []).map((option) => [option.id, next.filter((id) => id === option.id).length])));
+                  };
+                  return (
+                    <section className="pi-guest-accommodation" key={guestIndex}>
+                      <div className="pi-guest-accommodation__head"><strong>Guest {guestIndex + 1}</strong><span>{selectedId ? "Accommodation selected" : "Choose accommodation"}</span></div>
+                      <div className="pi-guest-accommodation__options">
+                        {(field.options ?? []).map((option) => {
+                          const selectedOption = selectedId === option.id;
+                          return (
+                            <label className={`pi-accommodation-choice${selectedOption ? " pi-accommodation-choice--selected" : ""}`} key={option.id}>
+                              <input type="radio" name={`${field.id}-${guestIndex}`} value={option.id} checked={selectedOption} onChange={() => update(option.id)} />
+                              {option.image ? <img src={option.image} alt="" /> : null}
+                              <span className="pi-accommodation-choice__body">
+                                <strong>{option.label}</strong>
+                                {option.detail ? <small>{option.detail}</small> : null}
+                                <b>{((option.priceEgp ?? 0) + basePrice).toLocaleString("en-EG")} EGP</b>
+                              </span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </section>
+                  );
+                })}
               </div>
             ) : null}
             {field.type === "checkbox" ? (

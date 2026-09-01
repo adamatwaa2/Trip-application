@@ -94,6 +94,11 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
     const count = Math.min(80, enteredCount);
     setGuests((current) => Array.from({ length: count }, (_, index) => current[index] ?? { name: "", phone: "" }));
     setCustomAnswers((current) => Object.fromEntries(Object.entries(current).map(([fieldId, answer]) => {
+      const field = (trip.bookingFormFields ?? []).find((item) => item.id === fieldId);
+      if (field?.type === "quantity" && field.quantityUnit?.trim().toLowerCase() === "accommodation" && answer && typeof answer === "object" && !Array.isArray(answer)) {
+        const selected = (field.options ?? []).flatMap((option) => Array.from({ length: Math.max(0, Math.floor(Number(answer[option.id]) || 0)) }, () => option.id)).slice(0, count);
+        return [fieldId, Object.fromEntries((field.options ?? []).map((option) => [option.id, selected.filter((id) => id === option.id).length]))];
+      }
       if (!answer || typeof answer !== "object" || Array.isArray(answer)) return [fieldId, answer];
       return [fieldId, Object.fromEntries(Object.entries(answer).map(([optionId, quantity]) => [optionId, Math.min(count, Number(quantity) || 0)]))];
     })));
@@ -132,7 +137,7 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
       const required = (trip.optionGroups ?? []).filter((g) => g.required !== false);
       return required.every((g) => Boolean(selection[g.id]));
     }
-    if (current === "custom") return guestCountNumber >= 1 && bookingFormAnswersComplete(trip.bookingFormFields ?? [], customAnswers);
+    if (current === "custom") return guestCountNumber >= 1 && bookingFormAnswersComplete(trip.bookingFormFields ?? [], customAnswers, guestCountNumber);
     if (current === "payment") return Boolean(paymentProof?.path);
     if (current === "guest") {
       return guestCountNumber >= 1 && guests.length === guestCountNumber && guests.every((guest) => guest.name.trim().length >= 2 && guest.phone.trim().length >= 6) && guestEmail.trim() !== "" && agreed;
@@ -275,6 +280,7 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
               fields={trip.bookingFormFields}
               answers={customAnswers}
               guestCount={guestCountNumber}
+              basePrice={trip.priceEgp}
               onChange={(id, answer) => setCustomAnswers((current) => ({ ...current, [id]: answer }))}
             />
           </>
