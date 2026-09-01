@@ -260,6 +260,14 @@ export function AdminCatalogForm({
     }
   }
 
+  async function uploadAccommodationOptionPhoto(fieldId: string, optionId: string, files: File[]) {
+    await uploadFiles(files.slice(0, 1), "image", (url) => {
+      setBookingFormFields((current) => current.map((field) => field.id === fieldId
+        ? { ...field, options: (field.options ?? []).map((option) => option.id === optionId ? { ...option, image: url } : option) }
+        : field));
+    });
+  }
+
   function resetNewItem() {
     setTitle("");
     setSlug("");
@@ -545,7 +553,12 @@ export function AdminCatalogForm({
       {isTrip ? (
         <fieldset className="pi-admin-form__section">
           <legend>Custom booking form</legend>
-          <BookingFormBuilder fields={bookingFormFields} onChange={setBookingFormFields} />
+          <BookingFormBuilder
+            fields={bookingFormFields}
+            onChange={setBookingFormFields}
+            uploading={uploading}
+            onAccommodationImageUpload={uploadAccommodationOptionPhoto}
+          />
         </fieldset>
       ) : null}
 

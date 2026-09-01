@@ -1,6 +1,7 @@
 "use client";
 
 import type { BookingFormField, BookingFormFieldType, BookingFormOption } from "@/lib/booking-form";
+import { CATALOG_MEDIA_ACCEPT } from "@/lib/catalog-media";
 
 const TYPE_LABELS: Record<BookingFormFieldType, string> = {
   text: "Short text",
@@ -27,9 +28,13 @@ function nextOption(): BookingFormOption {
 export function BookingFormBuilder({
   fields,
   onChange,
+  uploading = false,
+  onAccommodationImageUpload,
 }: {
   fields: BookingFormField[];
   onChange: (fields: BookingFormField[]) => void;
+  uploading?: boolean;
+  onAccommodationImageUpload?: (fieldId: string, optionId: string, files: File[]) => Promise<void>;
 }) {
   function update(index: number, patch: Partial<BookingFormField>) {
     onChange(fields.map((field, fieldIndex) => fieldIndex === index ? { ...field, ...patch } : field));
@@ -90,9 +95,25 @@ export function BookingFormBuilder({
                     <input maxLength={240} value={option.detail ?? ""} placeholder="e.g. Al Mamsha · breakfast included" onChange={(event) => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, detail: event.target.value } : current) })} />
                   </label> : null}
                   {field.type === "quantity" && field.quantityUnit?.trim().toLowerCase() === "accommodation" ? <label>
-                    Photo URL <span className="opt">optional</span>
+                    Photo link <span className="opt">optional</span>
                     <input type="url" value={option.image ?? ""} placeholder="https://… or /images/…" onChange={(event) => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, image: event.target.value } : current) })} />
                   </label> : null}
+                  {field.type === "quantity" && field.quantityUnit?.trim().toLowerCase() === "accommodation" ? <div className="pi-admin-asset-actions">
+                    <label className="pi-admin-upload">
+                      <span>{uploading ? "Uploading…" : "Upload accommodation photo"}</span>
+                      <input
+                        type="file"
+                        accept={CATALOG_MEDIA_ACCEPT.image}
+                        disabled={uploading || !onAccommodationImageUpload}
+                        onChange={async (event) => {
+                          const files = Array.from(event.currentTarget.files ?? []);
+                          event.currentTarget.value = "";
+                          if (files.length && onAccommodationImageUpload) await onAccommodationImageUpload(field.id, option.id, files.slice(0, 1));
+                        }}
+                      />
+                    </label>
+                    {option.image ? <><img className="pi-admin-gallery-preview" src={option.image} alt="" /><button type="button" onClick={() => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, image: undefined } : current) })}>Remove photo</button></> : null}
+                  </div> : null}
                   <button type="button" onClick={() => update(index, { options: (field.options ?? []).filter((_, currentIndex) => currentIndex !== optionIndex) })}>Remove choice</button>
                 </div>
               ))}
