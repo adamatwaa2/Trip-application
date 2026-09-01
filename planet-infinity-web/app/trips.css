@@ -1045,12 +1045,16 @@
   .pi-guest-card { grid-template-columns: 1fr; }
   .pi-guest-roster__head { flex-direction: column; }
   .pi-accommodation-stay,
-  .pi-accommodation-room { gap: 10px; align-items: flex-start; }
+  .pi-accommodation-room { grid-template-columns: minmax(0, 1fr); gap: 9px; align-items: flex-start; }
   .pi-accommodation-stay__price,
   .pi-accommodation-room__price { text-align: left; }
   .pi-accommodation-stay__price { align-items: start; }
   .pi-accommodation-stay__price b { white-space: normal; }
   .pi-accommodation-room__price b { white-space: normal; }
+  .pi-accommodation-stay > span:first-child strong,
+  .pi-accommodation-stay small,
+  .pi-accommodation-room__copy strong,
+  .pi-accommodation-room__copy small { overflow-wrap: normal; word-break: normal; }
   .pi-accommodation-gallery img { flex-basis: 88%; width: 88%; }
 }
 .pi-payment-proof__details {
