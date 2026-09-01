@@ -194,14 +194,16 @@ function AccommodationPicker({
   return (
     <div className="pi-accommodation-stays">
       <div className="pi-accommodation-stays__intro"><span>DAHAB STAY</span><strong>Starts from {overallFrom.toLocaleString("en-EG")} EGP</strong><small>per person · accommodation, transportation & full program included</small></div>
-      {stays.map((stay) => {
-        const from = Math.min(...stay.options.map((option) => basePrice + (option.priceEgp ?? 0)));
-        const selected = stay.options.some((option) => option.id === selectedId);
-        return <button type="button" className={`pi-accommodation-stay${selected ? " pi-accommodation-stay--selected" : ""}`} key={stay.id} onClick={() => onOpenStay(stay.id)}>
-          <span><strong>{stay.label}</strong>{stay.detail ? <small>{stay.detail}</small> : null}</span>
-          <span className="pi-accommodation-stay__price"><b>Starts from {from.toLocaleString("en-EG")} EGP</b><small>per person</small></span>
-        </button>;
-      })}
+      <div className="pi-accommodation-stays__grid">
+        {stays.map((stay) => {
+          const from = Math.min(...stay.options.map((option) => basePrice + (option.priceEgp ?? 0)));
+          const selected = stay.options.some((option) => option.id === selectedId);
+          return <button type="button" className={`pi-accommodation-stay${selected ? " pi-accommodation-stay--selected" : ""}`} key={stay.id} onClick={() => onOpenStay(stay.id)}>
+            <span className="pi-accommodation-stay__copy"><strong>{stay.label}</strong>{stay.detail ? <small>{stay.detail}</small> : null}</span>
+            <span className="pi-accommodation-stay__price"><small>Starts from</small><b>{from.toLocaleString("en-EG")} EGP</b><em>View rooms →</em></span>
+          </button>;
+        })}
+      </div>
       {selectedOption ? <p className="pi-accommodation-stays__selected">Selected: <strong>{selectedOption.label}</strong></p> : null}
       <p className="pi-flow__hint">Open a stay to view its gallery and all room types. Rooms that do not fit your group are shown but locked.</p>
     </div>

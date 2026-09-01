@@ -883,14 +883,16 @@
 .pi-accommodation-stays__intro > span { font-family: var(--pi-mono); font-size: .72rem; font-weight: 800; letter-spacing: .12em; }
 .pi-accommodation-stays__intro strong { font-family: var(--pi-display); font-size: clamp(1.35rem, 5vw, 1.8rem); line-height: 1; }
 .pi-accommodation-stays__intro small { font-size: .79rem; line-height: 1.35; opacity: .94; }
-.pi-accommodation-stay { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: center; width: 100%; min-width: 0; padding: 17px 18px; text-align: left; border: 1px solid var(--pi-line); border-radius: var(--pi-r-chip); background: #fff; color: var(--pi-ink); cursor: pointer; transition: border-color var(--pi-t-ui), box-shadow var(--pi-t-ui), transform var(--pi-t-ui); }
+.pi-accommodation-stays__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.pi-accommodation-stay { display: flex; flex-direction: column; justify-content: space-between; gap: 16px; min-width: 0; min-height: 170px; padding: 18px; text-align: left; border: 1px solid var(--pi-line); border-radius: var(--pi-r-chip); background: #fff; color: var(--pi-ink); cursor: pointer; transition: border-color var(--pi-t-ui), box-shadow var(--pi-t-ui), transform var(--pi-t-ui); }
 .pi-accommodation-stay:hover { transform: translateY(-1px); border-color: #e78b3b; box-shadow: 0 10px 22px rgba(24, 51, 66, .08); }
 .pi-accommodation-stay--selected { border-color: var(--pi-ember); box-shadow: 0 0 0 2px rgba(239, 111, 46, .13); }
-.pi-accommodation-stay > span:first-child, .pi-accommodation-stay__price { display: grid; min-width: 0; gap: 4px; }
-.pi-accommodation-stay > span:first-child strong { font-size: 1.08rem; line-height: 1.15; overflow-wrap: anywhere; }
+.pi-accommodation-stay__copy, .pi-accommodation-stay__price { display: grid; min-width: 0; gap: 4px; }
+.pi-accommodation-stay__copy strong { font-size: 1.08rem; line-height: 1.15; overflow-wrap: anywhere; }
 .pi-accommodation-stay small { color: var(--pi-soft); font-size: .8rem; line-height: 1.35; overflow-wrap: anywhere; }
-.pi-accommodation-stay__price { align-items: end; text-align: right; }
-.pi-accommodation-stay__price b { color: #e85d19; font-family: var(--pi-mono); font-size: .76rem; letter-spacing: .02em; white-space: nowrap; }
+.pi-accommodation-stay__price { align-items: start; }
+.pi-accommodation-stay__price b { color: #e85d19; font-family: var(--pi-mono); font-size: .92rem; letter-spacing: .02em; white-space: nowrap; }
+.pi-accommodation-stay__price em { margin-top: 2px; color: #1d8eb5; font-size: .78rem; font-style: normal; font-weight: 800; }
 .pi-accommodation-stays__selected { margin: 2px 0 0; padding: 10px 12px; border-radius: 12px; background: #edf9ef; color: #287443; font-size: .9rem; }
 .pi-accommodation-picker { display: grid; gap: 16px; min-width: 0; padding: 16px; border: 1px solid #bfe5ef; border-radius: var(--pi-r-card); background: linear-gradient(135deg, #f4fcff, #e4f7fb); }
 .pi-accommodation-picker__back { justify-self: start; padding: 0; border: 0; background: transparent; color: #1d8eb5; font-weight: 800; cursor: pointer; }
@@ -1044,14 +1046,16 @@
   .pi-stepper { width: 100%; grid-template-columns: minmax(44px, 1fr) 52px minmax(44px, 1fr); }
   .pi-guest-card { grid-template-columns: 1fr; }
   .pi-guest-roster__head { flex-direction: column; }
-  .pi-accommodation-stay,
   .pi-accommodation-room { grid-template-columns: minmax(0, 1fr); gap: 9px; align-items: flex-start; }
+  .pi-accommodation-room__price { text-align: left; }
+  .pi-accommodation-stays__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .pi-accommodation-stay { min-height: 164px; padding: 14px; gap: 12px; }
+  .pi-accommodation-stay__copy strong { font-size: 1rem; }
+  .pi-accommodation-stay__price b { font-size: .82rem; }
   .pi-accommodation-stay__price,
   .pi-accommodation-room__price { text-align: left; }
-  .pi-accommodation-stay__price { align-items: start; }
-  .pi-accommodation-stay__price b { white-space: normal; }
   .pi-accommodation-room__price b { white-space: normal; }
-  .pi-accommodation-stay > span:first-child strong,
+  .pi-accommodation-stay__copy strong,
   .pi-accommodation-stay small,
   .pi-accommodation-room__copy strong,
   .pi-accommodation-room__copy small { overflow-wrap: normal; word-break: normal; }
