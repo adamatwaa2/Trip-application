@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { GalleryLightbox } from "@/components/GalleryLightbox";
 import { bookingOptionLabel, type BookingFormAnswer, type BookingFormField, type BookingFormOption } from "@/lib/booking-form";
 
 type Stay = {
@@ -161,11 +160,7 @@ function AccommodationPicker({
   const selectedId = (field.options ?? []).find((option) => Number(quantities[option.id]) > 0)?.id ?? "";
   const selectedOption = (field.options ?? []).find((option) => option.id === selectedId);
   const activeStay = stays.find((stay) => stay.id === openStayId);
-  const relevantOptions = activeStay?.options.filter((option) => {
-    const minimum = option.minGuests ?? 1;
-    const maximum = option.maxGuests ?? 80;
-    return guestCount >= minimum && guestCount <= maximum;
-  }) ?? [];
+  const overallFrom = Math.min(...(field.options ?? []).map((option) => basePrice + (option.priceEgp ?? 0)));
   const choose = (optionId: string) => onChange(Object.fromEntries((field.options ?? []).map((option) => [option.id, option.id === optionId ? 1 : 0])));
 
   if (activeStay) {
@@ -176,17 +171,20 @@ function AccommodationPicker({
           <div><h3>{activeStay.label}</h3>{activeStay.detail ? <p>{activeStay.detail}</p> : null}</div>
           <span>{guestCount} guest{guestCount === 1 ? "" : "s"}</span>
         </div>
-        {activeStay.gallery.length ? <GalleryLightbox images={activeStay.gallery.map((src, index) => ({ src, alt: `${activeStay.label} photo ${index + 1}` }))} /> : null}
+        {activeStay.gallery.length ? <AccommodationGallery stay={activeStay} /> : null}
         <div className="pi-accommodation-picker__rooms">
-          {relevantOptions.map((option) => {
+          {activeStay.options.map((option) => {
             const selected = option.id === selectedId;
             const perPerson = basePrice + (option.priceEgp ?? 0);
-            return <button type="button" className={`pi-accommodation-room${selected ? " pi-accommodation-room--selected" : ""}`} key={option.id} onClick={() => choose(option.id)}>
-              <span className="pi-accommodation-room__copy"><strong>{option.label.replace(/^.*?·\s*/, "")}</strong>{option.detail ? <small>{option.detail}</small> : null}</span>
-              <span className="pi-accommodation-room__price"><b>{perPerson.toLocaleString("en-EG")} EGP</b><small>per person · {Math.round(perPerson * guestCount).toLocaleString("en-EG")} EGP total</small></span>
+            const minimum = option.minGuests ?? 1;
+            const maximum = option.maxGuests ?? 80;
+            const fits = guestCount >= minimum && guestCount <= maximum;
+            const capacity = minimum === maximum ? `${minimum} guest${minimum === 1 ? "" : "s"}` : `${minimum}–${maximum} guests`;
+            return <button type="button" disabled={!fits} className={`pi-accommodation-room${selected ? " pi-accommodation-room--selected" : ""}${!fits ? " pi-accommodation-room--locked" : ""}`} key={option.id} onClick={() => choose(option.id)}>
+              <span className="pi-accommodation-room__copy"><strong>{option.label.replace(/^.*?·\s*/, "")}</strong><small>{capacity}{option.detail ? ` · ${option.detail}` : ""}</small></span>
+              <span className="pi-accommodation-room__price"><b>{perPerson.toLocaleString("en-EG")} EGP</b><small>{fits ? `per person · ${Math.round(perPerson * guestCount).toLocaleString("en-EG")} EGP total` : `available for ${capacity}`}</small></span>
             </button>;
           })}
-          {!relevantOptions.length ? <p className="pi-flow__hint">This stay has no room option for {guestCount} guests. Choose another stay or message us on WhatsApp for help.</p> : null}
         </div>
         <p className="pi-flow__hint">Every listed price is per person and includes accommodation, round-trip transportation and the full trip program.</p>
       </section>
@@ -195,17 +193,25 @@ function AccommodationPicker({
 
   return (
     <div className="pi-accommodation-stays">
+      <div className="pi-accommodation-stays__intro"><span>DAHAB STAY</span><strong>Starts from {overallFrom.toLocaleString("en-EG")} EGP</strong><small>per person · accommodation, transportation & full program included</small></div>
       {stays.map((stay) => {
-        const possible = stay.options.filter((option) => guestCount >= (option.minGuests ?? 1) && guestCount <= (option.maxGuests ?? 80));
-        const from = possible.length ? Math.min(...possible.map((option) => basePrice + (option.priceEgp ?? 0))) : null;
+        const from = Math.min(...stay.options.map((option) => basePrice + (option.priceEgp ?? 0)));
         const selected = stay.options.some((option) => option.id === selectedId);
         return <button type="button" className={`pi-accommodation-stay${selected ? " pi-accommodation-stay--selected" : ""}`} key={stay.id} onClick={() => onOpenStay(stay.id)}>
           <span><strong>{stay.label}</strong>{stay.detail ? <small>{stay.detail}</small> : null}</span>
-          <span className="pi-accommodation-stay__price">{from !== null ? <><b>From {from.toLocaleString("en-EG")} EGP</b><small>per person</small></> : <small>Contact us for this group size</small>}</span>
+          <span className="pi-accommodation-stay__price"><b>Starts from {from.toLocaleString("en-EG")} EGP</b><small>per person</small></span>
         </button>;
       })}
       {selectedOption ? <p className="pi-accommodation-stays__selected">Selected: <strong>{selectedOption.label}</strong></p> : null}
-      <p className="pi-flow__hint">Choose one stay for your whole group, then choose the room type that fits your guest count.</p>
+      <p className="pi-flow__hint">Open a stay to view its gallery and all room types. Rooms that do not fit your group are shown but locked.</p>
+    </div>
+  );
+}
+
+function AccommodationGallery({ stay }: { stay: Stay }) {
+  return (
+    <div className="pi-accommodation-gallery" aria-label={`${stay.label} gallery`}>
+      {stay.gallery.map((src, index) => <img src={src} alt={`${stay.label} ${index + 1}`} key={src} loading={index === 0 ? "eager" : "lazy"} />)}
     </div>
   );
 }

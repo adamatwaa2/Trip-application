@@ -275,8 +275,10 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
         {step === "custom" && trip.bookingFormFields?.length ? (
           <>
             <h2 className="pi-flow__title">{STEP_LABELS.custom}</h2>
-            <label htmlFor="guestCountCustom">Number of guests</label>
-            <input id="guestCountCustom" type="number" min="1" max="80" value={guestCount} onChange={(e) => resizeGuestList(e.target.value)} />
+            <label className="pi-group-size" htmlFor="guestCountCustom">
+              <span><strong>Your group size</strong><small>We will show every room type; only rooms that fit your group can be selected.</small></span>
+              <input id="guestCountCustom" aria-label="Number of guests" type="number" min="1" max="80" value={guestCount} onChange={(e) => resizeGuestList(e.target.value)} />
+            </label>
             <TripCustomQuestions
               fields={trip.bookingFormFields}
               answers={customAnswers}
