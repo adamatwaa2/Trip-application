@@ -181,10 +181,35 @@ function AccommodationPicker({
             const maximum = option.maxGuests ?? 80;
             const fits = guestCount >= minimum && guestCount <= maximum;
             const capacity = minimum === maximum ? `${minimum} guest${minimum === 1 ? "" : "s"}` : `${minimum}–${maximum} guests`;
-            return <button type="button" disabled={!fits} className={`pi-accommodation-room${selected ? " pi-accommodation-room--selected" : ""}${!fits ? " pi-accommodation-room--locked" : ""}`} key={option.id} onClick={() => choose(option.id)}>
-              <span className="pi-accommodation-room__copy"><strong>{option.label.replace(/^.*?·\s*/, "")}</strong><small>{capacity}{option.detail ? ` · ${option.detail}` : ""}</small></span>
-              <span className="pi-accommodation-room__price"><b>{perPerson.toLocaleString("en-EG")} EGP</b><small>{fits ? `per person · ${Math.round(perPerson * guestCount).toLocaleString("en-EG")} EGP total` : `available for ${capacity}`}</small></span>
-            </button>;
+            return (
+              <article className={`pi-accommodation-room-card${selected ? " pi-accommodation-room-card--selected" : ""}${!fits ? " pi-accommodation-room-card--locked" : ""}`} key={option.id}>
+                <button
+                  type="button"
+                  disabled={!fits}
+                  className="pi-accommodation-room"
+                  onClick={() => choose(option.id)}
+                  aria-expanded={selected}
+                >
+                  <span className="pi-accommodation-room__copy">
+                    <strong>{option.label.replace(/^.*?·\s*/, "")}</strong>
+                    <small>{capacity}{option.detail ? ` · ${option.detail}` : ""}</small>
+                  </span>
+                  <span className="pi-accommodation-room__price">
+                    <small>Per person</small>
+                    <b>{perPerson.toLocaleString("en-EG")} EGP</b>
+                  </span>
+                </button>
+                {selected ? (
+                  <div className="pi-accommodation-room__details">
+                    <div>
+                      <span>For {guestCount} guest{guestCount === 1 ? "" : "s"}</span>
+                      <strong>{Math.round(perPerson * guestCount).toLocaleString("en-EG")} EGP total</strong>
+                    </div>
+                    <p>Includes accommodation, round-trip transportation and the full trip program.</p>
+                  </div>
+                ) : null}
+              </article>
+            );
           })}
         </div>
         <p className="pi-flow__hint">All room types are shown below, from the lowest price upward. Every listed price is per person and includes accommodation, round-trip transportation and the full trip program.</p>
