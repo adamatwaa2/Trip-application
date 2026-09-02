@@ -172,7 +172,7 @@ function AccommodationPicker({
           <span>{guestCount} guest{guestCount === 1 ? "" : "s"}</span>
         </div>
         {activeStay.gallery.length ? <AccommodationGallery stay={activeStay} /> : null}
-        <div className="pi-accommodation-picker__rooms">
+        <div className="pi-accommodation-picker__rooms" aria-label="Accommodation room options">
           {activeStay.options.map((option) => {
             const selected = option.id === selectedId;
             const perPerson = basePrice + (option.priceEgp ?? 0);
@@ -186,7 +186,7 @@ function AccommodationPicker({
             </button>;
           })}
         </div>
-        <p className="pi-flow__hint">Every listed price is per person and includes accommodation, round-trip transportation and the full trip program.</p>
+        <p className="pi-flow__hint">Swipe to browse room types. Every listed price is per person and includes accommodation, round-trip transportation and the full trip program.</p>
       </section>
     );
   }

@@ -31,8 +31,7 @@ export function GalleryLightbox({ images }: { images: GalleryImage[] }) {
       <div className="pi-gallery pi-gallery--interactive">
         {images.map((image, index) => (
           <button key={`${image.src}-${index}`} type="button" className="pi-gallery__item" onClick={() => setActive(index)} aria-label={`Open photo ${index + 1} of ${images.length}`}>
-            {image.type === "video" ? <video src={image.src} poster={image.poster} muted playsInline preload="metadata" /> : <Image src={image.src} alt={image.alt} fill sizes="(max-width: 899px) 50vw, 33vw" />}
-            {image.type === "video" ? <span className="pi-gallery__play" aria-hidden="true">▶</span> : null}
+            {image.type === "video" ? <video src={image.src} poster={image.poster} autoPlay loop muted playsInline preload="auto" /> : <Image src={image.src} alt={image.alt} fill sizes="(max-width: 899px) 50vw, 33vw" />}
             <span className="pi-gallery__number">{String(index + 1).padStart(2, "0")}</span>
           </button>
         ))}
