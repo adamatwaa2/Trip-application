@@ -34,7 +34,7 @@ export default async function TripBookingPage({ params }: Params) {
 
   return (
     <Section tone="ivory">
-      <Container size="read">
+      <Container>
         <Breadcrumbs
           trail={[
             { label: "Home", href: "/" },

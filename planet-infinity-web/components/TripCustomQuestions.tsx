@@ -162,6 +162,7 @@ function AccommodationPicker({
   const activeStay = stays.find((stay) => stay.id === openStayId);
   const overallFrom = Math.min(...(field.options ?? []).map((option) => basePrice + (option.priceEgp ?? 0)));
   const choose = (optionId: string) => onChange(Object.fromEntries((field.options ?? []).map((option) => [option.id, option.id === optionId ? 1 : 0])));
+  const activeRooms = activeStay ? [...activeStay.options].sort((a, b) => (a.priceEgp ?? 0) - (b.priceEgp ?? 0)) : [];
 
   if (activeStay) {
     return (
@@ -173,7 +174,7 @@ function AccommodationPicker({
         </div>
         {activeStay.gallery.length ? <AccommodationGallery stay={activeStay} /> : null}
         <div className="pi-accommodation-picker__rooms" aria-label="Accommodation room options">
-          {activeStay.options.map((option) => {
+          {activeRooms.map((option) => {
             const selected = option.id === selectedId;
             const perPerson = basePrice + (option.priceEgp ?? 0);
             const minimum = option.minGuests ?? 1;
@@ -186,7 +187,7 @@ function AccommodationPicker({
             </button>;
           })}
         </div>
-        <p className="pi-flow__hint">Swipe to browse room types. Every listed price is per person and includes accommodation, round-trip transportation and the full trip program.</p>
+        <p className="pi-flow__hint">All room types are shown below, from the lowest price upward. Every listed price is per person and includes accommodation, round-trip transportation and the full trip program.</p>
       </section>
     );
   }
