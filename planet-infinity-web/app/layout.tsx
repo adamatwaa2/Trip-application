@@ -44,9 +44,14 @@ export const metadata: Metadata = {
   creator: "Planet Infinity Entertainment",
   publisher: "Planet Infinity Entertainment",
   category: "entertainment",
+  alternates: { canonical: "/" },
   icons: {
-    icon: [{ url: "/icon?brand=20260829", type: "image/png", sizes: "512x512" }],
-    apple: [{ url: "/apple-icon?brand=20260829", type: "image/png", sizes: "512x512" }],
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml", sizes: "any" },
+      { url: "/icon", type: "image/png", sizes: "512x512" },
+    ],
+    shortcut: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/apple-icon", type: "image/png", sizes: "512x512" }],
   },
   openGraph: {
     title: "Planet Infinity | Entertainment, Community & Experiences",
@@ -63,7 +68,11 @@ export const metadata: Metadata = {
     description: "An entertainment and community platform for curated gatherings, events, experiences and selected trips in Egypt.",
     images: ["/opengraph-image?brand=20260829"],
   },
-  robots: { index: true, follow: true },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
