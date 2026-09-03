@@ -31,8 +31,8 @@ export const PLACEHOLDERS = {
   },
   reservationsEmail: {
     label: "Reservations email",
-    value: null,
-    note: "Booking Confirmation PDF · reservations@…",
+    value: "planetinfinity2023@gmail.com",
+    note: "Booking Confirmation PDF · reservations inbox",
   },
   emergencyContact: {
     label: "Emergency contact",
