@@ -14,6 +14,10 @@ import { createClient } from "@/lib/supabase/server";
  *   archiveRequest  a request is raw intake. Archiving hides it from the list
  *                   and nothing else, so a mis-click costs nothing: restore
  *                   puts it straight back.
+ *   archiveBooking  the same tidy-up for a booking: it leaves the bookings
+ *                   list and nothing else changes, so restoreBooking returns it
+ *                   exactly as it was. Cancel first if the seats should be
+ *                   resold — hiding a booking does not free its seats.
  *
  * Both reach the database only through a SECURITY DEFINER function that
  * re-checks admin rights server-side. The admin role has no direct write grant
@@ -75,4 +79,35 @@ export async function restoreRequest(requestId: string): Promise<RemovalResult> 
   revalidatePath(`/admin/requests/${requestId}`);
   revalidatePath("/admin");
   return { ok: true, message: "Restored. It is back in the requests list." };
+}
+
+export async function archiveBooking(bookingId: string, reason?: string): Promise<RemovalResult> {
+  await requireAdmin();
+  if (!UUID.test(bookingId)) return { ok: false, error: "Invalid booking reference." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("archive_booking", {
+    p_booking_id: bookingId,
+    p_note: note(reason),
+  });
+  if (error) return { ok: false, error: "The booking could not be removed." };
+
+  revalidatePath("/admin/bookings");
+  revalidatePath(`/admin/bookings/${bookingId}`);
+  revalidatePath("/admin");
+  return { ok: true, message: "Removed from the bookings list. Restore brings it back." };
+}
+
+export async function restoreBooking(bookingId: string): Promise<RemovalResult> {
+  await requireAdmin();
+  if (!UUID.test(bookingId)) return { ok: false, error: "Invalid booking reference." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("restore_booking", { p_booking_id: bookingId });
+  if (error) return { ok: false, error: "The booking could not be restored." };
+
+  revalidatePath("/admin/bookings");
+  revalidatePath(`/admin/bookings/${bookingId}`);
+  revalidatePath("/admin");
+  return { ok: true, message: "Restored. It is back in the bookings list." };
 }
