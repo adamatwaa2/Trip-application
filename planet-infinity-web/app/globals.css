@@ -503,3 +503,27 @@ select:focus {
   color: var(--pi-soft);
   line-height: 1.8;
 }
+
+
+/* ---------- per-trip request theme (/apply) ----------
+   Admin can set an accent colour + photo per trip for the Trip Request
+   form. Scoped to .pi-apply-page so the shared .chip/.submit-btn defaults
+   used elsewhere (e.g. booking flow) are untouched when no theme is set. */
+.pi-apply-page[data-accent] .chip.selected {
+  background: color-mix(in srgb, var(--pi-request-accent) 10%, transparent);
+  border-color: var(--pi-request-accent);
+}
+.pi-apply-page[data-accent] .submit-btn {
+  background: linear-gradient(120deg, var(--pi-request-accent) 0%, var(--pi-shine) 100%);
+}
+.pi-apply-page[data-accent] .badge.warm {
+  background: var(--pi-request-accent);
+}
+.pi-apply-hero {
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  border-radius: var(--pi-r-card);
+  margin-bottom: var(--pi-s3);
+  display: block;
+}
