@@ -68,6 +68,9 @@ body:has(.pi-admin) > main { min-height: 100vh; }
 .pi-admin-form-field { display: grid; gap: 12px; padding: 16px; border: 1px solid var(--pi-line); border-radius: 15px; background: #fff; }
 .pi-admin-form-field .pi-admin-section__head { margin: 0; }
 .pi-admin-form-field .pi-admin-section__head button { padding: 7px 10px; border: 1px solid var(--pi-line); border-radius: 9px; background: #fff; color: var(--pi-flame); cursor: pointer; font: 700 11px var(--pi-body); }
+.pi-admin-inline-actions { display: flex; gap: 8px; }
+.pi-admin-form-field--inactive { opacity: .55; }
+
 .pi-admin-payment-proof { display: grid; gap: 10px; margin-top: 22px; }
 .pi-admin-payment-proof h3,.pi-admin-payment-proof p { margin: 0; }
 .pi-admin-payment-proof a { display: block; width: min(100%, 520px); }
@@ -98,6 +101,10 @@ body:has(.pi-admin) > main { min-height: 100vh; }
 .pi-admin-quick-actions button,.pi-admin-contact-actions a { min-height: 42px; display: grid; place-items: center; padding: 9px 10px; border: 1px solid var(--pi-line); border-radius: 11px; background: #fff; color: var(--pi-ink); cursor: pointer; font: 800 12px var(--pi-body); text-decoration: none; text-align: center; }
 .pi-admin-quick-actions button:first-child { background: #dff6e7; border-color: #b4dec3; color: #237443; }
 .pi-admin-quick-actions button:nth-child(2) { background: #fee5e2; border-color: #f2b9b1; color: #aa3c2d; }
+.pi-admin-danger-zone label { color: #aa3c2d; }
+.pi-admin-button-danger { display: inline-flex; justify-content: center; align-items: center; min-height: 40px; padding: 10px 15px; border: 1px solid #f2b9b1; border-radius: 12px; background: #fee5e2; color: #aa3c2d; cursor: pointer; font: 800 13px var(--pi-body); width: fit-content; }
+.pi-admin-button-danger:disabled { cursor: not-allowed; opacity: .5; }
+
 .pi-admin-contact-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 20px; }
 .pi-admin-contact-actions a:first-child { background: #e4f8ea; border-color: #bce4c8; color: #176b38; }
 .pi-admin-filters--crm { grid-template-columns: minmax(220px, 1.8fr) minmax(170px, .8fr) auto auto; margin-bottom: 24px; }
