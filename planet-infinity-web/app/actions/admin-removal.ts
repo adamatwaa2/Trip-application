@@ -10,18 +10,18 @@ import { createClient } from "@/lib/supabase/server";
  * Two different verbs, deliberately:
  *   cancelBooking   a booking carries money and an audit trail, so it is never
  *                   deleted. It moves to 'cancelled' and its seats go back on
- *                   sale. The record â and every payment on it â stays.
+ *                   sale. The record — and every payment on it — stays.
  *   archiveRequest  a request is raw intake. Archiving hides it from the list
  *                   and nothing else, so a mis-click costs nothing: restore
  *                   puts it straight back.
  *   archiveBooking  the same tidy-up for a booking: it leaves the bookings
  *                   list and nothing else changes, so restoreBooking returns it
  *                   exactly as it was. Cancel first if the seats should be
- *                   resold â hiding a booking does not free its seats.
+ *                   resold — hiding a booking does not free its seats.
  *   deleteBooking   irreversible. The booking row and everything attached to
  *                   it (payments, guests, seat holds, documents, notification
  *                   history) is permanently removed via cascade. This exists
- *                   only to purge demo/test data â a real booking should be
+ *                   only to purge demo/test data — a real booking should be
  *                   cancelled or archived, never deleted.
  *
  * All of these reach the database only through a SECURITY DEFINER function
@@ -104,7 +104,7 @@ export async function archiveBooking(bookingId: string, reason?: string): Promis
 }
 
 /**
- * Permanently deletes a booking â the row, its payments, guests, seat
+ * Permanently deletes a booking — the row, its payments, guests, seat
  * holds, documents and notification history all go, via cascade. There is
  * no undo. Only for purging demo/test bookings.
  */
