@@ -62,7 +62,7 @@ export async function getOverview() {
   const supabase = await createClient();
   const countFor = async (table: "requests" | "bookings", status?: string) => {
     let query = supabase.from(table).select("id", { count: "exact", head: true });
-    if (table === "requests") query = query.is("archived_at", null);
+    query = query.is("archived_at", null);
     if (status) query = query.eq("status", status);
     const { count } = await query; return count ?? 0;
   };
