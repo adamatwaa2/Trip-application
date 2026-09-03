@@ -38,7 +38,8 @@ export function TripCustomQuestions({
   basePrice?: number;
 }) {
   const [openStay, setOpenStay] = useState<Record<string, string>>({});
-  const guestCountRequired = guestCount < 1 && fields.some((field) => field.type === "quantity");
+  const visibleFields = fields.filter((field) => field.active !== false);
+  const guestCountRequired = guestCount < 1 && visibleFields.some((field) => field.type === "quantity");
 
   return (
     <div className="pi-custom-questions">
@@ -51,8 +52,9 @@ export function TripCustomQuestions({
           </div>
         </div>
       ) : null}
-      {fields.map((field) => {
+      {visibleFields.map((field) => {
         if (field.type === "quantity" && guestCount < 1) return null;
+        const activeOptions = (field.options ?? []).filter((option) => option.active !== false);
 
         const answer = answers[field.id];
         const fieldUnit = field.quantityUnit?.trim() || "person";
@@ -71,20 +73,20 @@ export function TripCustomQuestions({
             {field.type === "select" ? (
               <select aria-label={field.label} value={typeof answer === "string" ? answer : ""} required={field.required} onChange={(event) => onChange(field.id, event.target.value)}>
                 <option value="">Choose an option</option>
-                {(field.options ?? []).map((option) => <option value={option.id} key={option.id}>{bookingOptionLabel(option)}</option>)}
+                {activeOptions.map((option) => <option value={option.id} key={option.id}>{bookingOptionLabel(option, guestCount)}</option>)}
               </select>
             ) : null}
             {field.type === "multiselect" ? (
               <div className="pi-custom-options">
-                {(field.options ?? []).map((option) => {
+                {activeOptions.map((option) => {
                   const selected = Array.isArray(answer) ? answer : [];
-                  return <label className="agree-row" key={option.id}><input type="checkbox" checked={selected.includes(option.id)} onChange={(event) => onChange(field.id, event.target.checked ? [...selected, option.id] : selected.filter((value) => value !== option.id))} /><span>{bookingOptionLabel(option)}</span></label>;
+                  return <label className="agree-row" key={option.id}><input type="checkbox" checked={selected.includes(option.id)} onChange={(event) => onChange(field.id, event.target.checked ? [...selected, option.id] : selected.filter((value) => value !== option.id))} /><span>{bookingOptionLabel(option, guestCount)}</span></label>;
                 })}
               </div>
             ) : null}
             {field.type === "quantity" && !perGuestAccommodation ? (
               <div className="pi-quantity-options">
-                {(field.options ?? []).map((option) => {
+                {activeOptions.map((option) => {
                   const unit = fieldUnit;
                   const maxQuantity = personBasedQuantity ? guestCount : 20;
                   const quantities = answer && typeof answer === "object" && !Array.isArray(answer) ? answer : {};
@@ -105,9 +107,9 @@ export function TripCustomQuestions({
                             <button type="button" onClick={() => update(quantity - 1)} aria-label={`Remove one ${option.label}`}>−</button>
                             <output>{quantity}</output>
                             <button type="button" onClick={() => update(quantity + 1)} disabled={quantity === maxQuantity} aria-label={`Add one ${option.label}`}>+</button>
-                          </div>
                         </div>
-                      )}
+                      </div>
+                     )}
                     </div>
                   );
                 })}
