@@ -47,12 +47,17 @@ export function BookingFormBuilder({
         Add only the questions that change for this trip.
       </p>
       {fields.map((field, index) => (
-        <article className="pi-admin-form-field" key={field.id}>
+        <article className={`pi-admin-form-field${field.active === false ? " pi-admin-form-field--inactive" : ""}`} key={field.id}>
           <div className="pi-admin-section__head">
-            <strong>Question {index + 1}</strong>
-            <button type="button" onClick={() => onChange(fields.filter((_, fieldIndex) => fieldIndex !== index))}>
-              Remove
-            </button>
+            <strong>Question {index + 1}{field.active === false ? " (off)" : ""}</strong>
+            <div className="pi-admin-inline-actions">
+              <button type="button" onClick={() => update(index, { active: field.active === false ? true : false })}>
+                {field.active === false ? "Turn on" : "Turn off"}
+              </button>
+              <button type="button" onClick={() => onChange(fields.filter((_, fieldIndex) => fieldIndex !== index))}>
+                Remove
+              </button>
+            </div>
           </div>
           <div className="pi-admin-form__grid pi-admin-form__grid--two">
             <label>
@@ -81,16 +86,32 @@ export function BookingFormBuilder({
               <p className="pi-admin-help">{field.type === "quantity" ? field.quantityUnit?.trim().toLowerCase() === "accommodation" ? "Guests choose one hotel and one room type for their whole group. The room price is charged per person, then multiplied by the guest count." : "Choose a unit such as person, tent or room. Person quantities are capped at the guest count; other units can be counted separately." : "A selected add-on price is charged per guest."}</p>
               {field.type === "quantity" ? <label>Quantity unit<input maxLength={24} value={field.quantityUnit ?? "person"} placeholder="person, tent, room…" onChange={(event) => update(index, { quantityUnit: event.target.value })} /></label> : null}
               {(field.options ?? []).map((option, optionIndex) => (
-                <div className="pi-admin-form__grid pi-admin-form__grid--two" key={option.id}>
+                <div className={`pi-admin-form__grid pi-admin-form__grid--two${option.active === false ? " pi-admin-form-field--inactive" : ""}`} key={option.id}>
                   <label>
-                    Choice
+                    Choice{option.active === false ? " (off)" : ""}
                     <input required maxLength={120} value={option.label} placeholder="e.g. Pottery workshop" onChange={(event) => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, label: event.target.value } : current) })} />
                   </label>
                   <label>
                     Extra price (EGP) <span className="opt">optional</span>
                     <input type="number" min="0" step="1" value={option.priceEgp ?? ""} placeholder="0" onChange={(event) => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, priceEgp: event.target.value === "" ? undefined : Number(event.target.value) } : current) })} />
                   </label>
-                  {field.type === "quantity" && field.quantityUnit?.trim().toLowerCase() === "accommodation" ? <label>
+                  {(field.type === "select" || field.type === "multiselect") && option.priceEgp ? (
+                    <label>
+                      How this price is charged
+                      <select
+                        value={option.priceMode === "totalSplit" ? "totalSplit" : "perGuest"}
+                        onChange={(event) => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, priceMode: event.target.value === "totalSplit" ? "totalSplit" : undefined } : current) })}
+                      >
+                        <option value="perGuest">Per guest — price × number of guests</option>
+                        <option value="totalSplit">Fixed total — split evenly across the guests who book it (e.g. a 4x4 rental)</option>
+                      </select>
+                    </label>
+                  ) : null}
+                  <label className="pi-admin-check">
+                    <input type="checkbox" checked={option.active !== false} onChange={(event) => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, active: event.target.checked ? undefined : false } : current) })} />
+                    Active — visible to guests
+                </label>
+                {field.type === "quantity" && field.quantityUnit?.trim().toLowerCase() === "accommodation" ? <label>
                     Room detail <span className="opt">optional</span>
                     <input maxLength={240} value={option.detail ?? ""} placeholder="e.g. Al Mamsha · breakfast included" onChange={(event) => update(index, { options: (field.options ?? []).map((current, currentIndex) => currentIndex === optionIndex ? { ...current, detail: event.target.value } : current) })} />
                   </label> : null}
