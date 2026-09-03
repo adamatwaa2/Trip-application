@@ -14,6 +14,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { BookingFormBuilder } from "@/components/BookingFormBuilder";
 import type { BookingFormField } from "@/lib/booking-form";
+import { REQUEST_ACCENTS, type RequestAccentId } from "@/lib/request-form";
 
 const GUIDE_SEAT = 1;
 function withGuideSeatReserved(seats: number[] | undefined) {
@@ -55,6 +56,8 @@ export type CatalogEditorItem = {
   seat_selection_enabled?: boolean;
   seat_config?: SeatConfig | null;
   booking_form_fields?: BookingFormField[] | null;
+  request_form_fields?: BookingFormField[] | null;
+  request_form_theme?: { accent?: string; image?: string } | null;
   payment_proof_required?: boolean;
   song_request_enabled?: boolean;
   media: CatalogMedia | null;
@@ -186,6 +189,13 @@ export function AdminCatalogForm({
   const [bookingFormFields, setBookingFormFields] = useState<BookingFormField[]>(
     item?.booking_form_fields ?? [],
   );
+  const [requestFormFields, setRequestFormFields] = useState<BookingFormField[]>(
+    item?.request_form_fields ?? [],
+  );
+  const [requestAccent, setRequestAccent] = useState<RequestAccentId | "">(
+    (item?.request_form_theme?.accent as RequestAccentId | undefined) ?? "",
+  );
+  const [requestImage, setRequestImage] = useState(item?.request_form_theme?.image ?? "");
   const [paymentProofRequired, setPaymentProofRequired] = useState(
     item?.payment_proof_required ?? true,
   );
@@ -339,6 +349,8 @@ export function AdminCatalogForm({
             songRequestEnabled: isTrip && songRequestEnabled,
             seatConfig: editorSeatConfigWithFleet(item?.seat_config, vehicleCount),
             bookingFormFields,
+            requestFormFields: isTrip ? requestFormFields : [],
+            requestFormTheme: isTrip ? { accent: requestAccent || undefined, image: requestImage.trim() || undefined } : {},
             paymentProofRequired: isTrip && paymentProofRequired,
             inclusions: lines(inclusions),
             exclusions: lines(exclusions),
@@ -559,6 +571,61 @@ export function AdminCatalogForm({
             uploading={uploading}
             onAccommodationImageUpload={uploadAccommodationOptionPhoto}
           />
+        </fieldset>
+      ) : null}
+
+      {/* The Trip request form is a different conversation from the booking
+          form: it asks who is coming, not what they want to buy. Same editor,
+          its own questions, and its own look per trip. */}
+      {isTrip ? (
+        <fieldset className="pi-admin-form__section">
+          <legend>Trip request form</legend>
+          <p className="pi-admin-help">
+            The questions someone answers before you hold them a seat. Name, mobile,
+            email and the policy tick are always asked — add whatever else you want to
+            know for this trip. Leave it empty and the standard questions are used.
+          </p>
+          <BookingFormBuilder
+            fields={requestFormFields}
+            onChange={setRequestFormFields}
+            uploading={uploading}
+            onAccommodationImageUpload={uploadAccommodationOptionPhoto}
+          />
+
+          <label>
+            Photo at the top of the form
+            <input
+              placeholder="https://… or /brand/…"
+              value={requestImage}
+              onChange={(event) => setRequestImage(event.target.value)}
+            />
+          </label>
+          <p className="pi-admin-help">Leave empty for no photo.</p>
+
+          <span>Accent colour</span>
+          <div className="pi-admin-quick-actions" role="group" aria-label="Accent colour">
+            {REQUEST_ACCENTS.map((accent) => (
+              <button
+                key={accent.id}
+                type="button"
+                aria-pressed={requestAccent === accent.id}
+                onClick={() => setRequestAccent(requestAccent === accent.id ? "" : accent.id)}
+                style={{
+                  borderWidth: requestAccent === accent.id ? 3 : 1,
+                  borderStyle: "solid",
+                  borderColor: `var(${accent.cssVar})`,
+                  background: requestAccent === accent.id ? `var(${accent.cssVar})` : "transparent",
+                  color: requestAccent === accent.id ? "#fff" : "inherit",
+                  fontWeight: 800,
+                }}
+              >
+                {accent.label}
+              </button>
+            ))}
+          </div>
+          <p className="pi-admin-help">
+            Brand colours only, from PI-BB-001. Nothing selected means the usual orange.
+          </p>
         </fieldset>
       ) : null}
 
