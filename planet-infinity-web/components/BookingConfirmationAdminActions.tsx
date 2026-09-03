@@ -6,7 +6,7 @@ import {
   generateBookingConfirmation,
   markBookingServicesConfirmed,
 } from "@/app/actions/booking-confirmations";
-import { archiveBooking, cancelBooking, restoreBooking } from "@/app/actions/admin-removal";
+import { archiveBooking, cancelBooking, deleteBooking, restoreBooking } from "@/app/actions/admin-removal";
 
 export function BookingConfirmationAdminActions({
   bookingId,
@@ -29,6 +29,8 @@ export function BookingConfirmationAdminActions({
   const [cancelFailed, setCancelFailed] = useState(false);
   const [confirmingCancel, setConfirmingCancel] = useState(false);
   const [confirmingRemove, setConfirmingRemove] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleteTyped, setDeleteTyped] = useState("");
   const [reason, setReason] = useState("");
   const [pending, startTransition] = useTransition();
 
@@ -49,6 +51,20 @@ export function BookingConfirmationAdminActions({
       setCancelFailed(!result.ok);
       setCancelMessage(result.ok ? result.message : result.error);
       if (result.ok) router.refresh();
+    });
+  }
+
+  function runDelete() {
+    setConfirmingDelete(false);
+    startTransition(async () => {
+      const result = await deleteBooking(bookingId, reason);
+      if (!result.ok) {
+        setCancelFailed(true);
+        setCancelMessage(result.error);
+        return;
+      }
+      router.push("/admin/bookings");
+      router.refresh();
     });
   }
 
@@ -90,8 +106,10 @@ export function BookingConfirmationAdminActions({
 
       {message ? <p className={message.includes("could not") || message.includes("first") ? "pi-admin-error" : "pi-admin-success"}>{message}</p> : null}
 
-      {/* A booking is never deleted — it holds payments and a paper trail.
-          Cancelling marks it cancelled and puts its seats back on sale. */}
+      {/* Cancel and Remove never delete anything — the record and its
+          payments stay. Cancelling marks it cancelled and puts its seats
+          back on sale; Remove just hides it. Real, permanent deletion is
+          its own separate, harder-to-reach control below. */}
       <div
         className="pi-admin-status-form"
         style={{ marginTop: 18, paddingTop: 18, borderTop: "1px solid var(--pi-line)" }}
@@ -147,6 +165,54 @@ export function BookingConfirmationAdminActions({
             on sale. <b>Remove from list</b> just hides it — nothing is deleted, its payments stay,
             and <b>Restore</b> brings it back.
           </p>
+        )}
+      </div>
+
+      {/* Real, irreversible delete — kept well apart from Cancel/Remove above
+          so a real booking is never lost to a mis-click. Only for purging
+          demo/test bookings. */}
+      <div
+        className="pi-admin-status-form pi-admin-danger-zone"
+        style={{ marginTop: 18, paddingTop: 18, borderTop: "1px solid var(--pi-line)" }}
+      >
+        <label htmlFor={`delete-confirm-${bookingId}`}>Delete this booking permanently</label>
+        <p className="pi-admin-help">
+          Only for test or demo bookings. This removes the booking, its payment history and
+          everything attached to it from the overview, every list and this trip&apos;s booking view —
+          for good. There is no restore.
+        </p>
+
+        {confirmingDelete ? (
+          <div className="pi-admin-quick-actions" aria-label="Confirm permanent deletion">
+            <input
+              id={`delete-confirm-${bookingId}`}
+              type="text"
+              placeholder={`Type ${bookingNumber} to confirm`}
+              value={deleteTyped}
+              disabled={pending}
+              onChange={(event) => setDeleteTyped(event.target.value)}
+            />
+            <button
+              type="button"
+              className="pi-admin-button-danger"
+              disabled={pending || deleteTyped.trim() !== bookingNumber}
+              onClick={runDelete}
+            >
+              Delete {bookingNumber} permanently
+            </button>
+            <button type="button" disabled={pending} onClick={() => { setConfirmingDelete(false); setDeleteTyped(""); }}>
+              Keep it
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="pi-admin-button-danger"
+            disabled={pending}
+            onClick={() => setConfirmingDelete(true)}
+          >
+            Delete permanently…
+          </button>
         )}
       </div>
     </div>
