@@ -94,7 +94,7 @@ const adminBookingSelect = "id, booking_number, booking_type, status, total_amou
 
 export async function getBookings() {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("bookings").select(adminBookingSelect).order("created_at", { ascending: false });
+  const { data, error } = await supabase.from("bookings").select(adminBookingSelect).is("archived_at", null).order("created_at", { ascending: false });
   return { items: (data ?? []) as unknown as AdminBooking[], error: error ? "Bookings could not be loaded." : null };
 }
 export async function getBookingsForProduct(bookingType: "trip" | "event", productId: string) {
@@ -105,6 +105,7 @@ export async function getBookingsForProduct(bookingType: "trip" | "event", produ
     .select(adminBookingSelect)
     .eq("booking_type", bookingType)
     .eq(column, productId)
+    .is("archived_at", null)
     .order("created_at", { ascending: false });
   return { items: (data ?? []) as unknown as AdminBooking[], error: error ? "Bookings could not be loaded." : null };
 }
