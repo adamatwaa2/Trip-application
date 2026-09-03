@@ -49,13 +49,20 @@ export const WORLD_NAV: NavItem[] = [
 
 /** Guest-facing flows that already exist. */
 export const PLAN_LINKS: NavItem[] = [
-  { label: "Apply to join", href: "/apply", status: "ready" },
+  { label: "Trip request", href: "/apply", status: "ready" },
   { label: "Book a trip", href: "/trips", status: "ready" },
 ];
 
-/** Company / about surfaces. */
+/**
+ * Company / about surfaces.
+ *
+ * Careers sits here, not under Plan: a guest asking for a seat and a person
+ * asking for a job are two different doors, and putting them side by side is
+ * how people end up in the wrong form.
+ */
 export const COMPANY_LINKS: NavItem[] = [
   { label: "Explore", href: "/explore", status: "ready" },
+  { label: "Careers", href: "/careers", status: "ready" },
   { label: "Contact", href: "/contact", status: "ready" },
 ];
 
