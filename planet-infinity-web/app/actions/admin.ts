@@ -14,6 +14,7 @@ import {
   normaliseBookingFormFields,
   type BookingFormField,
 } from "@/lib/booking-form";
+import { normaliseRequestFormTheme } from "@/lib/request-form";
 import { SITE_COPY_FIELDS, type SiteCopy } from "@/content/site-copy";
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -92,6 +93,9 @@ type CatalogItemInput = {
   songRequestEnabled: boolean;
   seatConfig?: unknown;
   bookingFormFields: BookingFormField[];
+  /** Questions and look of the Trip request form (/apply) for this trip. */
+  requestFormFields: BookingFormField[];
+  requestFormTheme: unknown;
   paymentProofRequired: boolean;
   inclusions: string[];
   exclusions: string[];
@@ -209,6 +213,11 @@ export async function createCatalogItem(input: CatalogItemInput): Promise<Action
   if (input.kind === "trips" && bookingFormFields === null) {
     return { ok: false, error: "Check the custom booking questions and their options." };
   }
+  const requestFormFields = normaliseBookingFormFields(input.requestFormFields);
+  if (input.kind === "trips" && requestFormFields === null) {
+    return { ok: false, error: "Check the trip request questions and their options." };
+  }
+  const requestFormTheme = normaliseRequestFormTheme(input.requestFormTheme);
 
   const supabase = await createClient();
   const date = input.date ? new Date(input.date) : null;
@@ -254,6 +263,8 @@ export async function createCatalogItem(input: CatalogItemInput): Promise<Action
           song_request_enabled: input.songRequestEnabled,
           seat_config: seatConfig,
           booking_form_fields: bookingFormFields ?? [],
+          request_form_fields: requestFormFields ?? [],
+          request_form_theme: requestFormTheme,
           payment_proof_required: input.paymentProofRequired,
         }).eq("id", input.id!)
       : await supabase.from("trips").insert({
@@ -272,6 +283,8 @@ export async function createCatalogItem(input: CatalogItemInput): Promise<Action
           song_request_enabled: input.songRequestEnabled,
           seat_config: seatConfig,
           booking_form_fields: bookingFormFields ?? [],
+          request_form_fields: requestFormFields ?? [],
+          request_form_theme: requestFormTheme,
           payment_proof_required: input.paymentProofRequired,
         })
     : isUpdate
