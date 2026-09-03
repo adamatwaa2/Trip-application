@@ -14,15 +14,28 @@ export type BookingFormField = {
   help?: string;
   quantityUnit?: string;
   options?: BookingFormOption[];
+  /** false hides the question from guests while keeping it (and its saved
+   *  configuration) intact in the admin panel — a pause, not a delete. */
+  active?: boolean;
 };
 
-/** A trip add-on. The price is always in EGP and is added per guest. */
+/**
+ * How an option's price is charged.
+ * - perGuest (default): priceEgp is added for each guest in the booking.
+ * - totalSplit: priceEgp is the fixed total for the whole booking (e.g. a
+ *   4x4 with a flat rental cost) — it is charged once and divided evenly
+ *   across the guests, never multiplied by guest count.
+ */
+export type BookingOptionPriceMode = "perGuest" | "totalSplit";
+
+/** A trip add-on. The price is always in EGP. */
 export type BookingFormOption = {
   id: string;
   label: string;
   detail?: string;
   image?: string;
   priceEgp?: number;
+  priceMode?: BookingOptionPriceMode;
   /** Accommodation-only grouping fields. They are ignored for normal add-ons. */
   stayId?: string;
   stayLabel?: string;
@@ -30,6 +43,9 @@ export type BookingFormOption = {
   stayGallery?: string[];
   minGuests?: number;
   maxGuests?: number;
+  /** false hides the choice from guests while keeping its saved
+   *  configuration — a quick pause, not a delete. */
+  active?: boolean;
 };
 
 export type BookingFormAnswer = string | string[] | boolean | Record<string, number>;
@@ -93,6 +109,8 @@ export function normaliseBookingFormFields(value: unknown): BookingFormField[] |
             : [];
           const minGuests = option?.minGuests === undefined ? undefined : Math.floor(Number(option.minGuests));
           const maxGuests = option?.maxGuests === undefined ? undefined : Math.floor(Number(option.maxGuests));
+          const priceMode = option?.priceMode === "totalSplit" ? "totalSplit" as const : undefined;
+          const active = option?.active === false ? false : undefined;
           if ((stayId && !FIELD_ID.test(stayId))
             || (minGuests !== undefined && (!Number.isFinite(minGuests) || minGuests < 1 || minGuests > 80))
             || (maxGuests !== undefined && (!Number.isFinite(maxGuests) || maxGuests < 1 || maxGuests > 80))
@@ -103,12 +121,14 @@ export function normaliseBookingFormFields(value: unknown): BookingFormField[] |
             ...(detail ? { detail } : {}),
             ...(image ? { image } : {}),
             ...(price && price > 0 ? { priceEgp: Math.round(price) } : {}),
+            ...(price && price > 0 && priceMode ? { priceMode } : {}),
             ...(stayId ? { stayId } : {}),
             ...(stayLabel ? { stayLabel } : {}),
             ...(stayDetail ? { stayDetail } : {}),
             ...(stayGallery.length ? { stayGallery } : {}),
             ...(minGuests !== undefined ? { minGuests } : {}),
             ...(maxGuests !== undefined ? { maxGuests } : {}),
+            ...(active === false ? { active: false as const } : {}),
           }];
         }).slice(0, 30)
       : [];
@@ -122,14 +142,22 @@ export function normaliseBookingFormFields(value: unknown): BookingFormField[] |
       ...(clean(source.help, 240) ? { help: clean(source.help, 240) } : {}),
       ...(type === "quantity" && clean(source.quantityUnit, 24) ? { quantityUnit: clean(source.quantityUnit, 24) } : {}),
       ...(type === "select" || type === "multiselect" || type === "quantity" ? { options } : {}),
+      ...(source.active === false ? { active: false as const } : {}),
     });
   }
 
   return fields;
 }
 
-export function bookingOptionLabel(option: BookingFormOption) {
-  return option.priceEgp ? `${option.label} · +${option.priceEgp.toLocaleString("en-EG")} EGP` : option.label;
+export function bookingOptionLabel(option: BookingFormOption, guestCount?: number) {
+  if (!option.priceEgp) return option.label;
+  if (option.priceMode === "totalSplit") {
+    const perGuest = guestCount && guestCount > 0 ? Math.round(option.priceEgp / guestCount) : undefined;
+    return perGuest
+      ? `${option.label} · ${option.priceEgp.toLocaleString("en-EG")} EGP total (≈${perGuest.toLocaleString("en-EG")} EGP each)`
+      : `${option.label} · ${option.priceEgp.toLocaleString("en-EG")} EGP total, split across guests`;
+  }
+  return `${option.label} · +${option.priceEgp.toLocaleString("en-EG")} EGP`;
 }
 
 export function bookingOptionPrice(
@@ -149,7 +177,7 @@ export function bookingOptionPrice(
     const ids = Array.isArray(answer) ? answer : typeof answer === "string" ? [answer] : [];
     return total + (field.options ?? [])
       .filter((option) => ids.includes(option.id))
-      .reduce((sum, option) => sum + (option.priceEgp ?? 0) * guestCount, 0);
+      .reduce((sum, option) => sum + (option.priceMode === "totalSplit" ? (option.priceEgp ?? 0) : (option.priceEgp ?? 0) * guestCount), 0);
   }, 0);
 }
 
