@@ -57,41 +57,34 @@ export default async function HomePage() {
   return (
     <>
       <section className="pi-home-hero">
-        <Container className="pi-home-hero__grid">
-          <div className="pi-home-hero__copy">
-            <p className="pi-home-hero__eyebrow">{copy.home_eyebrow}</p>
-            <h1>{copy.home_title}</h1>
-            <p className="pi-home-hero__lede">{copy.home_lede}</p>
-            <div className="pi-home-hero__actions">
-              <ButtonLink href="#trips" size="large">{copy.home_trips_cta}</ButtonLink>
-              <ButtonLink href="#events" variant="secondary" size="large">{copy.home_events_cta}</ButtonLink>
-            </div>
-          </div>
+        <Container className="pi-home-hero__stack">
+          <p className="pi-home-hero__eyebrow">{copy.home_eyebrow}</p>
+          <h1 className="pi-home-hero__title">{copy.home_title}</h1>
+          <p className="pi-home-hero__lede">{copy.home_lede}</p>
 
-          <div className="pi-home-hero__visual">
-            <div className="pi-home-hero__orbit" aria-hidden="true">∞</div>
-            {spotlightItems.length > 0 ? (
-              <div className="pi-home-hero__spotlight-grid">
-                {spotlightItems.map((item) => (
-                  <Link key={item.key} href={item.href} className="pi-home-hero__spotlight-card">
-                    <MediaBlock
-                      src={item.image}
-                      videoSrc={item.video}
-                      alt={item.alt || item.title}
-                      ratio="3-2"
-                      radius="card"
-                    />
-                    <span className="pi-home-hero__spotlight-card__title">{item.title}</span>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <MediaBlock ratio="4-5" radius="hero" emptyLabel="New worlds loading" />
-            )}
-            <div className="pi-home-hero__spotlight-actions">
-              <ButtonLink href="/trips" variant="secondary">{copy.home_trips_all}</ButtonLink>
-              <ButtonLink href="/events" variant="secondary">{copy.home_events_all}</ButtonLink>
+          {spotlightItems.length > 0 ? (
+            <div className="pi-home-hero__spotlight-grid">
+              {spotlightItems.map((item) => (
+                <Link key={item.key} href={item.href} className="pi-home-hero__spotlight-card">
+                  <MediaBlock
+                    src={item.image}
+                    videoSrc={item.video}
+                    videoControls={false}
+                    alt={item.alt || item.title}
+                    ratio="3-2"
+                    radius="card"
+                  />
+                  <span className="pi-home-hero__spotlight-card__title">{item.title}</span>
+                </Link>
+              ))}
             </div>
+          ) : (
+            <MediaBlock ratio="4-5" radius="hero" emptyLabel="New worlds loading" />
+          )}
+
+          <div className="pi-home-hero__spotlight-actions">
+            <ButtonLink href="/trips" variant="secondary">{copy.home_trips_cta}</ButtonLink>
+            <ButtonLink href="/events" variant="secondary">{copy.home_events_cta}</ButtonLink>
           </div>
         </Container>
       </section>
@@ -104,7 +97,7 @@ export default async function HomePage() {
             lede={copy.home_trips_lede}
             action={
               trips.length > previewTrips.length ? (
-                <ButtonLink href="/trips" variant="secondary">{copy.home_trips_all}</ButtonLink>
+                <ButtonLink href="/trips" variant="secondary">{copy.home_trips_cta}</ButtonLink>
               ) : undefined
             }
           />
@@ -124,7 +117,7 @@ export default async function HomePage() {
             lede={copy.home_events_lede}
             action={
               events.length > previewEvents.length ? (
-                <ButtonLink href="/events" variant="secondary">{copy.home_events_all}</ButtonLink>
+                <ButtonLink href="/events" variant="secondary">{copy.home_events_cta}</ButtonLink>
               ) : undefined
             }
           />
