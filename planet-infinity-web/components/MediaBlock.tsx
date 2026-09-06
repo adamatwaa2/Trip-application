@@ -18,6 +18,8 @@ type MediaBlockProps = {
   emptyLabel?: string;
   /** Reserve eager loading for the single above-the-fold hero image. */
   eager?: boolean;
+  /** false hides the video's sound/pause buttons — a small glance card just autoplays muted. */
+  videoControls?: boolean;
 };
 
 /**
@@ -35,6 +37,7 @@ export function MediaBlock({
   className,
   emptyLabel = "Planet Infinity",
   eager = false,
+  videoControls = true,
 }: MediaBlockProps) {
   const classNames = [
     "pi-media",
@@ -49,7 +52,7 @@ export function MediaBlock({
   return (
     <div className={classNames}>
       {videoSrc ? (
-        <HeroVideo src={videoSrc} poster={src} label={alt || "Planet Infinity video"} />
+        <HeroVideo src={videoSrc} poster={src} label={alt || "Planet Infinity video"} controls={videoControls} />
       ) : src ? (
         <Image
           className="pi-media__img"
