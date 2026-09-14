@@ -47,7 +47,8 @@ export const SITE_COPY_FIELDS = [
   { key: "contact_title", label: "Contact page headline", fallback: "Talk to us", multiline: false },
   { key: "contact_lede", label: "Contact page introduction", fallback: "The person who answers is the person who will be there on the day.", multiline: true },
   { key: "contact_whatsapp", label: "Contact WhatsApp", fallback: "+20 103 729 9464", multiline: false },
-  { key: "contact_email", label: "Contact email", fallback: "", multiline: false },
+  { key: "contact_email", label: "Contact email", fallback: "planetinfinity2023@gmail.com", multiline: false },
+  { key: "contact_address", label: "Business address", fallback: "45 Sheikh Mohamed El Ghazali Street, Dokki, Giza, Egypt", multiline: true },
   { key: "contact_office_hours", label: "Office hours", fallback: "", multiline: false },
   { key: "contact_emergency", label: "Emergency contact", fallback: "", multiline: false },
 ] as const;
