@@ -33,11 +33,11 @@ function customResponses(value: unknown) {
 export default async function BookingDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ bookingType: string }>;
 }) {
   const profile = await requireAdmin();
-  const { id } = await params;
-  const booking = await getBooking(id);
+  const { bookingType: bookingId } = await params;
+  const booking = await getBooking(bookingId);
   if (!booking) notFound();
 
   const balance = Number(booking.total_amount) - Number(booking.amount_paid);

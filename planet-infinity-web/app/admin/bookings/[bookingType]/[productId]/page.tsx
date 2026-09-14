@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminShell } from "@/components/AdminShell";
 import { formatDate } from "@/lib/admin-requests";
-import { getBookingsForProduct, getTripDepartureDates, getTripSeatOverview } from "@/lib/admin-operations";
+import { getBookingsForProduct, getProduct, getTripDepartureDates, getTripSeatOverview } from "@/lib/admin-operations";
 import { requireAdmin } from "@/lib/admin";
 
 export const metadata = { title: "Experience bookings" };
@@ -30,10 +30,10 @@ export default async function ExperienceBookingsPage({ params }: { params: Promi
   const profile = await requireAdmin();
   const { bookingType, productId } = await params;
   if (bookingType !== "trip" && bookingType !== "event") notFound();
-  const result = await getBookingsForProduct(bookingType, productId);
+  const [result, product] = await Promise.all([getBookingsForProduct(bookingType, productId), getProduct(bookingType === "trip" ? "trips" : "events", productId)]);
   const first = result.items[0];
-  if (!result.error && !first) notFound();
-  const title = bookingType === "trip" ? first?.trip?.title : first?.event?.title;
+  if (!product) notFound();
+  const title = product.title ?? (bookingType === "trip" ? first?.trip?.title : first?.event?.title);
   const paid = result.items.reduce((sum, item) => sum + Number(item.amount_paid), 0);
   const total = result.items.reduce((sum, item) => sum + Number(item.total_amount), 0);
   const scheduledDepartureDates = bookingType === "trip" ? await getTripDepartureDates(productId) : [];
@@ -56,7 +56,7 @@ export default async function ExperienceBookingsPage({ params }: { params: Promi
 
   return <AdminShell profile={profile} current="/admin/bookings">
     <header className="pi-admin-page-head pi-admin-detail-head"><div><p className="pi-admin-kicker">{bookingType} bookings</p><h1>{title ?? "Experience"}</h1><p>{result.items.length} booking{result.items.length === 1 ? "" : "s"} · {paid.toLocaleString("en-US")} EGP paid · {Math.max(0, total - paid).toLocaleString("en-US")} EGP remaining</p></div><Link href="/admin/bookings">Back to experiences</Link></header>
-    {result.error ? <section className="pi-admin-section"><p className="pi-admin-error">{result.error}</p></section> : Array.from(departures.entries()).map(([dayKey, group]) => {
+    {result.error ? <section className="pi-admin-section"><p className="pi-admin-error">{result.error}</p></section> : departures.size === 0 ? <section className="pi-admin-section"><div className="pi-admin-empty">No bookings yet for this experience.</div></section> : Array.from(departures.entries()).map(([dayKey, group]) => {
       const seatsForDeparture = Array.from(seatOverview.filter((seat) => departureDay(seat.scheduledAt).key === dayKey).reduce((vehicles, seat) => {
         const current = vehicles.get(seat.vehicleId);
         vehicles.set(seat.vehicleId, current ? { ...current, reservedSeats: current.reservedSeats + seat.reservedSeats, remainingSeats: Math.max(0, current.sellableSeats - current.reservedSeats - seat.reservedSeats) } : seat);

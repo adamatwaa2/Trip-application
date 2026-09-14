@@ -5,17 +5,17 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-
 
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ bookingType: string }> }
 ) {
   await requireAdmin();
-  const { id } = await params;
-  if (!UUID.test(id)) return new Response("Not found", { status: 404 });
+  const { bookingType: bookingId } = await params;
+  if (!UUID.test(bookingId)) return new Response("Not found", { status: 404 });
 
   const supabase = await createClient();
   const { data: booking } = await supabase
     .from("bookings")
     .select("booking_number, confirmation_pdf_path")
-    .eq("id", id)
+    .eq("id", bookingId)
     .maybeSingle();
 
   if (!booking?.confirmation_pdf_path) return new Response("Not found", { status: 404 });

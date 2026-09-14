@@ -1,14 +1,16 @@
 import Link from "next/link";
 import { AdminShell } from "@/components/AdminShell";
-import { getBookings } from "@/lib/admin-operations";
+import { getBookings, getProducts } from "@/lib/admin-operations";
 import { requireAdmin } from "@/lib/admin";
 
 export const metadata = { title: "Admin bookings" };
 
 export default async function BookingsPage() {
   const profile = await requireAdmin();
-  const result = await getBookings();
+  const [result, trips, events] = await Promise.all([getBookings(), getProducts("trips"), getProducts("events")]);
   const groups = new Map<string, { kind: "trip" | "event"; id: string; title: string; items: typeof result.items }>();
+  for (const trip of trips.items) groups.set(`trip:${trip.id}`, { kind: "trip", id: trip.id, title: trip.title, items: [] });
+  for (const event of events.items) groups.set(`event:${event.id}`, { kind: "event", id: event.id, title: event.title, items: [] });
   for (const item of result.items) {
     const product = item.booking_type === "trip" ? item.trip : item.event;
     if (!product) continue;
@@ -26,7 +28,7 @@ export default async function BookingsPage() {
         <p>Each trip and event has its own operational list, customer details and Excel export.</p>
       </header>
       <section className="pi-admin-section">
-        {result.error ? <p className="pi-admin-error">{result.error}</p> : groups.size ? (
+        {result.error || trips.error || events.error ? <p className="pi-admin-error">Bookings or experiences could not be loaded.</p> : groups.size ? (
           <div className="pi-admin-booking-groups">
             {Array.from(groups.values()).map((group) => {
               const paid = group.items.reduce((sum, item) => sum + Number(item.amount_paid), 0);
