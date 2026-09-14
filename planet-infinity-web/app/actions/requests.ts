@@ -57,6 +57,29 @@ export type PaymentProofUploadResult =
   | { ok: true; bucket: string; path: string; token: string }
   | { ok: false; error: string };
 
+export type CareerPhotoUploadResult = PaymentProofUploadResult;
+
+export async function createCareerPhotoUploadTarget(input: {
+  mimeType: string;
+  size: number;
+}): Promise<CareerPhotoUploadResult> {
+  const extension = PAYMENT_PROOF_TYPES[input.mimeType];
+  if (!extension || !Number.isInteger(input.size) || input.size < 1 || input.size > 5 * 1024 * 1024) {
+    return { ok: false, error: "Upload a JPG, PNG, or WebP image up to 5 MB." };
+  }
+  if (!isSupabaseServiceConfigured()) {
+    return { ok: false, error: "Secure photo upload is not configured yet." };
+  }
+
+  const month = new Date().toISOString().slice(0, 7);
+  const path = `careers/${month}/${crypto.randomUUID()}.${extension}`;
+  const { data, error } = await createServiceClient().storage
+    .from(PAYMENT_PROOF_BUCKET)
+    .createSignedUploadUrl(path);
+  if (error || !data?.token) return { ok: false, error: "The secure photo upload could not start." };
+  return { ok: true, bucket: PAYMENT_PROOF_BUCKET, path, token: data.token };
+}
+
 export async function choosePaidBookingSeats(input: { paymentToken: string; vehicleId: string; seats: number[] }): Promise<{ ok: true } | { ok: false; error: string }> {
   if (!UUID.test(input.paymentToken) || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(input.vehicleId) || !Array.isArray(input.seats) || input.seats.some((seat) => !Number.isInteger(seat))) {
     return { ok: false, error: "Choose valid seats." };

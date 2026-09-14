@@ -64,6 +64,7 @@ export const COMPANY_LINKS: NavItem[] = [
   { label: "Explore", href: "/explore", status: "ready" },
   { label: "Careers", href: "/careers", status: "ready" },
   { label: "Contact", href: "/contact", status: "ready" },
+  { label: "Careers", href: "/careers", status: "ready" },
 ];
 
 /** Parts of the universe that are not open yet. */

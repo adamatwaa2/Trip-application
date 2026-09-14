@@ -56,13 +56,14 @@ function Column({ title, items }: { title: string; items: NavItem[] }) {
  */
 export async function SiteFooter() {
   const copy = await getSiteCopy();
+  const footerTagline = copy.footer_tagline.replace(/\\n/g, "\n");
   return (
     <SiteFooterFrame>
       <Container>
         <div className="pi-footer__top">
           <div className="pi-footer__brand">
             <SiteFooterBrand />
-            <p className="pi-footer__line">{copy.footer_tagline}</p>
+            <p className="pi-footer__line">{footerTagline}</p>
           </div>
 
           <div className="pi-footer__cols">
@@ -79,7 +80,10 @@ export async function SiteFooter() {
                   WhatsApp <Placeholder id="whatsapp" />
                 </li>
                 <li className="pi-footer__contact">
-                  Email <Placeholder id="reservationsEmail" />
+                  Email {copy.contact_email}
+                </li>
+                <li className="pi-footer__contact">
+                  {copy.contact_address}
                 </li>
               </ul>
             </div>
