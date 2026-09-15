@@ -33,8 +33,13 @@ export function BrandLogo({
       width={width}
       height={height}
       priority={priority}
-      className={["pi-logo", className].filter(Boolean).join(" ")}
-      style={{ height, width: "auto" }}
+      className={["pi-logo", `pi-logo--${world}`, className].filter(Boolean).join(" ")}
+      style={{
+        height,
+        width: world === "events" ? height : "auto",
+        objectFit: world === "events" ? "cover" : undefined,
+        objectPosition: "center",
+      }}
     />
   );
 }

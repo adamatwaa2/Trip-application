@@ -273,6 +273,9 @@
   }
   .pi-burger {
     display: flex;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
     margin-inline-start: auto;
   }
   .pi-mobile:not([hidden]) {
