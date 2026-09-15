@@ -4,11 +4,12 @@ import { ButtonLink } from "@/components/Button";
 import { Container } from "@/components/Container";
 import { EmptyState } from "@/components/EmptyState";
 import { EventCard } from "@/components/EventCard";
+import { TripCard } from "@/components/TripCard";
 import { Eyebrow } from "@/components/Eyebrow";
 import { Grid } from "@/components/Grid";
 import { Section } from "@/components/Section";
 import { CTA } from "@/content/cta";
-import { getListedEvents } from "@/content/source";
+import { getCrossListedTrips, getListedEvents } from "@/content/source";
 import { getSiteCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
@@ -19,7 +20,8 @@ export const metadata: Metadata = {
 };
 
 export default async function EventsPage() {
-  const [{ events, usingDemoData }, copy] = await Promise.all([getListedEvents(), getSiteCopy()]);
+  const [{ events, usingDemoData }, sharedTrips, copy] = await Promise.all([getListedEvents(), getCrossListedTrips("events"), getSiteCopy()]);
+  const hasItems = events.length + sharedTrips.length > 0;
 
   return (
     <div className="pi-world-events">
@@ -46,8 +48,11 @@ export default async function EventsPage() {
             </div>
           ) : null}
 
-          {events.length > 0 ? (
+          {hasItems ? (
             <Grid columns={3}>
+              {sharedTrips.map((trip) => (
+                <TripCard key={`trip-${trip.id}`} trip={trip} />
+              ))}
               {events.map((event) => (
                 <EventCard key={event.id} event={event} />
               ))}

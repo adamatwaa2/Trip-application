@@ -527,3 +527,218 @@ select:focus {
   margin-bottom: var(--pi-s3);
   display: block;
 }
+
+/* ---------- configurable Trip Application ---------- */
+.pi-trip-application {
+  --pi-application-primary: #f59b23;
+  --pi-application-secondary: #f6d08b;
+  min-height: 100vh;
+  color: #fff8ed;
+  background: #111820;
+}
+.pi-application-hero {
+  min-height: min(72vh, 720px);
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: clamp(24px, 6vw, 88px);
+  isolation: isolate;
+  overflow: hidden;
+  background-color: color-mix(in srgb, var(--pi-application-primary) 18%, #101820);
+  background-image: var(--pi-application-background, radial-gradient(circle at 78% 20%, color-mix(in srgb, var(--pi-application-secondary) 62%, transparent), transparent 42%));
+  background-position: center;
+  background-size: cover;
+}
+.pi-application-hero__shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(7, 12, 18, .12), rgba(7, 12, 18, .88));
+  backdrop-filter: blur(2px);
+}
+.pi-application-back {
+  position: absolute;
+  top: 28px;
+  left: clamp(24px, 6vw, 88px);
+  color: inherit;
+  text-decoration: none;
+  font-weight: 700;
+}
+.pi-application-hero__copy {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(20px, 4vw, 56px);
+}
+.pi-application-hero__copy img {
+  width: clamp(112px, 18vw, 190px);
+  height: auto;
+  max-height: 190px;
+  object-fit: contain;
+  filter: drop-shadow(0 22px 36px rgba(0, 0, 0, .32));
+}
+.pi-application-hero__copy p,
+.pi-application-kicker {
+  margin: 0 0 10px;
+  color: var(--pi-application-secondary);
+  font: 700 12px/1.2 var(--pi-font-mono, monospace);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.pi-application-hero__copy h1 {
+  max-width: 900px;
+  margin: 0;
+  font-size: clamp(48px, 9vw, 122px);
+  line-height: .86;
+  letter-spacing: -.075em;
+  color: #fff;
+}
+.pi-application-hero__copy span {
+  display: block;
+  max-width: 620px;
+  margin-top: 22px;
+  color: rgba(255, 255, 255, .82);
+  font-size: clamp(16px, 2vw, 21px);
+  line-height: 1.55;
+}
+.pi-application-form {
+  width: min(980px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: clamp(44px, 8vw, 112px) 0;
+}
+.pi-application-card {
+  margin-bottom: 22px;
+  padding: clamp(24px, 5vw, 54px);
+  border: 1px solid color-mix(in srgb, var(--pi-application-secondary) 24%, transparent);
+  border-radius: 28px;
+  color: #f8f3e9;
+  background: color-mix(in srgb, var(--pi-application-primary) 7%, #17212c);
+  box-shadow: 0 24px 90px rgba(0, 0, 0, .22);
+}
+.pi-application-card h2 {
+  margin: 0 0 32px;
+  color: #fff;
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1;
+}
+.pi-application-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.pi-application-field,
+.pi-application-options,
+.pi-application-quantities {
+  display: grid;
+  gap: 9px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.pi-application-field--wide,
+.pi-application-options,
+.pi-application-quantities {
+  grid-column: 1 / -1;
+}
+.pi-application-field > span,
+.pi-application-options legend,
+.pi-application-quantities legend {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+}
+.pi-application-field b,
+.pi-application-options b,
+.pi-application-quantities b {
+  margin-left: 8px;
+  color: var(--pi-application-secondary);
+  font: 700 10px/1 var(--pi-font-mono, monospace);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.pi-application-field small,
+.pi-application-options > small {
+  color: rgba(255, 255, 255, .64);
+  line-height: 1.5;
+}
+.pi-application-field input,
+.pi-application-field select,
+.pi-application-field textarea,
+.pi-application-quantities input {
+  width: 100%;
+  min-height: 56px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, .2);
+  border-radius: 14px;
+  color: #fff;
+  background: rgba(255, 255, 255, .08);
+  font: inherit;
+  outline: none;
+}
+.pi-application-field textarea { min-height: 150px; resize: vertical; }
+.pi-application-field input:focus,
+.pi-application-field select:focus,
+.pi-application-field textarea:focus,
+.pi-application-quantities input:focus { border-color: var(--pi-application-secondary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--pi-application-secondary) 18%, transparent); }
+.pi-application-field option { color: #121820; }
+.pi-application-options > div { display: flex; flex-wrap: wrap; gap: 10px; }
+.pi-application-options label,
+.pi-application-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 14px;
+  color: #fff;
+  background: rgba(255, 255, 255, .055);
+}
+.pi-application-options input,
+.pi-application-check input { width: 19px; height: 19px; flex: 0 0 auto; accent-color: var(--pi-application-primary); }
+.pi-application-check small { display: block; margin-top: 5px; color: rgba(255, 255, 255, .62); }
+.pi-application-quantities label { display: grid; grid-template-columns: 1fr 92px; align-items: center; gap: 14px; margin-top: 10px; }
+.pi-application-card .agree-row { margin: 0 0 16px; color: #fff; }
+.pi-application-card .agree-row a { color: var(--pi-application-secondary); }
+.pi-application-card .placeholder-note { color: rgba(255, 255, 255, .56); }
+.pi-application-card > button,
+.pi-application-success a {
+  display: inline-flex;
+  min-height: 56px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 24px;
+  padding: 14px 28px;
+  border: 0;
+  border-radius: 999px;
+  color: #15120d;
+  background: linear-gradient(135deg, var(--pi-application-primary), var(--pi-application-secondary));
+  font: 800 15px/1 inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.pi-application-card > button:disabled { opacity: .45; cursor: not-allowed; }
+.pi-application-error { color: #ffb5aa; }
+.pi-trip-application[data-style="editorial"] .pi-application-card { color: #2a241c; background: #fff8ec; }
+.pi-trip-application[data-style="editorial"] .pi-application-card h2,
+.pi-trip-application[data-style="editorial"] .pi-application-field > span,
+.pi-trip-application[data-style="editorial"] .pi-application-options legend,
+.pi-trip-application[data-style="editorial"] .pi-application-check { color: #211c16; }
+.pi-trip-application[data-style="editorial"] .pi-application-field input,
+.pi-trip-application[data-style="editorial"] .pi-application-field select,
+.pi-trip-application[data-style="editorial"] .pi-application-field textarea { color: #211c16; background: #fff; border-color: rgba(33, 28, 22, .2); }
+.pi-trip-application[data-style="minimal"] .pi-application-hero { min-height: 430px; background-image: none; }
+.pi-trip-application[data-style="minimal"] .pi-application-card { box-shadow: none; }
+.pi-trip-application--success { display: grid; place-items: center; padding: 32px; }
+.pi-application-success { width: min(620px, 100%); padding: clamp(32px, 7vw, 70px); border-radius: 30px; text-align: center; background: #fff8ec; color: #211c16; }
+.pi-application-success h1 { margin: 8px 0 24px; font-size: clamp(42px, 8vw, 78px); line-height: .92; }
+.pi-application-success strong { display: block; color: var(--pi-application-primary); font-size: 24px; }
+@media (max-width: 700px) {
+  .pi-application-hero { min-height: 560px; padding-bottom: 42px; }
+  .pi-application-hero__copy { display: grid; }
+  .pi-application-grid { grid-template-columns: 1fr; }
+  .pi-application-field--wide,
+  .pi-application-options,
+  .pi-application-quantities { grid-column: auto; }
+}

@@ -26,7 +26,9 @@ export function BrandLockup({
 }: BrandLockupProps) {
   const content = (
     <>
-      <BrandLogo world={world} height={height} priority />
+      <span className="pi-brand__logo-slot" data-brand-logo-slot>
+        <BrandLogo world={world} height={height} priority />
+      </span>
       <span className="pi-brand__word">Planet Infinity</span>
     </>
   );
@@ -41,3 +43,4 @@ export function BrandLockup({
     </Link>
   );
 }
+

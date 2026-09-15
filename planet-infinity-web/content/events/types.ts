@@ -83,6 +83,10 @@ export type PlanetEvent = {
     gallery?: EventGalleryImage[];
     /** Uploaded first-party video. The hero image is used as its poster. */
     video?: string;
+    /** Per-event identity selected in the admin editor. */
+    visualTheme?: import("@/lib/catalog-visual-theme").CatalogVisualTheme;
+    /** When this event is a cross-listing of a trip, both cards open one canonical experience. */
+    linkedTripSlug?: string;
   };
 
   /** A guest-facing PDF presented as a branded card, never a raw URL. */

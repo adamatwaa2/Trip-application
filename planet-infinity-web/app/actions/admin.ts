@@ -14,8 +14,19 @@ import {
   normaliseBookingFormFields,
   type BookingFormField,
 } from "@/lib/booking-form";
-import { normaliseRequestFormTheme } from "@/lib/request-form";
 import { SITE_COPY_FIELDS, type SiteCopy } from "@/content/site-copy";
+import {
+  CATALOG_BACKGROUNDS,
+  CATALOG_CHANNELS,
+  CATALOG_DEPTHS,
+  CATALOG_EXPLORER_MOTIONS,
+  CATALOG_FINISHES,
+  CATALOG_SURFACES,
+  CATALOG_TYPOGRAPHIES,
+  isHexColor,
+  type CatalogVisualTheme,
+} from "@/lib/catalog-visual-theme";
+import { normaliseRequestFormTheme, type RequestFormTheme } from "@/lib/request-form";
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -65,6 +76,8 @@ type CatalogMediaInput = {
   heroAlt?: string;
   gallery?: { src: string; alt: string; type?: "image" | "video"; poster?: string }[];
   video?: string;
+  visualTheme?: CatalogVisualTheme;
+  linkedTripSlug?: string;
 };
 
 type CatalogItemInput = {
@@ -93,9 +106,8 @@ type CatalogItemInput = {
   songRequestEnabled: boolean;
   seatConfig?: unknown;
   bookingFormFields: BookingFormField[];
-  /** Questions and look of the Trip request form (/apply) for this trip. */
   requestFormFields: BookingFormField[];
-  requestFormTheme: unknown;
+  requestFormTheme?: RequestFormTheme;
   paymentProofRequired: boolean;
   inclusions: string[];
   exclusions: string[];
@@ -120,6 +132,16 @@ function textList(values: string[]) {
 function normaliseMedia(media: CatalogMediaInput): CatalogMediaInput | null {
   const hero = text(media.hero ?? "", 2000);
   const video = text(media.video ?? "", 2000);
+  const rawTheme = media.visualTheme;
+  const visualLogo = text(rawTheme?.logo ?? "", 2000);
+  const visualBackgroundImage = text(rawTheme?.backgroundImage ?? "", 2000);
+  const linkedTripSlug = text(media.linkedTripSlug ?? "", 160);
+  const primaryColor = text(rawTheme?.primaryColor ?? "", 7);
+  const secondaryColor = text(rawTheme?.secondaryColor ?? "", 7);
+  const explorerScale = Number(rawTheme?.explorerScale ?? 1);
+  const channels = Array.isArray(rawTheme?.channels)
+    ? Array.from(new Set(rawTheme.channels.filter((channel) => CATALOG_CHANNELS.includes(channel))))
+    : [];
   const gallery = (media.gallery ?? [])
     .map((image) => ({
       src: text(image.src ?? "", 2000),
@@ -133,7 +155,19 @@ function normaliseMedia(media: CatalogMediaInput): CatalogMediaInput | null {
   if (
     !isSafeCatalogUrl(hero) ||
     !isSafeCatalogUrl(video) ||
-    gallery.some((image) => !isSafeCatalogUrl(image.src))
+    gallery.some((image) => !isSafeCatalogUrl(image.src)) ||
+    !isSafeCatalogUrl(visualLogo) ||
+    !isSafeCatalogUrl(visualBackgroundImage) ||
+    (linkedTripSlug !== "" && !slugPattern.test(linkedTripSlug)) ||
+    (primaryColor !== "" && !isHexColor(primaryColor)) ||
+    (secondaryColor !== "" && !isHexColor(secondaryColor)) ||
+    (rawTheme?.surface !== undefined && !CATALOG_SURFACES.includes(rawTheme.surface)) ||
+    (rawTheme?.finish !== undefined && !CATALOG_FINISHES.includes(rawTheme.finish)) ||
+    (rawTheme?.background !== undefined && !CATALOG_BACKGROUNDS.includes(rawTheme.background)) ||
+    (rawTheme?.depth !== undefined && !CATALOG_DEPTHS.includes(rawTheme.depth))
+    || (rawTheme?.typography !== undefined && !CATALOG_TYPOGRAPHIES.includes(rawTheme.typography))
+    || (rawTheme?.explorerMotion !== undefined && !CATALOG_EXPLORER_MOTIONS.includes(rawTheme.explorerMotion))
+    || !Number.isFinite(explorerScale) || explorerScale < 0.75 || explorerScale > 1.3
   ) {
     return null;
   }
@@ -142,6 +176,23 @@ function normaliseMedia(media: CatalogMediaInput): CatalogMediaInput | null {
     ...(hero ? { hero, heroAlt: text(media.heroAlt ?? "", 240) } : {}),
     ...(gallery.length ? { gallery } : {}),
     ...(video ? { video } : {}),
+    ...(linkedTripSlug ? { linkedTripSlug } : {}),
+    ...(rawTheme ? {
+      visualTheme: {
+        ...(visualLogo ? { logo: visualLogo, logoAlt: text(rawTheme.logoAlt ?? "", 240) } : {}),
+        ...(primaryColor ? { primaryColor } : {}),
+        ...(secondaryColor ? { secondaryColor } : {}),
+        ...(rawTheme.surface ? { surface: rawTheme.surface } : {}),
+        ...(rawTheme.finish ? { finish: rawTheme.finish } : {}),
+        ...(rawTheme.background ? { background: rawTheme.background } : {}),
+        ...(rawTheme.depth ? { depth: rawTheme.depth } : {}),
+        ...(rawTheme.typography ? { typography: rawTheme.typography } : {}),
+        ...(rawTheme.explorerMotion ? { explorerMotion: rawTheme.explorerMotion } : {}),
+        ...(channels.length ? { channels } : {}),
+        explorerScale,
+        ...(visualBackgroundImage ? { backgroundImage: visualBackgroundImage } : {}),
+      },
+    } : {}),
   };
 }
 
@@ -215,7 +266,7 @@ export async function createCatalogItem(input: CatalogItemInput): Promise<Action
   }
   const requestFormFields = normaliseBookingFormFields(input.requestFormFields);
   if (input.kind === "trips" && requestFormFields === null) {
-    return { ok: false, error: "Check the trip request questions and their options." };
+    return { ok: false, error: "Check the Trip Application questions and their options." };
   }
   const requestFormTheme = normaliseRequestFormTheme(input.requestFormTheme);
 
@@ -307,6 +358,11 @@ export async function createCatalogItem(input: CatalogItemInput): Promise<Action
   if (input.id) revalidatePath(`/admin/${input.kind}/${input.id}`);
   revalidatePath(input.kind === "trips" ? "/trips" : "/events");
   revalidatePath(input.kind === "trips" ? `/trips/${input.slug}` : `/events/${input.slug}`);
+  revalidatePath("/");
+  revalidatePath("/trips");
+  revalidatePath("/events");
+  revalidatePath("/themes");
+  revalidatePath("/explore");
   return { ok: true };
 }
 
@@ -351,8 +407,30 @@ export async function saveSiteCopy(input: SiteCopy): Promise<ActionResult> {
   if (error) return { ok: false, error: "The website copy could not be saved." };
   revalidatePath("/");
   revalidatePath("/events");
+  revalidatePath("/trips");
+  revalidatePath("/themes");
+  revalidatePath("/careers");
   revalidatePath("/explore");
+  revalidatePath("/admin/pages");
   revalidatePath("/admin/settings");
+  return { ok: true };
+}
+
+export async function saveCareersForm(input: BookingFormField[]): Promise<ActionResult> {
+  await requireAdmin();
+  const fields = normaliseBookingFormFields(input);
+  if (fields === null) return { ok: false, error: "Check the Careers questions and their choices." };
+  const supabase = await createClient();
+  const { error } = await supabase.from("settings").upsert({
+    key: "careers_form_fields",
+    value: JSON.stringify(fields),
+    label: "Careers application questions",
+    is_public: true,
+    updated_at: new Date().toISOString(),
+  }, { onConflict: "key" });
+  if (error) return { ok: false, error: "The Careers questions could not be saved." };
+  revalidatePath("/careers");
+  revalidatePath("/admin/pages");
   return { ok: true };
 }
 

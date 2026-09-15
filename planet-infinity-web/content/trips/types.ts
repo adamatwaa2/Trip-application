@@ -162,6 +162,8 @@ export type Trip = {
     gallery?: GalleryImage[];
     /** Uploaded first-party video. The hero image is used as its poster. */
     video?: string;
+    /** Per-trip identity selected in the admin editor. */
+    visualTheme?: import("@/lib/catalog-visual-theme").CatalogVisualTheme;
   };
 
   /** A guest-facing PDF presented as a branded card, never a raw URL. */
@@ -259,3 +261,4 @@ export const SHOPIFY_FIELD_MAP = {
   document: "metafield: trip.document",
   media: "product.media",
 } as const;
+

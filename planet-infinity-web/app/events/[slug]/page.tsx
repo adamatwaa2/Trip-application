@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { AvailabilityPill } from "@/components/AvailabilityPill";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { CatalogDocumentCard } from "@/components/CatalogDocumentCard";
+import { CatalogThemeFrame } from "@/components/CatalogThemeFrame";
 import { Container } from "@/components/Container";
 import { DemoBadge } from "@/components/DemoBadge";
 import { EventBookingModule } from "@/components/EventBookingModule";
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return {
     title: event.title,
     description: event.shortDescription,
-    alternates: { canonical: `/events/${event.slug}` },
+    alternates: { canonical: event.media.linkedTripSlug ? `/trips/${event.media.linkedTripSlug}` : `/events/${event.slug}` },
     openGraph: {
       title: event.title,
       description: event.shortDescription,
@@ -47,6 +48,7 @@ export default async function EventPage({ params }: Params) {
   const { slug } = await params;
   const [event, copy] = await Promise.all([getEventBySlug(slug), getSiteCopy()]);
   if (!event) notFound();
+  if (event.media.linkedTripSlug) redirect(`/trips/${event.media.linkedTripSlug}`);
 
   const gallery = [
     ...(event.media.hero ? [{ src: event.media.hero, alt: event.media.heroAlt ?? event.title }] : []),
@@ -61,7 +63,8 @@ export default async function EventPage({ params }: Params) {
   ].filter((entry): entry is [string, string] => Boolean(entry[1]));
 
   return (
-    <div className="pi-world-events">
+    <CatalogThemeFrame theme={event.media.visualTheme} kind="event">
+      <div className="pi-world-events">
       <section className="pi-trip-cinema pi-event-cinema">
         <MediaBlock
           src={event.media.hero}
@@ -185,6 +188,7 @@ export default async function EventPage({ params }: Params) {
           </div>
         </Container>
       </Section>
-    </div>
+      </div>
+    </CatalogThemeFrame>
   );
 }

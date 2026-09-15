@@ -627,7 +627,7 @@ export const POLICY_DOCUMENTS: readonly PolicyDocument[] = [
         blocks: [
           bullets(
             "Identity and contact information, including your name, email address, mobile or WhatsApp number, and any optional social-media handle you provide.",
-            "Application information, such as age, work or study, music preferences, previous travel experience, smoking preference, how you heard about us, and your reason for joining.",
+            "Application information, including the answers you choose to provide to the questions configured for a specific trip or careers opportunity.",
             "Booking information, including the selected trip or event, travel dates, guest count, package choices, seat choices, notes, policy acceptances, booking reference, and booking status.",
             "Payment records, including amount, currency, payment status, payment reference, and gateway transaction identifiers. Planet Infinity does not receive or store your full card number, CVV, or card authentication credentials.",
             "Technical and security information generated when you use the website, such as service logs, timestamps, device or browser information, and information needed to prevent abuse and protect accounts.",

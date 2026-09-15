@@ -68,6 +68,8 @@ export type AdminProductDetail = Omit<AdminProduct, "updated_at"> & {
   booking_mode: "booking" | "request" | "application";
   seat_config?: SeatConfig | null;
   booking_form_fields?: BookingFormField[] | null;
+  request_form_fields?: BookingFormField[] | null;
+  request_form_theme?: import("@/lib/request-form").RequestFormTheme | null;
   payment_proof_required?: boolean;
   song_request_enabled?: boolean;
   media: {
@@ -75,6 +77,8 @@ export type AdminProductDetail = Omit<AdminProduct, "updated_at"> & {
     heroAlt?: string;
     gallery?: { src: string; alt: string }[];
     video?: string;
+    visualTheme?: import("@/lib/catalog-visual-theme").CatalogVisualTheme;
+    linkedTripSlug?: string;
   } | null;
   inclusions: string[] | null;
   exclusions: string[] | null;
@@ -94,7 +98,7 @@ const adminBookingSelect = "id, booking_number, booking_type, status, total_amou
 
 export async function getBookings() {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("bookings").select(adminBookingSelect).is("archived_at", null).order("created_at", { ascending: false });
+  const { data, error } = await supabase.from("bookings").select(adminBookingSelect).order("created_at", { ascending: false });
   return { items: (data ?? []) as unknown as AdminBooking[], error: error ? "Bookings could not be loaded." : null };
 }
 export async function getBookingsForProduct(bookingType: "trip" | "event", productId: string) {
@@ -105,7 +109,6 @@ export async function getBookingsForProduct(bookingType: "trip" | "event", produ
     .select(adminBookingSelect)
     .eq("booking_type", bookingType)
     .eq(column, productId)
-    .is("archived_at", null)
     .order("created_at", { ascending: false });
   return { items: (data ?? []) as unknown as AdminBooking[], error: error ? "Bookings could not be loaded." : null };
 }
@@ -191,7 +194,7 @@ export async function getProduct(kind: "trips" | "events", id: string) {
   if (kind === "trips") {
     const { data } = await supabase
       .from("trips")
-      .select("id, slug, title, short_description, description, destination, duration_label, meeting_point, departure_at, return_at, departure_point, return_point, package_label, accommodation, transportation, important_information, price_egp, capacity, booking_mode, application_required, seat_selection_enabled, seat_config, booking_form_fields, payment_proof_required, song_request_enabled, media, inclusions, exclusions, document_url, document_label, is_published, is_featured")
+      .select("id, slug, title, short_description, description, destination, duration_label, meeting_point, departure_at, return_at, departure_point, return_point, package_label, accommodation, transportation, important_information, price_egp, capacity, booking_mode, application_required, seat_selection_enabled, seat_config, booking_form_fields, request_form_fields, request_form_theme, payment_proof_required, song_request_enabled, media, inclusions, exclusions, document_url, document_label, is_published, is_featured")
       .eq("id", id)
       .maybeSingle();
     return data as unknown as AdminProductDetail | null;

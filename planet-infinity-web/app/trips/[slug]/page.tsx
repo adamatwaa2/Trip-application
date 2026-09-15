@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { AvailabilityPill } from "@/components/AvailabilityPill";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { CatalogDocumentCard } from "@/components/CatalogDocumentCard";
+import { CatalogThemeFrame } from "@/components/CatalogThemeFrame";
 import { Container } from "@/components/Container";
 import { DemoBadge } from "@/components/DemoBadge";
 import { Eyebrow } from "@/components/Eyebrow";
@@ -58,7 +59,7 @@ export default async function TripPage({ params }: Params) {
   ].filter((entry): entry is [string, string] => Boolean(entry[1]));
 
   return (
-    <>
+    <CatalogThemeFrame theme={trip.media.visualTheme} kind="trip">
       <section className="pi-trip-cinema">
         <MediaBlock
           src={trip.media.hero}
@@ -133,6 +134,7 @@ export default async function TripPage({ params }: Params) {
           </div>
         </Container>
       </Section>
-    </>
+    </CatalogThemeFrame>
   );
 }
+

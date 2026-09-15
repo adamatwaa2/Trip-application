@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, type CSSProperties } from "react";
 import {
   createCatalogItem,
   createCatalogUploadTarget,
@@ -14,7 +14,18 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { BookingFormBuilder } from "@/components/BookingFormBuilder";
 import type { BookingFormField } from "@/lib/booking-form";
-import { REQUEST_ACCENTS, type RequestAccentId } from "@/lib/request-form";
+import type { RequestFormTheme } from "@/lib/request-form";
+import {
+  DEFAULT_CATALOG_THEME,
+  type CatalogChannel,
+  type CatalogBackground,
+  type CatalogDepth,
+  type CatalogExplorerMotion,
+  type CatalogFinish,
+  type CatalogSurface,
+  type CatalogTypography,
+  type CatalogVisualTheme,
+} from "@/lib/catalog-visual-theme";
 
 const GUIDE_SEAT = 1;
 function withGuideSeatReserved(seats: number[] | undefined) {
@@ -26,6 +37,8 @@ type CatalogMedia = {
   heroAlt?: string;
   gallery?: { src: string; alt: string; type?: "image" | "video"; poster?: string }[];
   video?: string;
+  visualTheme?: CatalogVisualTheme;
+  linkedTripSlug?: string;
 };
 
 export type CatalogEditorItem = {
@@ -57,7 +70,7 @@ export type CatalogEditorItem = {
   seat_config?: SeatConfig | null;
   booking_form_fields?: BookingFormField[] | null;
   request_form_fields?: BookingFormField[] | null;
-  request_form_theme?: { accent?: string; image?: string } | null;
+  request_form_theme?: RequestFormTheme | null;
   payment_proof_required?: boolean;
   song_request_enabled?: boolean;
   media: CatalogMedia | null;
@@ -76,6 +89,191 @@ function lines(value: string): string[] {
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
+}
+
+type LogoThemeSuggestion = {
+  primary: string;
+  secondary: string;
+  surface: CatalogSurface;
+  background: CatalogBackground;
+  typography: CatalogTypography;
+  hasTransparency: boolean;
+};
+
+function rgbToHex(red: number, green: number, blue: number) {
+  return `#${[red, green, blue].map((value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, "0")).join("")}`;
+}
+
+async function loadLogoImage(file: File) {
+  const source = URL.createObjectURL(file);
+  try {
+    return await new Promise<HTMLImageElement>((resolve, reject) => {
+      const nextImage = new Image();
+      nextImage.onload = () => resolve(nextImage);
+      nextImage.onerror = () => reject(new Error("The logo image could not be opened."));
+      nextImage.src = source;
+    });
+  } finally {
+    // The image has decoded before this point, so the temporary URL is no longer needed.
+    URL.revokeObjectURL(source);
+  }
+}
+
+async function prepareLogoUpload(file: File): Promise<{ file: File; extracted: boolean }> {
+  if (!file.type.startsWith("image/")) throw new Error("Choose a PNG, JPG or WebP logo image.");
+  const image = await loadLogoImage(file);
+  const longestSide = Math.max(image.naturalWidth, image.naturalHeight);
+  const scale = Math.min(1, 900 / Math.max(longestSide, 1));
+  const width = Math.max(1, Math.round(image.naturalWidth * scale));
+  const height = Math.max(1, Math.round(image.naturalHeight * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d", { willReadFrequently: true });
+  if (!context) throw new Error("The logo could not be prepared.");
+  context.drawImage(image, 0, 0, width, height);
+  const imageData = context.getImageData(0, 0, width, height);
+  const pixels = imageData.data;
+  let transparentPixels = 0;
+  for (let index = 3; index < pixels.length; index += 4) {
+    if (pixels[index] < 245) transparentPixels += 1;
+  }
+  const alreadyTransparent = transparentPixels / (width * height) > .025;
+
+  if (!alreadyTransparent) {
+    const border: Array<[number, number, number]> = [];
+    const step = Math.max(1, Math.floor(Math.min(width, height) / 90));
+    const pushPixel = (x: number, y: number) => {
+      const index = (y * width + x) * 4;
+      border.push([pixels[index], pixels[index + 1], pixels[index + 2]]);
+    };
+    for (let x = 0; x < width; x += step) {
+      pushPixel(x, 0);
+      pushPixel(x, height - 1);
+    }
+    for (let y = 0; y < height; y += step) {
+      pushPixel(0, y);
+      pushPixel(width - 1, y);
+    }
+    const background = border.reduce((sum, colour) => [sum[0] + colour[0], sum[1] + colour[1], sum[2] + colour[2]], [0, 0, 0])
+      .map((value) => value / Math.max(border.length, 1));
+    const backgroundLightness = (background[0] + background[1] + background[2]) / 3;
+    for (let index = 0; index < pixels.length; index += 4) {
+      const red = pixels[index];
+      const green = pixels[index + 1];
+      const blue = pixels[index + 2];
+      const distance = Math.hypot(red - background[0], green - background[1], blue - background[2]);
+      const edge = backgroundLightness < 34
+        ? Math.max(red, green, blue)
+        : backgroundLightness > 224
+          ? 255 - Math.min(red, green, blue)
+          : distance;
+      pixels[index + 3] = Math.round(Math.max(0, Math.min(1, (edge - 16) / 54)) * 255);
+    }
+    context.putImageData(imageData, 0, 0);
+  }
+
+  let minX = width;
+  let minY = height;
+  let maxX = -1;
+  let maxY = -1;
+  const preparedPixels = context.getImageData(0, 0, width, height).data;
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      if (preparedPixels[(y * width + x) * 4 + 3] > 18) {
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
+      }
+    }
+  }
+  if (maxX < minX || maxY < minY) throw new Error("The logo could not be separated from its background.");
+  const contentWidth = maxX - minX + 1;
+  const contentHeight = maxY - minY + 1;
+  const output = document.createElement("canvas");
+  output.width = 1024;
+  output.height = 1024;
+  const outputContext = output.getContext("2d");
+  if (!outputContext) throw new Error("The logo could not be prepared.");
+  const fit = Math.min(900 / contentWidth, 900 / contentHeight);
+  const drawWidth = contentWidth * fit;
+  const drawHeight = contentHeight * fit;
+  outputContext.drawImage(canvas, minX, minY, contentWidth, contentHeight, (1024 - drawWidth) / 2, (1024 - drawHeight) / 2, drawWidth, drawHeight);
+  const blob = await new Promise<Blob | null>((resolve) => output.toBlob(resolve, "image/png", .96));
+  if (!blob) throw new Error("The logo could not be converted to PNG.");
+  const cleanName = file.name.replace(/\.[^.]+$/, "").replace(/[^a-z0-9_-]+/gi, "-") || "experience-logo";
+  return { file: new File([blob], `${cleanName}-extracted.png`, { type: "image/png" }), extracted: !alreadyTransparent };
+}
+
+async function analyseLogo(file: File): Promise<LogoThemeSuggestion> {
+  const source = URL.createObjectURL(file);
+  try {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const nextImage = new Image();
+      nextImage.onload = () => resolve(nextImage);
+      nextImage.onerror = () => reject(new Error("The logo could not be analysed."));
+      nextImage.src = source;
+    });
+    const canvas = document.createElement("canvas");
+    canvas.width = 72;
+    canvas.height = 72;
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    if (!context) throw new Error("The logo could not be analysed.");
+    context.clearRect(0, 0, 72, 72);
+    context.drawImage(image, 0, 0, 72, 72);
+    const pixels = context.getImageData(0, 0, 72, 72).data;
+    const buckets = new Map<string, { count: number; red: number; green: number; blue: number }>();
+    let transparent = 0;
+    for (let index = 0; index < pixels.length; index += 4) {
+      const alpha = pixels[index + 3];
+      if (alpha < 28) {
+        transparent += 1;
+        continue;
+      }
+      const red = pixels[index];
+      const green = pixels[index + 1];
+      const blue = pixels[index + 2];
+      const max = Math.max(red, green, blue);
+      const min = Math.min(red, green, blue);
+      const saturation = max ? (max - min) / max : 0;
+      const lightness = (max + min) / 510;
+      if (lightness > .96 || lightness < .035) continue;
+      const key = `${Math.round(red / 28)}-${Math.round(green / 28)}-${Math.round(blue / 28)}`;
+      const weight = 1 + saturation * 2.4;
+      const bucket = buckets.get(key) ?? { count: 0, red: 0, green: 0, blue: 0 };
+      bucket.count += weight;
+      bucket.red += red * weight;
+      bucket.green += green * weight;
+      bucket.blue += blue * weight;
+      buckets.set(key, bucket);
+    }
+    const colours = [...buckets.values()]
+      .map((bucket) => ({ red: bucket.red / bucket.count, green: bucket.green / bucket.count, blue: bucket.blue / bucket.count, score: bucket.count }))
+      .sort((a, b) => b.score - a.score);
+    const primary = colours[0] ?? { red: 245, green: 155, blue: 35, score: 1 };
+    const secondary = colours.find((colour) => Math.hypot(colour.red - primary.red, colour.green - primary.green, colour.blue - primary.blue) > 92)
+      ?? { red: Math.min(255, primary.blue + 42), green: Math.min(255, primary.green + 28), blue: Math.min(255, primary.red + 18), score: 1 };
+    const luminance = (.2126 * primary.red + .7152 * primary.green + .0722 * primary.blue) / 255;
+    const max = Math.max(primary.red, primary.green, primary.blue);
+    const min = Math.min(primary.red, primary.green, primary.blue);
+    const saturation = max ? (max - min) / max : 0;
+    const hueFamily = primary.blue > primary.red * 1.12
+      ? "cool"
+      : primary.red > primary.blue * 1.25 && primary.green > primary.blue * .9
+        ? "warm"
+        : "mixed";
+    return {
+      primary: rgbToHex(primary.red, primary.green, primary.blue),
+      secondary: rgbToHex(secondary.red, secondary.green, secondary.blue),
+      surface: luminance > .86 ? "dark" : "light",
+      background: hueFamily === "cool" ? "sea-blur" : hueFamily === "warm" ? "desert" : luminance < .3 ? "night" : "clean",
+      typography: hueFamily === "warm" ? "editorial" : saturation > .55 ? "rounded" : luminance < .35 ? "technical" : "brand",
+      hasTransparency: transparent / (pixels.length / 4) > .04,
+    };
+  } finally {
+    URL.revokeObjectURL(source);
+  }
 }
 
 function editorSeatConfig(value: SeatConfig | null | undefined): SeatConfig {
@@ -107,12 +305,14 @@ function editorSeatConfigWithFleet(value: SeatConfig | null | undefined, request
 function UploadControl({
   kind,
   label,
+  accept,
   multiple = false,
   disabled,
   onFiles,
 }: {
   kind: CatalogMediaKind;
   label: string;
+  accept?: string;
   multiple?: boolean;
   disabled: boolean;
   onFiles: (files: File[]) => Promise<void>;
@@ -122,7 +322,7 @@ function UploadControl({
       <span>{disabled ? "Uploading…" : label}</span>
       <input
         type="file"
-        accept={CATALOG_MEDIA_ACCEPT[kind]}
+        accept={accept ?? CATALOG_MEDIA_ACCEPT[kind]}
         multiple={multiple}
         disabled={disabled}
         onChange={async (event) => {
@@ -175,7 +375,7 @@ export function AdminCatalogForm({
   const [capacity, setCapacity] = useState(item?.capacity?.toString() ?? "");
   const [bookingMode, setBookingMode] = useState<
     "booking" | "request" | "application"
-  >(isTrip ? "booking" : item?.booking_mode ?? "booking");
+  >(item?.booking_mode ?? "booking");
   const [applicationRequired, setApplicationRequired] = useState(
     item?.application_required ?? false,
   );
@@ -192,10 +392,12 @@ export function AdminCatalogForm({
   const [requestFormFields, setRequestFormFields] = useState<BookingFormField[]>(
     item?.request_form_fields ?? [],
   );
-  const [requestAccent, setRequestAccent] = useState<RequestAccentId | "">(
-    (item?.request_form_theme?.accent as RequestAccentId | undefined) ?? "",
+  const [requestFormStyle, setRequestFormStyle] = useState<NonNullable<RequestFormTheme["style"]>>(
+    item?.request_form_theme?.style ?? "immersive",
   );
-  const [requestImage, setRequestImage] = useState(item?.request_form_theme?.image ?? "");
+  const [catalogChannels, setCatalogChannels] = useState<CatalogChannel[]>(
+    initialMedia.visualTheme?.channels ?? [isTrip ? "trips" : "events"],
+  );
   const [paymentProofRequired, setPaymentProofRequired] = useState(
     item?.payment_proof_required ?? true,
   );
@@ -208,8 +410,22 @@ export function AdminCatalogForm({
   const [hero, setHero] = useState(initialMedia.hero ?? "");
   const [heroAlt, setHeroAlt] = useState(initialMedia.heroAlt ?? "");
   const [video, setVideo] = useState(initialMedia.video ?? "");
+  const [linkedTripSlug, setLinkedTripSlug] = useState(initialMedia.linkedTripSlug ?? "");
   const [gallery, setGallery] = useState(initialMedia.gallery ?? []);
   const [galleryUrl, setGalleryUrl] = useState("");
+  const initialTheme = { ...DEFAULT_CATALOG_THEME, ...initialMedia.visualTheme };
+  const [visualLogo, setVisualLogo] = useState(initialTheme.logo ?? "");
+  const [visualLogoAlt, setVisualLogoAlt] = useState(initialTheme.logoAlt ?? "");
+  const [visualPrimary, setVisualPrimary] = useState(initialTheme.primaryColor);
+  const [visualSecondary, setVisualSecondary] = useState(initialTheme.secondaryColor);
+  const [visualSurface, setVisualSurface] = useState<CatalogSurface>(initialTheme.surface);
+  const [visualFinish, setVisualFinish] = useState<CatalogFinish>(initialTheme.finish);
+  const [visualBackground, setVisualBackground] = useState<CatalogBackground>(initialTheme.background);
+  const [visualDepth, setVisualDepth] = useState<CatalogDepth>(initialTheme.depth);
+  const [explorerScale, setExplorerScale] = useState(initialTheme.explorerScale);
+  const [explorerMotion, setExplorerMotion] = useState<CatalogExplorerMotion>(initialTheme.explorerMotion);
+  const [visualTypography, setVisualTypography] = useState<CatalogTypography>(initialTheme.typography);
+  const [visualBackgroundImage, setVisualBackgroundImage] = useState(initialTheme.backgroundImage ?? "");
   const [documentUrl, setDocumentUrl] = useState(item?.document_url ?? "");
   const [documentLabel, setDocumentLabel] = useState(
     item?.document_label ?? `${isTrip ? "Trip" : "Event"} information PDF`,
@@ -218,6 +434,7 @@ export function AdminCatalogForm({
   const [featured, setFeatured] = useState(item?.is_featured ?? false);
   const [uploading, setUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState<FormMessage>(null);
+  const [themeSuggestionMessage, setThemeSuggestionMessage] = useState<FormMessage>(null);
   const [message, setMessage] = useState<FormMessage>(null);
   const [pending, startTransition] = useTransition();
 
@@ -302,14 +519,29 @@ export function AdminCatalogForm({
     setVehicleCount(1);
     setSongRequestEnabled(false);
     setBookingFormFields([]);
+    setRequestFormFields([]);
+    setRequestFormStyle("immersive");
     setPaymentProofRequired(true);
     setInclusions("");
     setExclusions("");
     setHero("");
     setHeroAlt("");
     setVideo("");
+    setLinkedTripSlug("");
     setGallery([]);
     setGalleryUrl("");
+    setVisualLogo("");
+    setVisualLogoAlt("");
+    setVisualPrimary(DEFAULT_CATALOG_THEME.primaryColor);
+    setVisualSecondary(DEFAULT_CATALOG_THEME.secondaryColor);
+    setVisualSurface(DEFAULT_CATALOG_THEME.surface);
+    setVisualFinish(DEFAULT_CATALOG_THEME.finish);
+    setVisualBackground(DEFAULT_CATALOG_THEME.background);
+    setVisualDepth(DEFAULT_CATALOG_THEME.depth);
+    setExplorerScale(DEFAULT_CATALOG_THEME.explorerScale);
+    setExplorerMotion(DEFAULT_CATALOG_THEME.explorerMotion);
+    setVisualTypography(DEFAULT_CATALOG_THEME.typography);
+    setVisualBackgroundImage("");
     setDocumentUrl("");
     setDocumentLabel(`${isTrip ? "Trip" : "Event"} information PDF`);
     setPublished(false);
@@ -349,8 +581,8 @@ export function AdminCatalogForm({
             songRequestEnabled: isTrip && songRequestEnabled,
             seatConfig: editorSeatConfigWithFleet(item?.seat_config, vehicleCount),
             bookingFormFields,
-            requestFormFields: isTrip ? requestFormFields : [],
-            requestFormTheme: isTrip ? { accent: requestAccent || undefined, image: requestImage.trim() || undefined } : {},
+            requestFormFields,
+            requestFormTheme: { style: requestFormStyle },
             paymentProofRequired: isTrip && paymentProofRequired,
             inclusions: lines(inclusions),
             exclusions: lines(exclusions),
@@ -359,6 +591,22 @@ export function AdminCatalogForm({
               heroAlt: heroAlt || undefined,
               gallery,
               video: video || undefined,
+              linkedTripSlug: !isTrip && linkedTripSlug ? linkedTripSlug : undefined,
+              visualTheme: {
+                logo: visualLogo || undefined,
+                logoAlt: visualLogoAlt || undefined,
+                primaryColor: visualPrimary,
+                secondaryColor: visualSecondary,
+                surface: visualSurface,
+                finish: visualFinish,
+                background: visualBackground,
+                depth: visualDepth,
+                explorerScale,
+                explorerMotion,
+                typography: visualTypography,
+                channels: catalogChannels,
+                backgroundImage: visualBackgroundImage || undefined,
+              },
             },
             documentUrl,
             documentLabel,
@@ -495,25 +743,69 @@ export function AdminCatalogForm({
         </div>
       </fieldset>
 
+      {!isTrip ? (
+        <fieldset className="pi-admin-form__section">
+          <legend>Shared trip experience</legend>
+          <p className="pi-admin-help">
+            Use this when one experience should appear in Events and Trips but keep one details and booking page.
+          </p>
+          <label>
+            Linked trip slug
+            <input
+              placeholder="e.g. outer-banks-sinai"
+              pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+              value={linkedTripSlug}
+              onChange={(event) => setLinkedTripSlug(event.target.value)}
+            />
+          </label>
+        </fieldset>
+      ) : null}
+
+      <fieldset className="pi-admin-form__section">
+        <legend>Where this experience appears</legend>
+        <p className="pi-admin-help">
+          This stays one experience with one details page and one application. Choose every public catalogue where its card should appear.
+        </p>
+        <div className="pi-admin-form__grid pi-admin-form__grid--two">
+          {([
+            ["trips", "Trips"],
+            ["events", "Events"],
+            ["themes", "Themes"],
+          ] as const).map(([channel, channelLabel]) => (
+            <label className="pi-admin-check pi-admin-switch" key={channel}>
+              <input
+                type="checkbox"
+                checked={catalogChannels.includes(channel)}
+                onChange={(event) => setCatalogChannels((current) => event.target.checked
+                  ? Array.from(new Set([...current, channel]))
+                  : current.filter((value) => value !== channel))}
+              />
+              Show in {channelLabel}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
       <fieldset className="pi-admin-form__section">
         <legend>Guest flow</legend>
-        {isTrip ? (
-          <p className="pi-admin-help">
-            Normal trips use direct booking. Turn on the application switch only for the rare trips that need approval first.
-          </p>
-        ) : (
-          <label>
-            Booking mode
-            <select
-              value={bookingMode}
-              onChange={(event) => setBookingMode(event.target.value as "booking" | "request" | "application")}
-            >
-              <option value="booking">Direct booking</option>
-              <option value="request">Request before booking</option>
-              <option value="application">Application workflow</option>
-            </select>
-          </label>
-        )}
+        <p className="pi-admin-help">
+          Choose whether this experience is booked immediately, sent as a simple request, or reviewed as a full application that you accept or reject.
+        </p>
+        <label>
+          Guest path
+          <select
+            value={bookingMode}
+            onChange={(event) => {
+              const value = event.target.value as "booking" | "request" | "application";
+              setBookingMode(value);
+              if (value === "application") setApplicationRequired(true);
+            }}
+          >
+            <option value="booking">Direct booking</option>
+            <option value="request">Simple trip / event request</option>
+            <option value="application">Trip Application — accept or reject</option>
+          </select>
+        </label>
         <label className="pi-admin-check pi-admin-switch">
           <input
             type="checkbox"
@@ -574,58 +866,21 @@ export function AdminCatalogForm({
         </fieldset>
       ) : null}
 
-      {/* The Trip request form is a different conversation from the booking
-          form: it asks who is coming, not what they want to buy. Same editor,
-          its own questions, and its own look per trip. */}
       {isTrip ? (
         <fieldset className="pi-admin-form__section">
-          <legend>Trip request form</legend>
+          <legend>Trip Application</legend>
           <p className="pi-admin-help">
-            The questions someone answers before you hold them a seat. Name, mobile,
-            email and the policy tick are always asked — add whatever else you want to
-            know for this trip. Leave it empty and the standard questions are used.
+            These are the questions guests see only when this trip uses the application workflow. Full name, email and WhatsApp stay protected as the fixed contact basics. The form automatically uses the logo, colours, background and type selected in Visual identity below.
           </p>
-          <BookingFormBuilder
-            fields={requestFormFields}
-            onChange={setRequestFormFields}
-            uploading={uploading}
-            onAccommodationImageUpload={uploadAccommodationOptionPhoto}
-          />
-
           <label>
-            Photo at the top of the form
-            <input
-              placeholder="https://… or /brand/…"
-              value={requestImage}
-              onChange={(event) => setRequestImage(event.target.value)}
-            />
+            Application layout
+            <select value={requestFormStyle} onChange={(event) => setRequestFormStyle(event.target.value as NonNullable<RequestFormTheme["style"]>)}>
+              <option value="immersive">Immersive — full visual identity</option>
+              <option value="editorial">Editorial — story-led cards</option>
+              <option value="minimal">Minimal — clean and focused</option>
+            </select>
           </label>
-          <p className="pi-admin-help">Leave empty for no photo.</p>
-
-          <span>Accent colour</span>
-          <div className="pi-admin-quick-actions" role="group" aria-label="Accent colour">
-            {REQUEST_ACCENTS.map((accent) => (
-              <button
-                key={accent.id}
-                type="button"
-                aria-pressed={requestAccent === accent.id}
-                onClick={() => setRequestAccent(requestAccent === accent.id ? "" : accent.id)}
-                style={{
-                  borderWidth: requestAccent === accent.id ? 3 : 1,
-                  borderStyle: "solid",
-                  borderColor: `var(${accent.cssVar})`,
-                  background: requestAccent === accent.id ? `var(${accent.cssVar})` : "transparent",
-                  color: requestAccent === accent.id ? "#fff" : "inherit",
-                  fontWeight: 800,
-                }}
-              >
-                {accent.label}
-              </button>
-            ))}
-          </div>
-          <p className="pi-admin-help">
-            Brand colours only, from PI-BB-001. Nothing selected means the usual orange.
-          </p>
+          <BookingFormBuilder fields={requestFormFields} onChange={setRequestFormFields} />
         </fieldset>
       ) : null}
 
@@ -670,7 +925,8 @@ export function AdminCatalogForm({
         <label>
           Cover image URL
           <input
-            type="url"
+            type="text"
+            inputMode="url"
             value={hero}
             onChange={(event) => setHero(event.target.value)}
           />
@@ -702,7 +958,8 @@ export function AdminCatalogForm({
         <label>
           Video URL
           <input
-            type="url"
+            type="text"
+            inputMode="url"
             value={video}
             onChange={(event) => setVideo(event.target.value)}
           />
@@ -747,7 +1004,8 @@ export function AdminCatalogForm({
           />
           <div className="pi-admin-inline-field">
             <input
-              type="url"
+              type="text"
+              inputMode="url"
               aria-label="Gallery image URL"
               placeholder="Or paste an image URL"
               value={galleryUrl}
@@ -830,6 +1088,150 @@ export function AdminCatalogForm({
       </fieldset>
 
       <fieldset className="pi-admin-form__section">
+        <legend>Visual identity</legend>
+        <p className="pi-admin-help">
+          Upload PNG, JPG or WebP. The editor extracts the mark, removes a simple solid background, converts it to a transparent PNG and suggests the palette, atmosphere and typography for the whole public page.
+        </p>
+
+        <div
+          className="pi-admin-theme-preview"
+          data-surface={visualSurface}
+          data-finish={visualFinish}
+          data-background={visualBackground}
+          data-depth={visualDepth}
+          data-typography={visualTypography}
+          style={{
+            "--preview-primary": visualPrimary,
+            "--preview-secondary": visualSecondary,
+            "--preview-image": visualBackgroundImage ? `url("${visualBackgroundImage.replace(/["\\]/g, "")}")` : "none",
+          } as CSSProperties}
+        >
+          <div className="pi-admin-theme-preview__orb">
+            {visualLogo ? (
+              // Dynamic admin uploads can come from any configured public storage host.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={visualLogo} alt={visualLogoAlt || "Visual identity preview"} />
+            ) : <span aria-hidden="true">∞</span>}
+          </div>
+          <div><small>{isTrip ? "TRIP WORLD" : "EVENT WORLD"}</small><strong>{title || `New ${label}`}</strong></div>
+        </div>
+
+        <div className="pi-admin-form__grid pi-admin-form__grid--two">
+          <label>
+            Logo image URL
+            <input type="text" inputMode="url" value={visualLogo} onChange={(event) => setVisualLogo(event.target.value)} />
+          </label>
+          <label>
+            Logo description
+            <input maxLength={240} value={visualLogoAlt} onChange={(event) => setVisualLogoAlt(event.target.value)} />
+          </label>
+        </div>
+        <div className="pi-admin-asset-actions">
+          <UploadControl
+            kind="image"
+            label="Upload logo — PNG, JPG or WebP"
+            accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp"
+            disabled={uploading}
+            onFiles={async (files) => {
+              const file = files[0];
+              if (!file) return;
+              setThemeSuggestionMessage(null);
+              try {
+                const prepared = await prepareLogoUpload(file);
+                const suggestion = await analyseLogo(prepared.file);
+                setVisualPrimary(suggestion.primary);
+                setVisualSecondary(suggestion.secondary);
+                setVisualSurface(suggestion.surface);
+                setVisualBackground(suggestion.background);
+                setVisualTypography(suggestion.typography);
+                setVisualFinish("soft-metal");
+                setThemeSuggestionMessage({ tone: "success", text: prepared.extracted ? "Background removed. A transparent logo, palette, page mood and type style were prepared automatically." : "Transparent logo detected. Palette, page mood and type style were suggested automatically." });
+                await uploadFiles([prepared.file], "image", (url) => setVisualLogo(url));
+              } catch (error) {
+                setThemeSuggestionMessage({ tone: "error", text: error instanceof Error ? error.message : "The logo could not be prepared." });
+              }
+            }}
+          />
+          {visualLogo ? <button type="button" onClick={() => setVisualLogo("")}>Remove logo</button> : null}
+        </div>
+        {themeSuggestionMessage ? <p className={themeSuggestionMessage.tone === "success" ? "pi-admin-success" : "pi-admin-error"} aria-live="polite">{themeSuggestionMessage.text}</p> : null}
+
+        <div className="pi-admin-form__grid pi-admin-form__grid--two pi-admin-theme-colors">
+          <label>
+            Primary colour
+            <span><input type="color" value={visualPrimary} onChange={(event) => setVisualPrimary(event.target.value)} /><input value={visualPrimary} pattern="#[0-9A-Fa-f]{6}" onChange={(event) => setVisualPrimary(event.target.value)} /></span>
+          </label>
+          <label>
+            Secondary colour
+            <span><input type="color" value={visualSecondary} onChange={(event) => setVisualSecondary(event.target.value)} /><input value={visualSecondary} pattern="#[0-9A-Fa-f]{6}" onChange={(event) => setVisualSecondary(event.target.value)} /></span>
+          </label>
+          <label>
+            Page mood
+            <select value={visualSurface} onChange={(event) => setVisualSurface(event.target.value as CatalogSurface)}>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </label>
+          <label>
+            Page type style
+            <select value={visualTypography} onChange={(event) => setVisualTypography(event.target.value as CatalogTypography)}>
+              <option value="brand">Planet Infinity brand</option>
+              <option value="editorial">Editorial / destination</option>
+              <option value="rounded">Rounded / playful</option>
+              <option value="technical">Technical / nightlife</option>
+            </select>
+          </label>
+          <label>
+            Logo finish
+            <select value={visualFinish} onChange={(event) => setVisualFinish(event.target.value as CatalogFinish)}>
+              <option value="matte">Matte / non-metallic</option>
+              <option value="soft-metal">Soft metallic</option>
+              <option value="metallic">High metallic</option>
+            </select>
+          </label>
+          <label>
+            Background atmosphere
+            <select value={visualBackground} onChange={(event) => setVisualBackground(event.target.value as CatalogBackground)}>
+              <option value="clean">Clean gradient</option>
+              <option value="stars">Stars</option>
+              <option value="desert">Desert glow</option>
+              <option value="sea-blur">Blurred sea</option>
+              <option value="night">Deep night</option>
+            </select>
+          </label>
+          <label>
+            UI depth
+            <select value={visualDepth} onChange={(event) => setVisualDepth(event.target.value as CatalogDepth)}>
+              <option value="flat">Flat</option>
+              <option value="raised">Raised cards</option>
+              <option value="three-d">3D cards and price</option>
+            </select>
+          </label>
+          <label>
+            Explorer motion
+            <select value={explorerMotion} onChange={(event) => setExplorerMotion(event.target.value as CatalogExplorerMotion)}>
+              <option value="still">Still</option>
+              <option value="gentle">Gentle float</option>
+              <option value="interactive">Interactive tilt</option>
+            </select>
+          </label>
+          <label>
+            Explorer object size ({Math.round(explorerScale * 100)}%)
+            <input type="range" min="0.75" max="1.3" step="0.05" value={explorerScale} onChange={(event) => setExplorerScale(Number(event.target.value))} />
+          </label>
+        </div>
+
+        <label>
+          Optional background image URL
+          <input type="text" inputMode="url" value={visualBackgroundImage} onChange={(event) => setVisualBackgroundImage(event.target.value)} />
+        </label>
+        <div className="pi-admin-asset-actions">
+          <UploadControl kind="image" label="Upload background image" disabled={uploading} onFiles={(files) => uploadFiles(files.slice(0, 1), "image", (url) => setVisualBackgroundImage(url))} />
+          {visualBackgroundImage ? <button type="button" onClick={() => setVisualBackgroundImage("")}>Remove background</button> : null}
+        </div>
+      </fieldset>
+
+      <fieldset className="pi-admin-form__section">
         <legend>PDF document</legend>
         <p className="pi-admin-help">
           Guests see a clean document card; the raw storage or Drive link stays hidden.
@@ -845,7 +1247,8 @@ export function AdminCatalogForm({
         <label>
           PDF URL
           <input
-            type="url"
+            type="text"
+            inputMode="url"
             value={documentUrl}
             onChange={(event) => setDocumentUrl(event.target.value)}
           />

@@ -2,6 +2,7 @@
 
 import { normaliseBookingFormFields, type BookingFormField } from "@/lib/booking-form";
 import { normaliseRequestFormTheme, type RequestFormTheme } from "@/lib/request-form";
+import type { CatalogVisualTheme } from "@/lib/catalog-visual-theme";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
@@ -10,6 +11,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-
 export type TripRequestForm = {
   fields: BookingFormField[];
   theme: RequestFormTheme;
+  identity: CatalogVisualTheme | undefined;
   title: string | null;
 };
 
@@ -20,13 +22,13 @@ export type TripRequestForm = {
  * an unknown id simply falls back to the standard form rather than erroring.
  */
 export async function getTripRequestForm(productId: string): Promise<TripRequestForm> {
-  const empty: TripRequestForm = { fields: [], theme: {}, title: null };
+  const empty: TripRequestForm = { fields: [], theme: {}, identity: undefined, title: null };
   if (!UUID.test(productId) || !isSupabaseConfigured()) return empty;
 
   const supabase = await createClient();
   const { data } = await supabase
     .from("trips")
-    .select("title, request_form_fields, request_form_theme")
+    .select("title, request_form_fields, request_form_theme, media")
     .eq("id", productId)
     .eq("is_published", true)
     .maybeSingle();
@@ -35,6 +37,9 @@ export async function getTripRequestForm(productId: string): Promise<TripRequest
   return {
     fields: normaliseBookingFormFields(data.request_form_fields) ?? [],
     theme: normaliseRequestFormTheme(data.request_form_theme),
+    identity: data.media && typeof data.media === "object" && !Array.isArray(data.media)
+      ? (data.media as { visualTheme?: CatalogVisualTheme }).visualTheme
+      : undefined,
     title: typeof data.title === "string" ? data.title : null,
   };
 }

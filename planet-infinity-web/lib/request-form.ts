@@ -23,6 +23,7 @@ export type RequestAccentId = (typeof REQUEST_ACCENTS)[number]["id"];
 export type RequestFormTheme = {
   accent?: RequestAccentId;
   image?: string;
+  style?: "editorial" | "immersive" | "minimal";
 };
 
 const ACCENT_IDS = new Set<string>(REQUEST_ACCENTS.map((accent) => accent.id));
@@ -34,12 +35,15 @@ function safeImage(value: unknown): string {
 
 export function normaliseRequestFormTheme(value: unknown): RequestFormTheme {
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
-  const source = value as { accent?: unknown; image?: unknown };
+  const source = value as { accent?: unknown; image?: unknown; style?: unknown };
   const accent = typeof source.accent === "string" && ACCENT_IDS.has(source.accent)
     ? (source.accent as RequestAccentId)
     : undefined;
   const image = safeImage(source.image);
-  return { ...(accent ? { accent } : {}), ...(image ? { image } : {}) };
+  const style = source.style === "editorial" || source.style === "immersive" || source.style === "minimal"
+    ? source.style
+    : undefined;
+  return { ...(accent ? { accent } : {}), ...(image ? { image } : {}), ...(style ? { style } : {}) };
 }
 
 export function accentCssVar(accent: RequestAccentId | undefined): string {

@@ -40,6 +40,6 @@ function ExperienceDeck({ label, items, tone }: { label: string; items: DeckItem
 
 export function HomeExperienceDecks({ trips, events }: { trips: Trip[]; events: PlanetEvent[] }) {
   const tripItems: DeckItem[] = trips.map((trip) => ({ id: trip.id, href: `/trips/${trip.slug}`, title: trip.title, eyebrow: trip.destination, image: trip.media.hero, imageAlt: trip.media.heroAlt ?? "", video: trip.media.video }));
-  const eventItems: DeckItem[] = events.map((event) => ({ id: event.id, href: `/events/${event.slug}`, title: event.title, eyebrow: event.category, image: event.media.hero, imageAlt: event.media.heroAlt ?? "", video: event.media.video }));
+  const eventItems: DeckItem[] = events.map((event) => ({ id: event.id, href: event.media.linkedTripSlug ? `/trips/${event.media.linkedTripSlug}` : `/events/${event.slug}`, title: event.title, eyebrow: event.category, image: event.media.hero, imageAlt: event.media.heroAlt ?? "", video: event.media.video }));
   return <div className="pi-home-decks"><ExperienceDeck label="Explore Trips" items={tripItems} tone="trip" /><ExperienceDeck label="Explore Events" items={eventItems} tone="event" /></div>;
 }

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { AdminShell } from "@/components/AdminShell";
 import { RequestStatusForm } from "@/components/RequestStatusForm";
 import { RequestToBookingForm } from "@/components/RequestToBookingForm";
-import { formatDate, getCareerPhotoUrls, getPaymentProofUrl, getRequest, getRequestHistory, requestSubject, requestTypeLabel } from "@/lib/admin-requests";
+import { formatDate, getPaymentProofUrl, getPrivateRequestPhotoUrls, getRequest, getRequestHistory, requestSubject, requestTypeLabel } from "@/lib/admin-requests";
 import { requireAdmin } from "@/lib/admin";
 
 export const metadata = { title: "Request details" };
@@ -28,9 +28,17 @@ function customResponses(value: unknown) {
   });
 }
 
+function applicationAnswers(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return [];
+  return Object.entries(value).flatMap(([label, raw]) => {
+    const answer = typeof raw === "string" || typeof raw === "number" ? String(raw) : "";
+    return label.trim() && answer.trim() ? [{ label, answer }] : [];
+  });
+}
+
 function selectionDetails(value: Record<string, unknown>) {
   return Object.entries(value).flatMap(([key, raw]) => {
-    if (key === "customResponses" || key === "careerPhotos" || raw === null || raw === undefined || raw === "") return [];
+    if (key === "customResponses" || key === "applicationAnswers" || key === "careerPhotos" || key === "applicationPhotos" || raw === null || raw === undefined || raw === "") return [];
     const answer = Array.isArray(raw)
       ? raw.map(String).filter(Boolean).join(", ")
       : raw === true
@@ -51,11 +59,15 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
   const { id } = await params;
   const [request, history] = await Promise.all([getRequest(id), getRequestHistory(id)]);
   if (!request) notFound();
-  const [paymentProofUrl, careerPhotos] = await Promise.all([
+  const privatePhotoData = request.selections.applicationPhotos ?? request.selections.careerPhotos;
+  const [paymentProofUrl, privatePhotos] = await Promise.all([
     getPaymentProofUrl(request.payment_proof_path),
-    getCareerPhotoUrls(request.selections.careerPhotos),
+    getPrivateRequestPhotoUrls(privatePhotoData),
   ]);
-  const tripAnswers = customResponses(request.selections.customResponses);
+  const tripAnswers = [
+    ...customResponses(request.selections.customResponses),
+    ...applicationAnswers(request.selections.applicationAnswers),
+  ];
   const submittedDetails = selectionDetails(request.selections);
   const whatsappNumber = request.customer?.phone?.replace(/\D/g, "") ?? "";
   const whatsappMessage = encodeURIComponent(`Hello ${request.customer?.full_name ?? ""}, this is Planet Infinity regarding ${request.request_number}.`);
@@ -83,7 +95,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
             {request.customer?.email ? <a href={`mailto:${request.customer.email}?subject=${encodeURIComponent(`Planet Infinity · ${request.request_number}`)}`}>Send email</a> : null}
           </div>
           {paymentProofUrl ? <div className="pi-admin-payment-proof"><h3>Uploaded payment receipt</h3><a href={paymentProofUrl} target="_blank" rel="noreferrer"><Image src={paymentProofUrl} width={900} height={900} unoptimized alt={`Payment receipt for ${request.request_number}`} /></a><p>Review the receiving account before recording this payment. The uploaded image alone is not proof of a successful transfer.</p></div> : null}
-          {careerPhotos.length ? <div className="pi-admin-payment-proof"><h3>Candidate photos</h3><div className="pi-admin-gallery-list">{careerPhotos.map((photo) => <a key={photo.url} href={photo.url} target="_blank" rel="noreferrer"><Image className="pi-admin-gallery-preview" src={photo.url} width={640} height={640} unoptimized alt={photo.name} /></a>)}</div><p>Private uploads. These links expire after ten minutes.</p></div> : null}
+          {privatePhotos.length ? <div className="pi-admin-payment-proof"><h3>{request.selections.applicationPhotos ? "Trip application photos" : "Candidate photos"}</h3><div className="pi-admin-gallery-list">{privatePhotos.map((photo) => <a key={photo.url} href={photo.url} target="_blank" rel="noreferrer"><Image className="pi-admin-gallery-preview" src={photo.url} width={640} height={640} unoptimized alt={photo.name} /></a>)}</div><p>Private uploads. These links expire after ten minutes.</p></div> : null}
           {tripAnswers.length ? <div className="pi-admin-submitted-answers"><h3>Trip-specific answers</h3><dl className="pi-admin-details">{tripAnswers.map((answer, index) => <div key={`${answer.label}-${index}`}><dt>{answer.label}</dt><dd>{answer.answer}</dd></div>)}</dl></div> : null}
           {submittedDetails.length || request.notes ? <div className="pi-admin-submitted-answers"><h3>Submitted details</h3><dl className="pi-admin-details">
             {submittedDetails.map((detail) => <div key={detail.label}><dt>{detail.label}</dt><dd>{detail.answer}</dd></div>)}

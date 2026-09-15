@@ -91,12 +91,16 @@ async function databaseTrips(): Promise<Trip[] | null> {
   if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
   const baseColumns = "id, slug, title, short_description, description, destination, duration_label, departure_at, return_at, meeting_point, departure_point, return_point, package_label, accommodation, transportation, important_information, price_egp, capacity, booking_mode, application_required, seat_selection_enabled, seat_config, booking_form_fields, payment_proof_required, document_url, document_label, is_featured, media, inclusions, exclusions, itinerary, options";
-  let { data, error } = await supabase.from("trips").select(`${baseColumns}, song_request_enabled`).eq("is_published", true).order("departure_at", { ascending: true, nullsFirst: false });
+  let tripQuery = supabase.from("trips").select(`${baseColumns}, song_request_enabled`).order("departure_at", { ascending: true, nullsFirst: false });
+  if (process.env.NODE_ENV !== "development") tripQuery = tripQuery.eq("is_published", true);
+  let { data, error } = await tripQuery;
   // Keep the public catalogue online while a newly deployed optional field is
   // waiting for its database migration. Core trip and booking data must not
   // disappear just because the playlist toggle is not available yet.
   if (error?.code === "42703" && error.message.includes("song_request_enabled")) {
-    const fallback = await supabase.from("trips").select(baseColumns).eq("is_published", true).order("departure_at", { ascending: true, nullsFirst: false });
+    let fallbackQuery = supabase.from("trips").select(baseColumns).order("departure_at", { ascending: true, nullsFirst: false });
+    if (process.env.NODE_ENV !== "development") fallbackQuery = fallbackQuery.eq("is_published", true);
+    const fallback = await fallbackQuery;
     data = fallback.data?.map((row) => ({ ...row, song_request_enabled: false })) ?? null;
     error = fallback.error;
   }
@@ -109,7 +113,9 @@ async function databaseTrips(): Promise<Trip[] | null> {
 async function databaseEvents(): Promise<PlanetEvent[] | null> {
   if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
-  const { data, error } = await supabase.from("events").select("id, slug, title, short_description, description, category, venue, starts_at, ends_at, important_information, price_egp, capacity, booking_mode, application_required, document_url, document_label, is_featured, media, ticket_options, inclusions, exclusions").eq("is_published", true).order("starts_at", { ascending: true, nullsFirst: false });
+  let eventQuery = supabase.from("events").select("id, slug, title, short_description, description, category, venue, starts_at, ends_at, important_information, price_egp, capacity, booking_mode, application_required, document_url, document_label, is_featured, media, ticket_options, inclusions, exclusions").order("starts_at", { ascending: true, nullsFirst: false });
+  if (process.env.NODE_ENV !== "development") eventQuery = eventQuery.eq("is_published", true);
+  const { data, error } = await eventQuery;
   // See databaseTrips: an empty table must not blank out the public listing.
   if (error || !data?.length) return null;
   return (data as unknown as DatabaseEvent[]).map(mapEvent);
@@ -121,7 +127,8 @@ export async function getListedTrips(): Promise<{ trips: Trip[]; usingDemoData: 
   const items = await databaseTrips();
   // Architecture fixtures are useful for direct developer testing, but they
   // must never become public catalogue content when Supabase is unavailable.
-  return { trips: items ?? TRIPS, usingDemoData: false };
+  const trips = items ?? TRIPS;
+  return { trips: trips.filter((item) => (item.media.visualTheme?.channels ?? ["trips"]).includes("trips")), usingDemoData: false };
 }
 export async function getFeaturedTrips(): Promise<Trip[]> { const items = await databaseTrips(); return items === null ? FEATURED_TRIPS : items.filter((item) => item.featured); }
 export async function getTripBySlug(slug: string): Promise<Trip | undefined> {
@@ -147,7 +154,18 @@ export async function getTripSlugs(): Promise<string[]> { const items = await da
 export async function getEvents(): Promise<PlanetEvent[]> { return (await databaseEvents()) ?? EVENTS; }
 export async function getListedEvents(): Promise<{ events: PlanetEvent[]; usingDemoData: boolean }> {
   const items = await databaseEvents();
-  return { events: items ?? EVENTS, usingDemoData: false };
+  const events = items ?? EVENTS;
+  return { events: events.filter((item) => (item.media.visualTheme?.channels ?? ["events"]).includes("events")), usingDemoData: false };
+}
+
+export async function getCrossListedTrips(channel: "events" | "themes"): Promise<Trip[]> {
+  const trips = (await databaseTrips()) ?? TRIPS;
+  return trips.filter((item) => item.media.visualTheme?.channels?.includes(channel));
+}
+
+export async function getThemedEvents(): Promise<PlanetEvent[]> {
+  const events = (await databaseEvents()) ?? EVENTS;
+  return events.filter((item) => item.media.visualTheme?.channels?.includes("themes"));
 }
 export async function getFeaturedEvents(): Promise<PlanetEvent[]> { const items = await databaseEvents(); return items === null ? FEATURED_EVENTS : items.filter((item) => item.featured); }
 export async function getEventBySlug(slug: string): Promise<PlanetEvent | undefined> { const items = await databaseEvents(); return items === null ? findEvent(slug) : items.find((item) => item.slug === slug); }

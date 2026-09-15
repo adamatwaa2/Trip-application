@@ -58,12 +58,12 @@ export async function getPaymentProofUrl(path: string | null): Promise<string | 
   return error ? null : data.signedUrl;
 }
 
-export async function getCareerPhotoUrls(value: unknown): Promise<Array<{ name: string; url: string }>> {
+export async function getPrivateRequestPhotoUrls(value: unknown): Promise<Array<{ name: string; url: string }>> {
   if (!Array.isArray(value)) return [];
   const photos = value.slice(0, 2).flatMap((entry) => {
     if (!entry || typeof entry !== "object") return [];
     const photo = entry as { path?: unknown; fileName?: unknown };
-    if (typeof photo.path !== "string" || !/^careers\/\d{4}-\d{2}\/[0-9a-f-]+\.(jpg|png|webp)$/i.test(photo.path)) return [];
+    if (typeof photo.path !== "string" || !/^(?:careers\/\d{4}-\d{2}|applications\/[0-9a-f-]{36}\/\d{4}-\d{2})\/[0-9a-f-]+\.(jpg|png|webp)$/i.test(photo.path)) return [];
     return [{ path: photo.path, name: typeof photo.fileName === "string" ? photo.fileName.slice(0, 120) : "Candidate photo" }];
   });
   const supabase = await createClient();
@@ -73,6 +73,8 @@ export async function getCareerPhotoUrls(value: unknown): Promise<Array<{ name: 
   }));
   return signed.filter((photo): photo is { name: string; url: string } => photo !== null);
 }
+
+export const getCareerPhotoUrls = getPrivateRequestPhotoUrls;
 
 export async function getOverview() {
   const supabase = await createClient();

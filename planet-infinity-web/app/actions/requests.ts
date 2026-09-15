@@ -59,6 +59,38 @@ export type PaymentProofUploadResult =
 
 export type CareerPhotoUploadResult = PaymentProofUploadResult;
 
+export async function createApplicationPhotoUploadTarget(input: {
+  tripId: string;
+  mimeType: string;
+  size: number;
+}): Promise<CareerPhotoUploadResult> {
+  const extension = PAYMENT_PROOF_TYPES[input.mimeType];
+  if (!UUID.test(input.tripId) || !extension || !Number.isInteger(input.size) || input.size < 1 || input.size > 5 * 1024 * 1024) {
+    return { ok: false, error: "Upload a JPG, PNG, or WebP image up to 5 MB." };
+  }
+  if (!isSupabaseServiceConfigured()) {
+    return { ok: false, error: "Secure photo upload is not configured yet." };
+  }
+
+  const supabase = createServiceClient();
+  const { data: trip, error: tripError } = await supabase
+    .from("trips")
+    .select("id")
+    .eq("id", input.tripId)
+    .eq("is_published", true)
+    .or("application_required.eq.true,booking_mode.eq.application")
+    .maybeSingle();
+  if (tripError || !trip) return { ok: false, error: "This trip application is not available." };
+
+  const month = new Date().toISOString().slice(0, 7);
+  const path = `applications/${input.tripId}/${month}/${crypto.randomUUID()}.${extension}`;
+  const { data, error } = await supabase.storage
+    .from(PAYMENT_PROOF_BUCKET)
+    .createSignedUploadUrl(path);
+  if (error || !data?.token) return { ok: false, error: "The secure photo upload could not start." };
+  return { ok: true, bucket: PAYMENT_PROOF_BUCKET, path, token: data.token };
+}
+
 export async function createCareerPhotoUploadTarget(input: {
   mimeType: string;
   size: number;

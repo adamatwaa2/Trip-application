@@ -4,6 +4,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
 import { TripBookingFlow } from "@/components/TripBookingFlow";
+import { CatalogThemeFrame } from "@/components/CatalogThemeFrame";
 import { getTripBySlug } from "@/content/source";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -33,8 +34,9 @@ export default async function TripBookingPage({ params }: Params) {
   }
 
   return (
-    <Section tone="ivory">
-      <Container>
+    <CatalogThemeFrame theme={trip.media.visualTheme} kind="trip">
+      <Section tone="white" className="pi-catalog-booking">
+        <Container>
         <Breadcrumbs
           trail={[
             { label: "Home", href: "/" },
@@ -45,7 +47,9 @@ export default async function TripBookingPage({ params }: Params) {
         />
         <h1 className="pi-flow__heading">{trip.title}</h1>
         <TripBookingFlow trip={trip} />
-      </Container>
-    </Section>
+        </Container>
+      </Section>
+    </CatalogThemeFrame>
   );
 }
+

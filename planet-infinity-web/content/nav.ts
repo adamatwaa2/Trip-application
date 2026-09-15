@@ -25,9 +25,9 @@ export const PRIMARY_NAV: NavItem[] = [
   { label: "Home", href: "/", status: "ready" },
   { label: "Travel", href: "/trips", status: "ready" },
   { label: "Events", href: "/events", status: "ready" },
+  { label: "Themes", href: "/themes", status: "ready" },
   { label: "Explore", href: "/explore", status: "ready" },
   { label: "Contact", href: "/contact", status: "ready" },
-  { label: "Themes", href: "/themes", status: "soon", note: "Soon" },
 ];
 
 /**
@@ -45,6 +45,7 @@ export const HEADER_CTA: NavItem = {
 export const WORLD_NAV: NavItem[] = [
   { label: "Travel", href: "/trips", status: "ready" },
   { label: "Events", href: "/events", status: "ready" },
+  { label: "Themes", href: "/themes", status: "ready" },
 ];
 
 /** Guest-facing flows that already exist. */
@@ -68,7 +69,6 @@ export const COMPANY_LINKS: NavItem[] = [
 
 /** Parts of the universe that are not open yet. */
 export const COMING_SOON_LINKS: NavItem[] = [
-  { label: "Themes", href: "/themes", status: "soon", note: "Soon" },
   { label: "Merch", href: "/merch", status: "soon", note: "Soon" },
 ];
 

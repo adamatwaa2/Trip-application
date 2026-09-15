@@ -24,6 +24,11 @@ export const SITE_COPY_FIELDS = [
   { key: "events_lede", label: "Events page introduction", fallback: "From daytime gatherings to after-dark experiences, every event is announced only when its details are ready.", multiline: true },
   { key: "events_empty_title", label: "Events empty heading", fallback: "The next dates are being locked in", multiline: false },
   { key: "events_empty_body", label: "Events empty text", fallback: "Line-ups, venues and ticket details are confirmed before an event is listed.", multiline: true },
+  { key: "themes_eyebrow", label: "Themes page eyebrow", fallback: "Story worlds", multiline: false },
+  { key: "themes_title", label: "Themes page headline", fallback: "Enter a world. Make it yours.", multiline: false },
+  { key: "themes_lede", label: "Themes page introduction", fallback: "Immersive Planet Infinity stories that can become a trip, an event, or a custom experience.", multiline: true },
+  { key: "themes_empty_title", label: "Themes empty heading", fallback: "The next world is being built", multiline: false },
+  { key: "themes_empty_body", label: "Themes empty text", fallback: "New themed experiences will appear here when their story and details are ready.", multiline: true },
   { key: "explore_title", label: "Explore page headline", fallback: "One planet. More than one world.", multiline: false },
   { key: "explore_lede", label: "Explore page introduction", fallback: "Move between travel and events as the Planet Infinity universe changes around you.", multiline: true },
   { key: "trip_overview_title", label: "Trip overview heading", fallback: "Overview", multiline: false },
@@ -51,6 +56,14 @@ export const SITE_COPY_FIELDS = [
   { key: "contact_address", label: "Business address", fallback: "45 Sheikh Mohamed El Ghazali Street, Dokki, Giza, Egypt", multiline: true },
   { key: "contact_office_hours", label: "Office hours", fallback: "", multiline: false },
   { key: "contact_emergency", label: "Emergency contact", fallback: "", multiline: false },
+  { key: "careers_eyebrow", label: "Careers header eyebrow", fallback: "Planet Infinity · Careers", multiline: false },
+  { key: "careers_title", label: "Careers page headline", fallback: "Join the story", multiline: false },
+  { key: "careers_subtitle", label: "Careers header subheadline", fallback: "We're looking for characters, not employees.", multiline: false },
+  { key: "careers_lede", label: "Careers header introduction", fallback: "We don't hire CVs. We hire people — the ones with a bit of soul, who make a bus of strangers feel like a family by hour two. Tell us who you are, what you're good at, and how you move through the world. Experience helps. Personality decides.", multiline: true },
+  { key: "careers_roles_question", label: "Careers roles question", fallback: "Which role are you applying for?", multiline: false },
+  { key: "careers_roles_options", label: "Careers role choices — one per line", fallback: "Content Creator\nVideographer\nTravel Consultant\nSales\nTrip Counselor\nExperience Crew\nOperations", multiline: true },
+  { key: "careers_music_question", label: "Careers music question", fallback: "Your music taste (this matters more than you think)", multiline: false },
+  { key: "careers_music_options", label: "Careers music choices — one per line", fallback: "Pop / Hits\nArabic / Shaabi\nTechno / House\nR&B / Chill\nRock\nAnything, I'm easy", multiline: true },
 ] as const;
 
 export type SiteCopyKey = (typeof SITE_COPY_FIELDS)[number]["key"];

@@ -16,8 +16,11 @@ import { Price } from "./Price";
  * a ticket control and never implies one.
  */
 export function EventCard({ event }: { event: PlanetEvent }) {
+  const href = event.media.linkedTripSlug
+    ? `/trips/${event.media.linkedTripSlug}`
+    : `/events/${event.slug}`;
   return (
-    <Card href={`/events/${event.slug}`} className="pi-eventcard pi-world-events">
+    <Card href={href} className="pi-eventcard pi-world-events">
       <MediaBlock
         src={event.media.hero}
         alt={event.media.heroAlt ?? ""}

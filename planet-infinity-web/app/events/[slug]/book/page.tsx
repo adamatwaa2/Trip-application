@@ -5,6 +5,7 @@ import { Container } from "@/components/Container";
 import { EventBookingFlow } from "@/components/EventBookingFlow";
 import { Section } from "@/components/Section";
 import { getEventBySlug } from "@/content/source";
+import { CatalogThemeFrame } from "@/components/CatalogThemeFrame";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -29,13 +30,15 @@ export default async function EventBookingPage({ params }: Params) {
   const { slug } = await params;
   const event = await getEventBySlug(slug);
   if (!event) notFound();
+  if (event.media.linkedTripSlug) redirect(`/trips/${event.media.linkedTripSlug}/book`);
   if (event.applicationRequired || event.bookingMode === "application") {
     redirect(`/apply?product=${encodeURIComponent(event.id)}&type=event&title=${encodeURIComponent(event.title)}`);
   }
 
   return (
-    <Section tone="ivory" className="pi-world-events">
-      <Container size="read">
+    <CatalogThemeFrame theme={event.media.visualTheme} kind="event">
+      <Section tone="white" className="pi-world-events pi-catalog-booking">
+        <Container size="read">
         <Breadcrumbs
           trail={[
             { label: "Home", href: "/" },
@@ -46,7 +49,8 @@ export default async function EventBookingPage({ params }: Params) {
         />
         <h1 className="pi-flow__heading">{event.title}</h1>
         <EventBookingFlow event={event} />
-      </Container>
-    </Section>
+        </Container>
+      </Section>
+    </CatalogThemeFrame>
   );
 }
