@@ -456,12 +456,19 @@ export function AdminCatalogForm({
     if (mediaKind === "video" && file.size > 6 * 1024 * 1024) {
       const projectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
       if (!projectUrl) throw new Error("Video storage is not configured.");
+      const supabase = createClient();
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      if (sessionError || !accessToken) throw new Error("Your admin session expired. Refresh the page and sign in again.");
       const directStorageUrl = projectUrl.replace(/^(https:\/\/[^.]+)\.supabase\.co$/i, "$1.storage.supabase.co");
       await new Promise<void>((resolve, reject) => {
         const upload = new Upload(file, {
           endpoint: `${directStorageUrl}/storage/v1/upload/resumable`,
           retryDelays: [0, 3000, 5000, 10000, 20000],
-          headers: { "x-signature": target.token },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "x-upsert": "true",
+          },
           uploadDataDuringCreation: true,
           removeFingerprintOnSuccess: true,
           chunkSize: 6 * 1024 * 1024,
