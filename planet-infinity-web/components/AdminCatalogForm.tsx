@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition, type CSSProperties } from "react";
+import { Upload } from "tus-js-client";
 import {
   createCatalogItem,
   createCatalogUploadTarget,
@@ -439,22 +440,51 @@ export function AdminCatalogForm({
   const [pending, startTransition] = useTransition();
 
   async function uploadOne(file: File, mediaKind: CatalogMediaKind) {
-    const validationError = validateCatalogMedia(mediaKind, file.type, file.size);
+    const mimeType = mediaKind === "video" && /\.mov$/i.test(file.name)
+      ? "video/quicktime"
+      : file.type;
+    const validationError = validateCatalogMedia(mediaKind, mimeType, file.size);
     if (validationError) throw new Error(validationError);
 
     const target = await createCatalogUploadTarget({
       kind: mediaKind,
-      mimeType: file.type,
+      mimeType,
       size: file.size,
     });
     if (!target.ok) throw new Error(target.error);
+
+    if (mediaKind === "video" && file.size > 6 * 1024 * 1024) {
+      const projectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      if (!projectUrl) throw new Error("Video storage is not configured.");
+      const directStorageUrl = projectUrl.replace(/^(https:\/\/[^.]+)\.supabase\.co$/i, "$1.storage.supabase.co");
+      await new Promise<void>((resolve, reject) => {
+        const upload = new Upload(file, {
+          endpoint: `${directStorageUrl}/storage/v1/upload/resumable`,
+          retryDelays: [0, 3000, 5000, 10000, 20000],
+          headers: { "x-signature": target.token },
+          uploadDataDuringCreation: true,
+          removeFingerprintOnSuccess: true,
+          chunkSize: 6 * 1024 * 1024,
+          metadata: {
+            bucketName: target.bucket,
+            objectName: target.path,
+            contentType: mimeType,
+            cacheControl: "31536000",
+          },
+          onError: reject,
+          onSuccess: () => resolve(),
+        });
+        upload.start();
+      });
+      return target.publicUrl;
+    }
 
     const supabase = createClient();
     const { error } = await supabase.storage
       .from(target.bucket)
       .uploadToSignedUrl(target.path, target.token, file, {
         cacheControl: "31536000",
-        contentType: file.type,
+        contentType: mimeType,
       });
 
     if (error) throw new Error("The file could not be uploaded. Please try again.");
@@ -978,6 +1008,7 @@ export function AdminCatalogForm({
           />
           {video ? <><button type="button" onClick={() => setVideo("")}>Remove video from hero</button><video className="pi-admin-video-preview" src={video} controls muted playsInline /></> : null}
         </div>
+        <p className="pi-admin-hint">MP4, WebM or MOV up to 150 MB. Large videos upload in resumable chunks without changing their quality.</p>
 
         <div className="pi-admin-gallery-editor">
           <h3>Gallery</h3>

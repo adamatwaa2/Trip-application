@@ -56,6 +56,39 @@ async function extractLogoIdentity(source: string): Promise<ExtractedLogo> {
       context.putImageData(imageData, 0, 0);
     }
 
+    const preparedPixels = context.getImageData(0, 0, size, size).data;
+    let minX = size;
+    let minY = size;
+    let maxX = -1;
+    let maxY = -1;
+    for (let index = 0; index < preparedPixels.length; index += 4) {
+      if (preparedPixels[index + 3] < 45) continue;
+      const pixel = index / 4;
+      const x = pixel % size;
+      const y = Math.floor(pixel / size);
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, y);
+      maxX = Math.max(maxX, x);
+      maxY = Math.max(maxY, y);
+    }
+
+    const logoCanvas = document.createElement("canvas");
+    logoCanvas.width = size;
+    logoCanvas.height = size;
+    const logoContext = logoCanvas.getContext("2d");
+    if (!logoContext) throw new Error("Logo image could not be prepared.");
+    if (maxX >= minX && maxY >= minY) {
+      const sourceWidth = maxX - minX + 1;
+      const sourceHeight = maxY - minY + 1;
+      const logoPadding = 12;
+      const logoFit = Math.min((size - logoPadding * 2) / sourceWidth, (size - logoPadding * 2) / sourceHeight);
+      const logoWidth = sourceWidth * logoFit;
+      const logoHeight = sourceHeight * logoFit;
+      logoContext.drawImage(canvas, minX, minY, sourceWidth, sourceHeight, (size - logoWidth) / 2, (size - logoHeight) / 2, logoWidth, logoHeight);
+    } else {
+      logoContext.drawImage(canvas, 0, 0);
+    }
+
     const colours = new Map<string, { score: number; red: number; green: number; blue: number }>();
     const prepared = context.getImageData(0, 0, size, size).data;
     for (let index = 0; index < prepared.length; index += 4) {
@@ -84,7 +117,7 @@ async function extractLogoIdentity(source: string): Promise<ExtractedLogo> {
     const secondary = ranked.find((colour) => Math.hypot(colour.red - primary.red, colour.green - primary.green, colour.blue - primary.blue) > 82)
       ?? { red: Math.min(255, primary.red + 28), green: Math.min(255, primary.green + 38), blue: Math.min(255, primary.blue + 54), score: 1 };
     return {
-      source: canvas.toDataURL("image/png"),
+      source: logoCanvas.toDataURL("image/png"),
       primary: colourToHex(primary.red, primary.green, primary.blue),
       secondary: colourToHex(secondary.red, secondary.green, secondary.blue),
     };

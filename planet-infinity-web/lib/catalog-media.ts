@@ -6,12 +6,12 @@ const IMAGE_TYPES = [
   "image/webp",
 ] as const;
 
-const VIDEO_TYPES = ["video/mp4", "video/webm"] as const;
+const VIDEO_TYPES = ["video/mp4", "video/webm", "video/quicktime"] as const;
 const DOCUMENT_TYPES = ["application/pdf"] as const;
 
 export const CATALOG_MEDIA_LIMITS: Record<CatalogMediaKind, number> = {
   image: 10 * 1024 * 1024,
-  video: 50 * 1024 * 1024,
+  video: 150 * 1024 * 1024,
   document: 15 * 1024 * 1024,
 };
 
@@ -33,6 +33,7 @@ const EXTENSIONS: Record<string, string> = {
   "image/webp": "webp",
   "video/mp4": "mp4",
   "video/webm": "webm",
+  "video/quicktime": "mov",
   "application/pdf": "pdf",
 };
 
