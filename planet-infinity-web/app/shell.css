@@ -259,6 +259,16 @@
   min-height: 48px;
   align-self: stretch;
 }
+.pi-mobile__team-access {
+  align-self: center;
+  margin-top: var(--pi-s2);
+  color: rgba(253, 248, 241, .64);
+  font: 700 10px var(--pi-mono);
+  letter-spacing: .16em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.pi-mobile__team-access:hover { color: var(--pi-ivory); }
 
 @media (max-width: 899px) {
   .pi-header__inner {
@@ -391,6 +401,12 @@
   text-transform: uppercase;
   color: rgba(253, 248, 241, 0.55);
 }
+.pi-footer__team-access {
+  color: inherit;
+  opacity: .74;
+  text-decoration: none;
+}
+.pi-footer__team-access:hover { color: var(--pi-ivory); opacity: 1; }
 
 @media (max-width: 899px) {
   .pi-footer__top {

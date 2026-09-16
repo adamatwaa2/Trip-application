@@ -95,6 +95,9 @@ export async function SiteFooter() {
           <span>
             <Placeholder id="instagramHandle" />
           </span>
+          <Link href="/admin" className="pi-footer__team-access">
+            Team access
+          </Link>
           <span>© {new Date().getFullYear()} planetinfinity.online</span>
         </div>
       </Container>

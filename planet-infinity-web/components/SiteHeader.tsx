@@ -134,6 +134,13 @@ export function SiteHeader() {
         >
           {HEADER_CTA.label}
         </Link>
+        <Link
+          href="/admin"
+          className="pi-mobile__team-access"
+          onClick={() => setMenuOpen(false)}
+        >
+          Team access
+        </Link>
       </div>
     </>
   );
