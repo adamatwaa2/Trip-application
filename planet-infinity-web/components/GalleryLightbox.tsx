@@ -5,8 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 type GalleryImage = { src: string; alt: string; type?: "image" | "video"; poster?: string };
+type GalleryLayout = "swipe" | "grid";
 
-export function GalleryLightbox({ images }: { images: GalleryImage[] }) {
+export function GalleryLightbox({ images, layout = "swipe" }: { images: GalleryImage[]; layout?: GalleryLayout }) {
   const [active, setActive] = useState<number | null>(null);
   const touchStart = useRef<number | null>(null);
 
@@ -37,13 +38,13 @@ export function GalleryLightbox({ images }: { images: GalleryImage[] }) {
         {images.length > 1 ? (
           <div className="pi-gallery__summary" aria-label={`${images.length} gallery items`}>
             <strong>{images.length}</strong>
-            <span>photos &amp; videos · swipe to explore</span>
+            <span>{layout === "grid" ? "photos & videos · scroll to explore" : "photos & videos · swipe to explore"}</span>
           </div>
         ) : null}
-        <div className="pi-gallery pi-gallery--interactive">
+        <div className={`pi-gallery pi-gallery--interactive pi-gallery--layout-${layout}`}>
         {images.map((image, index) => (
           <button key={`${image.src}-${index}`} type="button" className="pi-gallery__item" onClick={() => setActive(index)} aria-label={`Open photo ${index + 1} of ${images.length}`}>
-            {image.type === "video" ? <video src={image.src} poster={image.poster} autoPlay loop muted playsInline preload="auto" /> : <Image src={image.src} alt={image.alt} fill sizes="(max-width: 899px) 50vw, 33vw" />}
+            {image.type === "video" ? <><video src={image.src} poster={image.poster} autoPlay loop muted playsInline preload="auto" /><span className="pi-gallery__play" aria-hidden="true">▶</span></> : <Image src={image.src} alt={image.alt} fill sizes="(max-width: 899px) 50vw, 33vw" />}
             <span className="pi-gallery__number">{String(index + 1).padStart(2, "0")}</span>
             {index === 0 && images.length > 1 ? <span className="pi-gallery__total">View all {images.length}</span> : null}
           </button>
@@ -70,7 +71,7 @@ export function GalleryLightbox({ images }: { images: GalleryImage[] }) {
           <button type="button" className="pi-lightbox__close" onClick={() => setActive(null)} aria-label="Close gallery">×</button>
           {images.length > 1 ? <button type="button" className="pi-lightbox__nav pi-lightbox__nav--prev" onClick={(event) => { event.stopPropagation(); previous(); }} aria-label="Previous photo">←</button> : null}
           <div className="pi-lightbox__image" onClick={(event) => event.stopPropagation()}>
-            {images[active].type === "video" ? <video src={images[active].src} poster={images[active].poster} controls autoPlay playsInline /> : <Image src={images[active].src} alt={images[active].alt} fill sizes="100vw" priority />}
+            {images[active].type === "video" ? <video src={images[active].src} poster={images[active].poster} controls autoPlay muted playsInline preload="auto" /> : <Image src={images[active].src} alt={images[active].alt} fill sizes="100vw" priority />}
           </div>
           {images.length > 1 ? <button type="button" className="pi-lightbox__nav pi-lightbox__nav--next" onClick={(event) => { event.stopPropagation(); next(); }} aria-label="Next photo">→</button> : null}
           {images.length > 1 ? (

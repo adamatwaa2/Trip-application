@@ -27,6 +27,7 @@ import {
   type CatalogTypography,
   type CatalogVisualTheme,
 } from "@/lib/catalog-visual-theme";
+import type { GalleryLayout } from "@/content/trips/types";
 
 const GUIDE_SEAT = 1;
 function withGuideSeatReserved(seats: number[] | undefined) {
@@ -37,6 +38,7 @@ type CatalogMedia = {
   hero?: string;
   heroAlt?: string;
   gallery?: { src: string; alt: string; type?: "image" | "video"; poster?: string }[];
+  galleryLayout?: GalleryLayout;
   video?: string;
   visualTheme?: CatalogVisualTheme;
   linkedTripSlug?: string;
@@ -413,6 +415,7 @@ export function AdminCatalogForm({
   const [video, setVideo] = useState(initialMedia.video ?? "");
   const [linkedTripSlug, setLinkedTripSlug] = useState(initialMedia.linkedTripSlug ?? "");
   const [gallery, setGallery] = useState(initialMedia.gallery ?? []);
+  const [galleryLayout, setGalleryLayout] = useState<GalleryLayout>(initialMedia.galleryLayout ?? (item?.slug === "outer-banks-sinai" ? "swipe" : "grid"));
   const [galleryUrl, setGalleryUrl] = useState("");
   const initialTheme = { ...DEFAULT_CATALOG_THEME, ...initialMedia.visualTheme };
   const [visualLogo, setVisualLogo] = useState(initialTheme.logo ?? "");
@@ -566,6 +569,7 @@ export function AdminCatalogForm({
     setVideo("");
     setLinkedTripSlug("");
     setGallery([]);
+    setGalleryLayout("grid");
     setGalleryUrl("");
     setVisualLogo("");
     setVisualLogoAlt("");
@@ -627,6 +631,7 @@ export function AdminCatalogForm({
               hero: hero || undefined,
               heroAlt: heroAlt || undefined,
               gallery,
+              galleryLayout,
               video: video || undefined,
               linkedTripSlug: !isTrip && linkedTripSlug ? linkedTripSlug : undefined,
               visualTheme: {
@@ -1019,6 +1024,14 @@ export function AdminCatalogForm({
 
         <div className="pi-admin-gallery-editor">
           <h3>Gallery</h3>
+          <label>
+            Mobile gallery style
+            <select value={galleryLayout} onChange={(event) => setGalleryLayout(event.target.value as GalleryLayout)}>
+              <option value="swipe">Swipe one large card at a time</option>
+              <option value="grid">Show all photos while scrolling</option>
+            </select>
+          </label>
+          <p className="pi-admin-hint">Choose this per trip or event. “Swipe” keeps the current carousel; “show all” keeps every image visible down the page.</p>
           <UploadControl
             kind="image"
             label="Upload gallery photos"

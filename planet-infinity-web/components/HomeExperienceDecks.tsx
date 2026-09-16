@@ -25,7 +25,7 @@ function ExperienceDeck({ label, items, tone }: { label: string; items: DeckItem
           return (
             <button className={`pi-experience-deck__card${offset === 0 ? " is-active" : " pi-experience-deck__card--peek"}${hidden ? " is-hidden" : ""}`} type="button" key={item.id} style={style} aria-label={offset === 0 ? `View ${item.title}` : `Bring ${item.title} to the front`} aria-current={offset === 0 ? "true" : undefined} tabIndex={hidden ? -1 : 0} onPointerEnter={(event) => { if (event.pointerType !== "mouse" || offset === 0 || hoverLocked.current) return; hoverLocked.current = true; setActive(index); }} onClick={() => offset === 0 ? router.push(item.href) : setActive(index)}>
               <div className="pi-experience-deck__media">
-                {!hidden && item.video ? <video src={item.video} poster={item.image} autoPlay loop muted playsInline preload="metadata" aria-label={`${item.title} preview`} /> : item.image ? <Image src={item.image} alt={item.imageAlt} fill sizes="(max-width: 899px) 44vw, 260px" /> : <span className="pi-experience-deck__fallback" aria-hidden="true">∞</span>}
+                {!hidden && item.video ? <video src={item.video} poster={item.image} autoPlay loop muted playsInline preload="auto" aria-label={`${item.title} preview`} /> : item.image ? <Image src={item.image} alt={item.imageAlt} fill sizes="(max-width: 899px) 44vw, 260px" /> : <span className="pi-experience-deck__fallback" aria-hidden="true">∞</span>}
               </div>
               <div className="pi-experience-deck__scrim" />
               <div className="pi-experience-deck__copy"><span>{item.eyebrow}</span><strong>{item.title}</strong>{offset === 0 ? <b>View details →</b> : null}</div>

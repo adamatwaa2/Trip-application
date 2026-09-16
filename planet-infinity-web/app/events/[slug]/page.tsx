@@ -50,10 +50,14 @@ export default async function EventPage({ params }: Params) {
   if (!event) notFound();
   if (event.media.linkedTripSlug) redirect(`/trips/${event.media.linkedTripSlug}`);
 
-  const gallery = [
-    ...(event.media.hero ? [{ src: event.media.hero, alt: event.media.heroAlt ?? event.title }] : []),
-    ...(event.media.gallery ?? []),
-  ].filter((image, index, images) => images.findIndex((entry) => entry.src === image.src) === index);
+  const gallerySource = event.media.gallery?.length
+    ? event.media.gallery
+    : event.media.hero
+      ? [{ src: event.media.hero, alt: event.media.heroAlt ?? event.title }]
+      : [];
+  const gallery = gallerySource
+    .map((item) => item.type === "video" && item.poster === event.media.hero ? { ...item, poster: undefined } : item)
+    .filter((image, index, images) => images.findIndex((entry) => entry.src === image.src) === index);
 
   const facts = [
     ["Category", event.category],
@@ -101,7 +105,7 @@ export default async function EventPage({ params }: Params) {
               {gallery.length ? (
                 <section className="pi-trip-block pi-trip-block--gallery">
                   <div className="pi-trip-block__head"><div><Eyebrow>Photography</Eyebrow><h2>{copy.event_gallery_title}</h2></div><p>{copy.trip_gallery_hint}</p></div>
-                  <GalleryLightbox images={gallery} />
+                  <GalleryLightbox images={gallery} layout={event.media.galleryLayout ?? (event.slug === "outer-banks-sinai" ? "swipe" : "grid")} />
                 </section>
               ) : null}
 

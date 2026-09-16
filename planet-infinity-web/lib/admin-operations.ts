@@ -75,7 +75,8 @@ export type AdminProductDetail = Omit<AdminProduct, "updated_at"> & {
   media: {
     hero?: string;
     heroAlt?: string;
-    gallery?: { src: string; alt: string }[];
+    gallery?: { src: string; alt: string; type?: "image" | "video"; poster?: string }[];
+    galleryLayout?: "swipe" | "grid";
     video?: string;
     visualTheme?: import("@/lib/catalog-visual-theme").CatalogVisualTheme;
     linkedTripSlug?: string;

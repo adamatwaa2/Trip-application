@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { AdminSignOut } from "./AdminSignOut";
 import { AdminNotificationLink } from "./AdminNotificationLink";
+import { AdminPushNotifications } from "./AdminPushNotifications";
 import type { AdminProfile } from "@/lib/admin";
 import { getAdminNotificationCount } from "@/lib/admin-notifications";
 
@@ -62,7 +63,7 @@ export async function AdminShell({
           <AdminSignOut />
         </div>
       </aside>
-      <main className="pi-admin-main">{children}</main>
+      <main className="pi-admin-main"><AdminPushNotifications compact />{children}</main>
     </div>
   );
 }

@@ -140,6 +140,7 @@ export type ItineraryStop = {
 
 export type FaqItem = { question: string; answer: string };
 
+export type GalleryLayout = "swipe" | "grid";
 export type GalleryImage = { src: string; alt: string; type?: "image" | "video"; poster?: string };
 
 export type Trip = {
@@ -160,6 +161,8 @@ export type Trip = {
     hero?: string;
     heroAlt?: string;
     gallery?: GalleryImage[];
+    /** Mobile presentation: swipe carousel or all items in a scrolling grid. */
+    galleryLayout?: GalleryLayout;
     /** Uploaded first-party video. The hero image is used as its poster. */
     video?: string;
     /** Per-trip identity selected in the admin editor. */
@@ -261,4 +264,3 @@ export const SHOPIFY_FIELD_MAP = {
   document: "metafield: trip.document",
   media: "product.media",
 } as const;
-

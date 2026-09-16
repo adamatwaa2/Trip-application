@@ -40,10 +40,14 @@ export default async function TripPage({ params }: Params) {
   const [trip, copy] = await Promise.all([getTripBySlug(slug), getSiteCopy()]);
   if (!trip) notFound();
 
-  const gallery = [
-    ...(trip.media.hero ? [{ src: trip.media.hero, alt: trip.media.heroAlt ?? trip.title }] : []),
-    ...(trip.media.gallery ?? []),
-  ].filter((image, index, images) => images.findIndex((entry) => entry.src === image.src) === index);
+  const gallerySource = trip.media.gallery?.length
+    ? trip.media.gallery
+    : trip.media.hero
+      ? [{ src: trip.media.hero, alt: trip.media.heroAlt ?? trip.title }]
+      : [];
+  const gallery = gallerySource
+    .map((item) => item.type === "video" && item.poster === trip.media.hero ? { ...item, poster: undefined } : item)
+    .filter((image, index, images) => images.findIndex((entry) => entry.src === image.src) === index);
 
   const facts = [
     ["Destination", trip.destination],
@@ -102,7 +106,7 @@ export default async function TripPage({ params }: Params) {
               {gallery.length ? (
                 <section className="pi-trip-block pi-trip-block--gallery">
                   <div className="pi-trip-block__head"><div><Eyebrow>Photography</Eyebrow><h2>{copy.trip_gallery_title}</h2></div><p>{copy.trip_gallery_hint}</p></div>
-                  <GalleryLightbox images={gallery} />
+                  <GalleryLightbox images={gallery} layout={trip.media.galleryLayout ?? (trip.slug === "outer-banks-sinai" ? "swipe" : "grid")} />
                 </section>
               ) : null}
 
@@ -137,4 +141,3 @@ export default async function TripPage({ params }: Params) {
     </CatalogThemeFrame>
   );
 }
-

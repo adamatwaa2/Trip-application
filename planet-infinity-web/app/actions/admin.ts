@@ -27,6 +27,7 @@ import {
   type CatalogVisualTheme,
 } from "@/lib/catalog-visual-theme";
 import { normaliseRequestFormTheme, type RequestFormTheme } from "@/lib/request-form";
+import type { GalleryLayout } from "@/content/trips/types";
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -75,6 +76,7 @@ type CatalogMediaInput = {
   hero?: string;
   heroAlt?: string;
   gallery?: { src: string; alt: string; type?: "image" | "video"; poster?: string }[];
+  galleryLayout?: GalleryLayout;
   video?: string;
   visualTheme?: CatalogVisualTheme;
   linkedTripSlug?: string;
@@ -136,6 +138,7 @@ function normaliseMedia(media: CatalogMediaInput): CatalogMediaInput | null {
   const visualLogo = text(rawTheme?.logo ?? "", 2000);
   const visualBackgroundImage = text(rawTheme?.backgroundImage ?? "", 2000);
   const linkedTripSlug = text(media.linkedTripSlug ?? "", 160);
+  const galleryLayout = media.galleryLayout === "grid" ? "grid" : media.galleryLayout === "swipe" ? "swipe" : undefined;
   const primaryColor = text(rawTheme?.primaryColor ?? "", 7);
   const secondaryColor = text(rawTheme?.secondaryColor ?? "", 7);
   const explorerScale = Number(rawTheme?.explorerScale ?? 1);
@@ -167,6 +170,7 @@ function normaliseMedia(media: CatalogMediaInput): CatalogMediaInput | null {
     (rawTheme?.depth !== undefined && !CATALOG_DEPTHS.includes(rawTheme.depth))
     || (rawTheme?.typography !== undefined && !CATALOG_TYPOGRAPHIES.includes(rawTheme.typography))
     || (rawTheme?.explorerMotion !== undefined && !CATALOG_EXPLORER_MOTIONS.includes(rawTheme.explorerMotion))
+    || (media.galleryLayout !== undefined && galleryLayout === undefined)
     || !Number.isFinite(explorerScale) || explorerScale < 0.75 || explorerScale > 1.3
   ) {
     return null;
@@ -175,6 +179,7 @@ function normaliseMedia(media: CatalogMediaInput): CatalogMediaInput | null {
   return {
     ...(hero ? { hero, heroAlt: text(media.heroAlt ?? "", 240) } : {}),
     ...(gallery.length ? { gallery } : {}),
+    ...(galleryLayout ? { galleryLayout } : {}),
     ...(video ? { video } : {}),
     ...(linkedTripSlug ? { linkedTripSlug } : {}),
     ...(rawTheme ? {

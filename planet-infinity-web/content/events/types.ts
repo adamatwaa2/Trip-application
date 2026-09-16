@@ -56,6 +56,7 @@ export type TicketOption = {
   availableQuantity?: number;
 };
 
+export type EventGalleryLayout = "swipe" | "grid";
 export type EventGalleryImage = { src: string; alt: string; type?: "image" | "video"; poster?: string };
 
 export type FaqItem = { question: string; answer: string };
@@ -81,6 +82,8 @@ export type PlanetEvent = {
     hero?: string;
     heroAlt?: string;
     gallery?: EventGalleryImage[];
+    /** Mobile presentation: swipe carousel or all items in a scrolling grid. */
+    galleryLayout?: EventGalleryLayout;
     /** Uploaded first-party video. The hero image is used as its poster. */
     video?: string;
     /** Per-event identity selected in the admin editor. */

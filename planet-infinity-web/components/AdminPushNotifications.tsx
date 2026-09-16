@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { saveAdminPushSubscription } from "@/app/actions/admin-push";
 
 function urlBase64ToUint8Array(value: string) {
@@ -20,23 +20,64 @@ function unavailableReason(vapidKey: string | undefined): string | null {
   if (!vapidKey) {
     return "Phone alerts are not switched on for this site yet. The VAPID keys need adding to the site settings first — once they are, this button works.";
   }
-  if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-    const isAppleMobile = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const isStandalone =
-      window.matchMedia?.("(display-mode: standalone)").matches ||
-      (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
-    if (isAppleMobile && !isStandalone) {
-      return "On iPhone, alerts only work once this page is added to your Home Screen. Tap Share, then “Add to Home Screen”, open it from there and try again.";
-    }
+  const isAppleMobile = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isStandalone =
+    window.matchMedia?.("(display-mode: standalone)").matches ||
+    (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
+  if (isAppleMobile && !isStandalone) {
+    return "On iPhone, alerts only work once this page is added to your Home Screen. Tap Share, then “Add to Home Screen”, open it from there and try again.";
+  }
+  if (!("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window)) {
     return "This browser cannot send phone alerts. Open the Admin Panel directly in Chrome or Safari — not inside Instagram, Facebook or another app’s built-in browser.";
   }
   return null;
 }
 
-export function AdminPushNotifications() {
+type PushState = "checking" | "disabled" | "enabled";
+
+export function AdminPushNotifications({ compact = false }: { compact?: boolean }) {
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [state, setState] = useState<PushState>("checking");
   const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+
+  useEffect(() => {
+    let active = true;
+    async function checkExistingSubscription() {
+      const blocked = unavailableReason(vapidKey);
+      if (blocked || !vapidKey) {
+        if (active) {
+          setState("disabled");
+          setMessage(blocked);
+        }
+        return;
+      }
+      try {
+        await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+        if (!active) return;
+        if (!subscription) {
+          setState("disabled");
+          return;
+        }
+        const json = subscription.toJSON();
+        const result = await saveAdminPushSubscription({
+          endpoint: subscription.endpoint,
+          p256dh: json.keys?.p256dh || "",
+          auth: json.keys?.auth || "",
+          userAgent: navigator.userAgent,
+        });
+        if (!active) return;
+        setState(result.ok ? "enabled" : "disabled");
+        if (!result.ok) setMessage(result.error ?? "We could not restore notifications for this phone.");
+      } catch {
+        if (active) setState("disabled");
+      }
+    }
+    void checkExistingSubscription();
+    return () => { active = false; };
+  }, [vapidKey]);
 
   async function enable() {
     const blocked = unavailableReason(vapidKey);
@@ -65,6 +106,7 @@ export function AdminPushNotifications() {
         auth: json.keys?.auth || "",
         userAgent: navigator.userAgent,
       });
+      setState(result.ok ? "enabled" : "disabled");
       setMessage(result.ok ? "Phone notifications are on for this device." : (result.error ?? "We could not save this device for notifications."));
     } catch {
       setMessage("We could not enable notifications on this device. Try again from Chrome or Safari.");
@@ -73,5 +115,7 @@ export function AdminPushNotifications() {
     }
   }
 
-  return <div className="pi-admin-push"><div><strong>Phone notifications</strong><p>Get a lock-screen alert for new bookings and payment receipts, even when the Admin Panel is closed.</p></div><button className="pi-admin-button" type="button" onClick={enable} disabled={pending}>{pending ? "Enabling…" : "Enable on this phone"}</button>{message ? <p role="status">{message}</p> : null}</div>;
+  if (compact && state === "enabled") return null;
+
+  return <div className={compact ? "pi-admin-push pi-admin-push--banner" : "pi-admin-push"}><div><strong>{state === "enabled" ? "Phone notifications are on" : "Turn on phone notifications"}</strong><p>{state === "enabled" ? "This phone will receive new booking and payment alerts." : "Get new booking and payment alerts on this phone, even when the Admin Panel is closed."}</p></div>{state !== "enabled" ? <button className="pi-admin-button" type="button" onClick={enable} disabled={pending || state === "checking"}>{pending || state === "checking" ? "Checking…" : "Enable on this phone"}</button> : null}{message ? <p role="status">{message}</p> : null}</div>;
 }
