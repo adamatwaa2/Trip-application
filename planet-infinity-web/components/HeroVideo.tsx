@@ -9,12 +9,10 @@ export function HeroVideo({ src, poster, label, controls = true }: { src: string
   const ref = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
   const [paused, setPaused] = useState(true);
-  const [failed, setFailed] = useState(false);
 
   const playVideo = () => {
     const video = ref.current;
     if (!video) return;
-    video.muted = true;
     const attempt = video.play();
     if (attempt) {
       void attempt.then(() => setPaused(false)).catch(() => setPaused(true));
@@ -25,15 +23,23 @@ export function HeroVideo({ src, poster, label, controls = true }: { src: string
     const video = ref.current;
     if (!video) return;
     setPaused(true);
-    setFailed(false);
     video.defaultMuted = true;
     video.muted = true;
     // Mobile Safari may not start autoplay until the media has enough data.
     // Retrying from canplay keeps the poster from becoming a permanent fallback.
-    const retry = () => playVideo();
+    const retry = () => {
+      if (!document.hidden) playVideo();
+    };
+    const retryWhenVisible = () => retry();
+    video.addEventListener("loadeddata", retry);
     video.addEventListener("canplay", retry);
+    document.addEventListener("visibilitychange", retryWhenVisible);
     playVideo();
-    return () => video.removeEventListener("canplay", retry);
+    return () => {
+      video.removeEventListener("loadeddata", retry);
+      video.removeEventListener("canplay", retry);
+      document.removeEventListener("visibilitychange", retryWhenVisible);
+    };
   }, [src]);
 
   const toggleSound = () => {
@@ -62,20 +68,18 @@ export function HeroVideo({ src, poster, label, controls = true }: { src: string
         muted={muted}
         playsInline
         preload="auto"
-        controls={controls}
+        controls={false}
         aria-label={label}
-        onPlaying={() => { setPaused(false); setFailed(false); }}
+        onPlaying={() => setPaused(false)}
         onPause={() => setPaused(true)}
-        onError={() => { setFailed(true); setPaused(true); }}
+        onError={() => setPaused(true)}
       />
       {controls ? (
         <div className="pi-media__video-controls">
           <button type="button" onClick={toggleSound} aria-label={muted ? "Turn sound on" : "Mute video"}>{muted ? "Sound on" : "Mute"}</button>
-          <button type="button" onClick={togglePlayback} aria-label={paused ? "Play video" : "Pause video"}>{paused ? "Play" : "Pause"}</button>
+          <button type="button" onClick={togglePlayback} aria-label={paused ? "Resume video" : "Pause video"}>{paused ? "Resume" : "Pause"}</button>
         </div>
       ) : null}
-      {controls && paused && !failed ? <button className="pi-media__video-play" type="button" onClick={togglePlayback} aria-label="Play video">▶</button> : null}
-      {controls && failed ? <div className="pi-media__video-error" role="status">Tap play to load this video</div> : null}
     </>
   );
 }

@@ -115,7 +115,9 @@ export function AdminPushNotifications({ compact = false }: { compact?: boolean 
     }
   }
 
-  if (compact && state === "enabled") return null;
+  // Keep the confirmation visible immediately after enabling. On later page
+  // loads an already-subscribed phone stays out of the way.
+  if (compact && state === "enabled" && !message) return null;
 
   return <div className={compact ? "pi-admin-push pi-admin-push--banner" : "pi-admin-push"}><div><strong>{state === "enabled" ? "Phone notifications are on" : "Turn on phone notifications"}</strong><p>{state === "enabled" ? "This phone will receive new booking and payment alerts." : "Get new booking and payment alerts on this phone, even when the Admin Panel is closed."}</p></div>{state !== "enabled" ? <button className="pi-admin-button" type="button" onClick={enable} disabled={pending || state === "checking"}>{pending || state === "checking" ? "Checking…" : "Enable on this phone"}</button> : null}{message ? <p role="status">{message}</p> : null}</div>;
 }

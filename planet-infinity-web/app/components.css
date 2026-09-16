@@ -222,9 +222,6 @@
 .pi-media__video-controls { position: absolute; right: 18px; bottom: 18px; z-index: 3; display: flex; gap: 8px; }
 .pi-media__video-controls button { min-height: 34px; padding: 7px 11px; border: 1px solid rgba(255,255,255,.48); border-radius: 999px; background: rgba(15,30,40,.78); color: #fff; cursor: pointer; font: 800 11px var(--pi-body); }
 .pi-media__video-controls button:hover { background: rgba(15,30,40,.95); }
-.pi-media__video-play { position: absolute; inset: 50% auto auto 50%; z-index: 3; display: grid; place-items: center; width: 58px; height: 58px; transform: translate(-50%, -50%); padding: 0 0 0 4px; border: 1px solid rgba(255,255,255,.78); border-radius: 50%; background: rgba(15,30,40,.78); color: #fff; cursor: pointer; font-size: 20px; box-shadow: 0 8px 26px rgba(0,0,0,.24); }
-.pi-media__video-play:hover { background: rgba(15,30,40,.94); }
-.pi-media__video-error { position: absolute; inset: auto 18px 18px 18px; z-index: 3; padding: 10px 12px; border-radius: 10px; background: rgba(15,30,40,.84); color: #fff; font: 700 12px var(--pi-body); text-align: center; }
 /* No photography yet: brand type on an honest gradient, never stock imagery. */
 .pi-media--empty {
   display: flex;

@@ -1,0 +1,19 @@
+{
+  "name": "Planet Infinity Admin",
+  "short_name": "PI Admin",
+  "description": "Planet Infinity admin panel and booking notifications.",
+  "id": "/admin",
+  "start_url": "/admin",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fdf8f1",
+  "theme_color": "#fdf8f1",
+  "icons": [
+    {
+      "src": "/icon",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

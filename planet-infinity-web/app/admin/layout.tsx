@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Admin",
+  manifest: "/admin-manifest.webmanifest",
   robots: { index: false, follow: false, nocache: true },
 };
 
