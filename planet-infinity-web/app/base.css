@@ -189,3 +189,26 @@ h4 {
   border-color: var(--pi-gold);
   background: rgba(242, 180, 65, 0.1);
 }
+/* Safari/iOS can paint its native play badge over a muted, controls-free
+   video while the first bytes are still arriving. The site supplies its own
+   sound/pause controls where useful, so the native overlay must never appear. */
+video:not([controls])::-webkit-media-controls,
+video:not([controls])::-webkit-media-controls-start-playback-button,
+video:not([controls])::-webkit-media-controls-overlay-play-button {
+  display: none !important;
+  -webkit-appearance: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pi-media__video,
+.pi-gallery__item video,
+.pi-experience-deck__media video {
+  pointer-events: none;
+}
+
+.pi-lightbox__video-thumb {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #182733, #d9803d 55%, #f0c188);
+}

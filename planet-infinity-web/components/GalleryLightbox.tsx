@@ -46,7 +46,7 @@ export function GalleryLightbox({ images, layout = "swipe" }: { images: GalleryI
         {images.map((image, index) => (
           <button key={`${image.src}-${index}`} type="button" className="pi-gallery__item" onClick={() => setActive(index)} aria-label={`Open photo ${index + 1} of ${images.length}`}>
             {image.type === "video" ? (
-              <video src={image.src} poster={image.poster} autoPlay loop muted playsInline preload="auto" />
+              <HeroVideo src={image.src} poster={image.poster} label={image.alt || `Gallery video ${index + 1}`} controls={false} preload="metadata" />
             ) : layout === "grid" ? (
               // A natural-size image is intentional here: masonry must honour
               // each upload's portrait or landscape proportions.
@@ -94,7 +94,7 @@ export function GalleryLightbox({ images, layout = "swipe" }: { images: GalleryI
                   onClick={() => setActive(index)}
                   aria-label={`Show item ${index + 1}`}
                 >
-                  {image.type === "video" ? <video src={image.src} poster={image.poster} muted playsInline preload="metadata" /> : <Image src={image.src} alt="" fill sizes="72px" />}
+                  {image.type === "video" ? image.poster ? <Image src={image.poster} alt="" fill sizes="72px" /> : <span className="pi-lightbox__video-thumb" aria-hidden="true" /> : <Image src={image.src} alt="" fill sizes="72px" />}
                 </button>
               ))}
             </div>
