@@ -26,6 +26,7 @@ import {
   type PaymentProofValue,
 } from "./BookingPaymentStep";
 import { createPaymobCheckout } from "@/app/actions/payments";
+import { PaymobCheckoutFrame } from "./PaymobCheckoutFrame";
 import { trackMetaCustomEvent, trackMetaEvent } from "@/lib/meta-pixel";
 
 /**
@@ -69,6 +70,7 @@ export function TripBookingFlow({
     paymobCardEnabled ? "paymob_card" : paymobWalletEnabled ? "paymob_wallet" : "manual",
   );
   const [paymentLink, setPaymentLink] = useState<string | null>(null);
+  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [handoffError, setHandoffError] = useState<string | null>(null);
   const [agreed, setAgreed] = useState(false);
   const [whatsappOptIn, setWhatsappOptIn] = useState(false);
@@ -166,6 +168,27 @@ export function TripBookingFlow({
       return guestCountNumber >= 1 && guests.length === guestCountNumber && guests.every((guest) => guest.name.trim().length >= 2 && guest.phone.trim().length >= 6) && guestEmail.trim() !== "" && agreed;
     }
     return true;
+  }
+
+  // The booking exists and the card form is open. Nothing here should invite
+  // the guest to leave or resubmit: the booking is already theirs.
+  if (checkoutUrl) {
+    return (
+      <div className="pi-flow">
+        <div className="pi-flow__panel">
+          <h2 className="pi-flow__title">Booking {requestNumber} is held for you</h2>
+          <p className="pi-flow__hint">
+            Complete the payment below to confirm it. If you close this page before paying, the
+            booking is kept and you can pay any time from{" "}
+            {paymentLink ? <Link href={paymentLink}>your booking payment page</Link> : "your booking payment link"}.
+          </p>
+          <PaymobCheckoutFrame
+            checkoutUrl={checkoutUrl}
+            amountLabel={total !== undefined ? `${total.toLocaleString("en-US")} EGP` : undefined}
+          />
+        </div>
+      </div>
+    );
   }
 
   if (done) {
@@ -276,7 +299,10 @@ export function TripBookingFlow({
         setPaymentLink(`/pay/${paymentToken}`);
         const checkout = await createPaymobCheckout(paymentToken);
         if (checkout.ok) {
-          window.location.assign(checkout.checkoutUrl);
+          // The card form opens in place, so the guest pays without leaving
+          // the booking they just made.
+          setRequestNumber(completedNumber);
+          setCheckoutUrl(checkout.checkoutUrl);
           return;
         }
         setHandoffError(checkout.error);
@@ -476,7 +502,7 @@ export function TripBookingFlow({
                 ? "This sends your application for review. No booking is created until our team accepts it."
                 : paymentMethod === "manual"
                   ? "This completes your booking and securely sends the receipt for payment verification. Your final Booking Confirmation follows after our team verifies it."
-                  : "This creates your booking and takes you to a secure checkout page to pay. Your final Booking Confirmation follows once the payment clears."}
+                  : "This creates your booking and opens the card form here on this page. Your final Booking Confirmation follows once the payment clears."}
             </p>
           </>
         ) : null}
@@ -504,13 +530,13 @@ export function TripBookingFlow({
           <Button disabled={!canContinue(step) || isPending} onClick={submitRequest}>
             {isPending
               ? paymentMethod !== "manual" && trip.bookingMode === "booking"
-                ? "Opening secure checkout…"
+                ? "Opening the card form…"
                 : "Sending…"
               : trip.bookingMode !== "booking"
                 ? "Send for confirmation"
                 : paymentMethod === "manual"
                   ? "Complete booking"
-                  : "Continue to secure payment"}
+                  : "Continue to payment"}
           </Button>
         )}
       </div>

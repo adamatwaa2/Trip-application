@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BreakOutOfFrame } from "@/components/BreakOutOfFrame";
 import { getPaymobConfig } from "@/lib/paymob/config";
 import { verifyPaymobRedirectHmac } from "@/lib/paymob/hmac";
 import { createServiceClient, isSupabaseServiceConfigured } from "@/lib/supabase/service";
@@ -83,6 +84,7 @@ export default async function PaymentResultPage({ searchParams }: { searchParams
 
   return (
     <main className={styles.page}>
+      <BreakOutOfFrame />
       <section className={styles.card}>
         <p className={styles.kicker}>Planet Infinity · Secure payment</p>
         <h1>{title}</h1>

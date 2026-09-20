@@ -1,0 +1,79 @@
+.panel {
+  display: grid;
+  gap: var(--pi-s2);
+  margin-top: var(--pi-s3);
+  padding: var(--pi-s3);
+  border: 1px solid var(--pi-line);
+  border-radius: var(--pi-r-card);
+  background: #fff;
+}
+
+.head {
+  display: grid;
+  gap: 4px;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--pi-display);
+  font-size: var(--pi-h3);
+  font-weight: 700;
+}
+
+.note {
+  margin: 0;
+  color: var(--pi-soft);
+  font-size: var(--pi-ui);
+  line-height: 1.5;
+}
+
+/*
+  The card fields are served by the payment provider inside this frame, so the
+  details never reach Planet Infinity. The frame keeps the guest on the booking
+  page instead of sending them to another site.
+*/
+.frameWrap {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--pi-line);
+  border-radius: var(--pi-r-chip);
+  background: var(--pi-ivory);
+}
+
+.frame {
+  display: block;
+  width: 100%;
+  min-height: 640px;
+  border: 0;
+}
+
+.loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--pi-s3);
+  color: var(--pi-soft);
+  font-size: var(--pi-ui);
+  text-align: center;
+  pointer-events: none;
+}
+
+.fallback {
+  margin: 0;
+  font-size: var(--pi-ui);
+  color: var(--pi-soft);
+}
+
+.fallback a {
+  color: var(--pi-ember);
+}
+
+@media (max-width: 640px) {
+  .panel {
+    padding: var(--pi-s2);
+  }
+  .frame {
+    min-height: 560px;
+  }
+}

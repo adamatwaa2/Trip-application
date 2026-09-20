@@ -129,7 +129,7 @@ export function BookingPaymentStep({
 
       {method !== "manual" ? (
         <p className="pi-flow__hint">
-          You will be taken to a secure checkout page to pay {amountLabel} as soon as you complete the booking.
+          The card form opens on the next step, here on this page, to pay {amountLabel}.
           If anything interrupts the payment, your booking is kept and you can pay from your booking link.
         </p>
       ) : (

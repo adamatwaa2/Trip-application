@@ -125,7 +125,10 @@ export default async function PaymentPage({ params }: { params: Promise<{ token:
               <div className={styles.option}>
                 <p className={styles.optionLabel}>Card payment</p>
                 <p>Pay on a secure checkout page. Planet Infinity does not receive or store your card details.</p>
-                <PaymobCheckoutButton paymentToken={token} />
+                <PaymobCheckoutButton
+                  paymentToken={token}
+                  amountLabel={`${balance.toLocaleString("en-US")} ${booking.currency}`}
+                />
               </div>
             ) : null}
             {instapayAddress ? (
