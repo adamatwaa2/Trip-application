@@ -20,12 +20,19 @@ export async function POST(request: NextRequest) {
   const receivedHmac = request.nextUrl.searchParams.get("hmac") || "";
   if (!body || !Object.keys(object).length) return new Response("Invalid payload", { status: 400 });
 
-  const config = getPaymobConfig();
+  let config: ReturnType<typeof getPaymobConfig>;
+  try {
+    config = getPaymobConfig();
+  } catch {
+    return new Response("Payment service unavailable", { status: 503 });
+  }
   if (!verifyPaymobTransactionHmac(object, receivedHmac, config.hmacSecret)) {
     return new Response("Invalid signature", { status: 401 });
   }
 
-  if (Number(object.integration_id) !== config.cardIntegrationId) {
+  const enabledIntegrationIds = [config.cardIntegrationId, config.walletIntegrationId]
+    .filter((value): value is number => value !== null);
+  if (!enabledIntegrationIds.includes(Number(object.integration_id))) {
     return new Response("Ignored integration", { status: 202 });
   }
 

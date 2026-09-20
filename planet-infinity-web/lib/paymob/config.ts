@@ -6,6 +6,7 @@ export type PaymobConfig = {
   publicKey: string;
   hmacSecret: string;
   cardIntegrationId: number;
+  walletIntegrationId: number | null;
 };
 
 export function isPaymobConfigured(): boolean {
@@ -22,11 +23,18 @@ export function getPaymobConfig(): PaymobConfig {
   const publicKey = process.env.PAYMOB_PUBLIC_KEY;
   const hmacSecret = process.env.PAYMOB_HMAC_SECRET;
   const cardIntegrationId = Number(process.env.PAYMOB_INTEGRATION_ID_CARD);
+  const walletIntegrationId = process.env.PAYMOB_INTEGRATION_ID_WALLET
+    ? Number(process.env.PAYMOB_INTEGRATION_ID_WALLET)
+    : null;
   const baseUrl = (process.env.PAYMOB_BASE_URL || "https://accept.paymob.com").replace(/\/$/, "");
 
   if (!secretKey || !publicKey || !hmacSecret || !Number.isInteger(cardIntegrationId) || cardIntegrationId < 1) {
     throw new Error("Paymob server credentials are not configured.");
   }
 
-  return { baseUrl, secretKey, publicKey, hmacSecret, cardIntegrationId };
+  if (walletIntegrationId !== null && (!Number.isInteger(walletIntegrationId) || walletIntegrationId < 1)) {
+    throw new Error("The optional Paymob wallet integration ID is invalid.");
+  }
+
+  return { baseUrl, secretKey, publicKey, hmacSecret, cardIntegrationId, walletIntegrationId };
 }

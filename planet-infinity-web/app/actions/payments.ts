@@ -2,6 +2,7 @@
 
 import { randomUUID } from "node:crypto";
 import { getPaymobConfig, isPaymobConfigured } from "@/lib/paymob/config";
+import { createPaymobIntention, PaymobIntentionError } from "@/lib/paymob/intention";
 import {
   createServiceClient,
   isSupabaseServiceConfigured,
@@ -76,59 +77,39 @@ export async function createPaymobCheckout(paymentToken: string): Promise<Checko
   const productTitle = booking.trip?.title ?? booking.event?.title ?? "Planet Infinity booking";
   const { firstName, lastName } = nameParts(booking.customer.full_name);
 
-  const response = await fetch(`${config.baseUrl}/v1/intention/`, {
-    method: "POST",
-    headers: {
-      Authorization: `Token ${config.secretKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+  const providerReference = `${booking.booking_number}-${randomUUID()}`;
+  const paymentMethods = [config.cardIntegrationId];
+  if (config.walletIntegrationId) paymentMethods.push(config.walletIntegrationId);
+
+  let intention;
+  try {
+    intention = await createPaymobIntention(config, {
       amount: amountPiasters,
       currency: "EGP",
-      payment_methods: [config.cardIntegrationId],
-      items: [
-        {
-          name: productTitle.slice(0, 120),
-          amount: amountPiasters,
-          description: `Booking ${booking.booking_number}`,
-          quantity: 1,
-        },
-      ],
-      billing_data: {
-        first_name: firstName,
-        last_name: lastName,
-        email: booking.customer.email,
-        phone_number: booking.customer.phone,
-        apartment: "NA",
-        floor: "NA",
-        street: "NA",
-        building: "NA",
-        shipping_method: "NA",
-        postal_code: "NA",
-        city: "Cairo",
-        country: "EG",
-        state: "Cairo",
+      paymentMethods,
+      item: {
+        name: productTitle.slice(0, 120),
+        description: `Booking ${booking.booking_number}`,
       },
-      customer: {
-        first_name: firstName,
-        last_name: lastName,
+      billingData: {
+        firstName,
+        lastName,
         email: booking.customer.email,
+        phoneNumber: booking.customer.phone,
       },
-      special_reference: booking.booking_number,
-      notification_url: `${siteUrl}/api/payments/paymob/webhook`,
-      redirection_url: `${siteUrl}/payment/result`,
-    }),
-    cache: "no-store",
-  });
-
-  const payload = (await response.json().catch(() => null)) as
-    | { id?: string | number; client_secret?: string; intention_order_id?: string | number }
-    | null;
-  if (!response.ok || !payload?.id || !payload.client_secret) {
+      specialReference: providerReference,
+      notificationUrl: `${siteUrl}/api/payments/paymob/webhook`,
+      redirectionUrl: `${siteUrl}/payment/result`,
+    });
+  } catch (error) {
+    console.error("Paymob intention creation failed", {
+      status: error instanceof PaymobIntentionError ? error.status : null,
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
     return { ok: false, error: "Paymob could not start this payment. Please try again." };
   }
 
-  const checkoutUrl = `${config.baseUrl}/unifiedcheckout/?publicKey=${encodeURIComponent(config.publicKey)}&clientSecret=${encodeURIComponent(payload.client_secret)}`;
+  const checkoutUrl = `${config.baseUrl}/unifiedcheckout/?publicKey=${encodeURIComponent(config.publicKey)}&clientSecret=${encodeURIComponent(intention.clientSecret)}`;
   const idempotencyKey = randomUUID();
   const { error: insertError } = await supabase.from("payments").insert({
     booking_id: booking.id,
@@ -138,11 +119,15 @@ export async function createPaymobCheckout(paymentToken: string): Promise<Checko
     status: "pending",
     provider: "paymob",
     gateway_status: "created",
-    provider_intention_id: String(payload.id),
-    provider_order_id: payload.intention_order_id ? String(payload.intention_order_id) : null,
+    provider_intention_id: intention.id,
+    provider_order_id: intention.orderId,
+    provider_reference: providerReference,
     idempotency_key: idempotencyKey,
     checkout_url: checkoutUrl,
-    provider_data: { intention_id: String(payload.id) },
+    provider_data: {
+      intention_id: intention.id,
+      enabled_integration_ids: paymentMethods,
+    },
   });
   if (insertError) return { ok: false, error: "The payment attempt could not be saved." };
 

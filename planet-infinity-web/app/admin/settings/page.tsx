@@ -24,7 +24,7 @@ export default async function SettingsPage() {
       name: "Paymob",
       ready: isPaymobConfigured(),
       detail: isPaymobConfigured()
-        ? "Card checkout credentials are connected."
+        ? "Secure Paymob checkout and signed payment callbacks are connected."
         : "Code is ready and waiting for the four Paymob credentials.",
     },
     {
