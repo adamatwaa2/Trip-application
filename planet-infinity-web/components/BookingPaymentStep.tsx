@@ -91,7 +91,7 @@ export function BookingPaymentStep({
             />
             <span>
               <strong>Pay now by card</strong>
-              <small>Visa or Mastercard, through Paymob&rsquo;s secure checkout. Planet Infinity never sees your card details.</small>
+              <small>Visa or Mastercard, on a secure checkout page. Your card details are never seen or stored by us.</small>
             </span>
           </label>
         ) : null}
@@ -107,7 +107,7 @@ export function BookingPaymentStep({
             />
             <span>
               <strong>Pay now by mobile wallet</strong>
-              <small>Vodafone Cash, Etisalat, Orange or WE, through Paymob&rsquo;s secure checkout.</small>
+              <small>Vodafone Cash, Etisalat, Orange or WE, on a secure checkout page.</small>
             </span>
           </label>
         ) : null}
@@ -129,7 +129,7 @@ export function BookingPaymentStep({
 
       {method !== "manual" ? (
         <p className="pi-flow__hint">
-          You will be taken to Paymob&rsquo;s secure checkout to pay {amountLabel} as soon as you complete the booking.
+          You will be taken to a secure checkout page to pay {amountLabel} as soon as you complete the booking.
           If anything interrupts the payment, your booking is kept and you can pay from your booking link.
         </p>
       ) : (

@@ -1098,40 +1098,76 @@
 .pi-payment-methods {
   gap: var(--pi-s2);
 }
+/*
+  The chosen payment method has to be unmistakable at a glance, so the selected
+  card carries the CTA gradient as a rail down its edge — an accent on the live
+  decision, not a fill. Unselected cards stay quiet hairline cards.
+*/
 .pi-payment-method {
+  position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: start;
   gap: var(--pi-s2);
   min-height: 44px;
-  padding: var(--pi-s2);
+  padding: var(--pi-s3) var(--pi-s3) var(--pi-s3) calc(var(--pi-s3) + 4px);
+  overflow: hidden;
   border: 1px solid var(--pi-line);
   border-radius: var(--pi-r-chip);
+  background: #fff;
   cursor: pointer;
+  transition: border-color var(--pi-t-ui) var(--pi-e-ui),
+    background var(--pi-t-ui) var(--pi-e-ui),
+    box-shadow var(--pi-t-ui) var(--pi-e-ui);
+}
+.pi-payment-method::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--pi-g-cta);
+  opacity: 0;
+  transition: opacity var(--pi-t-ui) var(--pi-e-ui);
+}
+.pi-payment-method:hover {
+  border-color: var(--pi-soft);
 }
 .pi-payment-method:has(input:checked) {
-  border-color: var(--pi-ink);
+  border-color: var(--pi-orange);
   background: var(--pi-ivory);
+  box-shadow: 0 1px 0 rgba(15, 30, 40, 0.04);
+}
+.pi-payment-method:has(input:checked)::before {
+  opacity: 1;
 }
 .pi-payment-method:focus-within {
   outline: 2px solid var(--pi-ink);
   outline-offset: 2px;
 }
 .pi-payment-method input {
-  margin-top: 3px;
+  margin-top: 4px;
+  accent-color: var(--pi-orange);
 }
 .pi-payment-method span {
   display: grid;
-  gap: 4px;
+  gap: 6px;
 }
 .pi-payment-method strong {
   font-weight: 800;
 }
+.pi-payment-method:has(input:checked) strong {
+  color: var(--pi-ember);
+}
 .pi-payment-method small {
-  color: var(--pi-ink);
-  opacity: 0.72;
+  color: var(--pi-soft);
   font-size: var(--pi-ui);
   line-height: 1.5;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pi-payment-method,
+  .pi-payment-method::before {
+    transition: none;
+  }
 }
 .pi-payment-proof__details {
   display: grid;

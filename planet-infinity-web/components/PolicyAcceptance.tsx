@@ -36,7 +36,10 @@ export function PolicyAcceptance({
         {policies.map((policy, index) => (
           <span key={policy.slug}>
             {index > 0 ? (index === policies.length - 1 ? " and " : ", ") : null}
-            <Link href={`/policies/${policy.slug}`}>{policy.shortTitle}</Link>
+            {/* Opens in a new tab so reading a policy never discards a booking in progress. */}
+            <Link href={`/policies/${policy.slug}`} target="_blank" rel="noopener noreferrer">
+              {policy.shortTitle}
+            </Link>
           </span>
         ))}
         {" "}policies.

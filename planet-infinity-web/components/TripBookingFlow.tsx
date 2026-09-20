@@ -232,9 +232,13 @@ export function TripBookingFlow({
           })),
           ...(songRequest.trim() ? { songRequest: songRequest.trim() } : {}),
           paymentMethod,
-          paymentProof: paymentMethod === "manual" && paymentProof
-            ? { method: paymentProof.method, path: paymentProof.path }
-            : null,
+          // The key is omitted entirely when there is no receipt. A JSON null
+          // is not a SQL NULL once it reaches jsonb, so sending one makes the
+          // booking function read it as a receipt that is missing its fields
+          // and reject the booking.
+          ...(paymentMethod === "manual" && paymentProof
+            ? { paymentProof: { method: paymentProof.method, path: paymentProof.path } }
+            : {}),
         },
       };
       const result = trip.bookingMode === "booking"
@@ -422,33 +426,23 @@ export function TripBookingFlow({
                   <dd>{selectionLabels.join(" · ")}</dd>
                 </div>
               ) : null}
-              {trip.seatBookingEnabled ? <div><dt>Seat selection</dt><dd>It unlocks after full payment is recorded.</dd></div> : null}
-              {(trip.bookingFormFields ?? []).length ? (
-                <div>
-                  <dt>Trip questions</dt>
-                  <dd>{(trip.bookingFormFields ?? []).map((field) => {
-                    const answer = customAnswers[field.id];
-                    const ids = Array.isArray(answer) ? answer : typeof answer === "string" ? [answer] : [];
-                    const quantities = answer && typeof answer === "object" && !Array.isArray(answer) ? answer : null;
-                    const isAccommodation = field.type === "quantity" && field.quantityUnit?.trim().toLowerCase() === "accommodation";
-                    const display = quantities
-                      ? (field.options ?? []).filter((option) => Number(quantities[option.id]) > 0).map((option) => isAccommodation ? `${option.label} · ${guestCountNumber} guests` : `${option.label} × ${quantities[option.id]}`).join(", ") || "None"
-                      : ids.length ? (field.options ?? []).filter((option) => ids.includes(option.id)).map(bookingOptionLabel).join(", ") : answer === true ? "Yes" : answer === false ? "No" : "—";
-                    return `${field.label}: ${display}`;
-                  }).join(" · ")}</dd>
-                </div>
-              ) : null}
-              {songRequest ? <div><dt>Playlist song</dt><dd>{songRequest}</dd></div> : null}
+              {/*
+                Kept deliberately short: the guest only needs to recognise what
+                they are about to pay for. Every answer they gave is still on
+                the booking and in the confirmation.
+              */}
               <div>
                 <dt>Guests</dt>
-                <dd>{guests.map((guest) => `${guest.name || "—"} · ${guest.phone || "—"}`).join(" | ")}</dd>
+                <dd>
+                  {guestCountNumber} guest{guestCountNumber === 1 ? "" : "s"}
+                  {guests.some((guest) => guest.name.trim())
+                    ? ` · ${guests.map((guest) => guest.name.trim()).filter(Boolean).join(", ")}`
+                    : ""}
+                </dd>
               </div>
               <div>
                 <dt>Contact</dt>
-                <dd>
-                  {guestEmail || "—"}
-                  {guestPhone ? ` · ${guestPhone}` : ""}
-                </dd>
+                <dd>{guestEmail || "—"}</dd>
               </div>
               <div>
                 <dt>Total</dt>
@@ -463,9 +457,9 @@ export function TripBookingFlow({
                   <dt>Payment</dt>
                   <dd>
                     {paymentMethod === "paymob_card"
-                      ? "Card — Paymob secure checkout"
+                      ? "Card — secure checkout"
                       : paymentMethod === "paymob_wallet"
-                        ? "Mobile wallet — Paymob secure checkout"
+                        ? "Mobile wallet — secure checkout"
                         : "InstaPay / Vodafone Cash transfer"}
                   </dd>
                 </div>
@@ -482,7 +476,7 @@ export function TripBookingFlow({
                 ? "This sends your application for review. No booking is created until our team accepts it."
                 : paymentMethod === "manual"
                   ? "This completes your booking and securely sends the receipt for payment verification. Your final Booking Confirmation follows after our team verifies it."
-                  : "This creates your booking and takes you to Paymob's secure checkout to pay. Your final Booking Confirmation follows once the payment clears."}
+                  : "This creates your booking and takes you to a secure checkout page to pay. Your final Booking Confirmation follows once the payment clears."}
             </p>
           </>
         ) : null}
