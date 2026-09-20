@@ -79,7 +79,7 @@ export function TripBookingModule({ trip }: { trip: Trip }) {
       </ButtonLink>
 
       <p className="pi-booking__note">
-        {trip.ctaHelper ?? "Payment instructions and the private receipt upload appear in the booking form."}
+        {trip.ctaHelper ?? "Pay by card or mobile wallet at the end of the booking form, or transfer manually and upload a receipt."}
       </p>
     </aside>
   );

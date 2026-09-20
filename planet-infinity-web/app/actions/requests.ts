@@ -50,7 +50,12 @@ export type PublicTripBookingInput = Omit<
 > & { productId: string };
 
 export type TripBookingActionResult =
-  | { ok: true; bookingNumber: string }
+  /**
+   * paymentToken is the booking's own secure payment page. It is returned so a
+   * guest who chose to pay online can be handed straight to checkout; it is
+   * null only when the token could not be read back.
+   */
+  | { ok: true; bookingNumber: string; paymentToken: string | null }
   | { ok: false; error: string };
 
 export type PaymentProofUploadResult =
@@ -324,14 +329,30 @@ export async function submitPublicTripBooking(input: PublicTripBookingInput): Pr
     console.error("[submitPublicTripBooking]", error);
     return { ok: false, error: publicBookingError(error?.message) };
   }
+  const paidOnline = input.selections?.paymentMethod === "paymob_card"
+    || input.selections?.paymentMethod === "paymob_wallet";
   after(async () => {
     await sendAdminPush({
-      title: "New booking awaiting verification",
-      body: `${data[0].booking_number} has a payment receipt to review.`,
+      title: paidOnline ? "New booking awaiting payment" : "New booking awaiting verification",
+      body: paidOnline
+        ? `${data[0].booking_number} was sent to Paymob checkout.`
+        : `${data[0].booking_number} has a payment receipt to review.`,
       url: "/admin/bookings",
     });
   });
-  return { ok: true, bookingNumber: data[0].booking_number };
+
+  // Read the booking's payment token back so an online payment can start
+  // immediately. A failure here only costs the hand-off, never the booking.
+  let paymentToken: string | null = null;
+  if (isSupabaseServiceConfigured()) {
+    const { data: created } = await createServiceClient()
+      .from("bookings")
+      .select("payment_token")
+      .eq("id", data[0].id)
+      .maybeSingle();
+    paymentToken = created?.payment_token ?? null;
+  }
+  return { ok: true, bookingNumber: data[0].booking_number, paymentToken };
 }
 
 export async function updateRequestStatus(

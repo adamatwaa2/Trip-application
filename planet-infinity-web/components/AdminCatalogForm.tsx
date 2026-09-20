@@ -891,7 +891,7 @@ export function AdminCatalogForm({
               checked={paymentProofRequired}
               onChange={(event) => setPaymentProofRequired(event.target.checked)}
             />
-            Require an InstaPay or Vodafone Cash receipt in this trip&apos;s booking form
+            Require a receipt for this trip — guests must transfer manually and upload proof, and cannot pay by card or wallet
           </label>
         ) : null}
       </fieldset>

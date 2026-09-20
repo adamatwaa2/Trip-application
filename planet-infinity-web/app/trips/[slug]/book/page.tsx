@@ -6,6 +6,7 @@ import { Section } from "@/components/Section";
 import { TripBookingFlow } from "@/components/TripBookingFlow";
 import { CatalogThemeFrame } from "@/components/CatalogThemeFrame";
 import { getTripBySlug } from "@/content/source";
+import { isPaymobConfigured, isPaymobWalletConfigured } from "@/lib/paymob/config";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -23,7 +24,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  * The booking flow for one trip. Which steps exist is decided per trip, not
  * per site: selection and seats are independent and both are optional.
  *
- * Nothing here submits, saves or charges anything.
+ * Whether card and wallet payment are offered is decided here, by the server,
+ * because the Paymob credentials are server-only.
  */
 export default async function TripBookingPage({ params }: Params) {
   const { slug } = await params;
@@ -46,7 +48,15 @@ export default async function TripBookingPage({ params }: Params) {
           ]}
         />
         <h1 className="pi-flow__heading">{trip.title}</h1>
-        <TripBookingFlow trip={trip} />
+        {/*
+          A trip that still demands a receipt is manual-only: the booking RPC
+          rejects a booking without one, so online payment is not offered for it.
+        */}
+        <TripBookingFlow
+          trip={trip}
+          paymobCardEnabled={!trip.paymentProofRequired && isPaymobConfigured()}
+          paymobWalletEnabled={!trip.paymentProofRequired && isPaymobWalletConfigured()}
+        />
         </Container>
       </Section>
     </CatalogThemeFrame>

@@ -54,7 +54,12 @@ export function bookingSteps(trip: Trip): BookingStep[] {
   // an unpaid request from locking a seat for other guests.
   if (trip.bookingFormFields?.length) steps.push("custom");
   steps.push("guest");
-  if (trip.paymentProofRequired) steps.push("payment");
+  // A priced direct booking always asks how the guest wants to pay. Paying by
+  // card or wallet through Paymob and transferring manually are options inside
+  // that one step, so it no longer depends on paymentProofRequired — that flag
+  // now only decides whether a manual transfer must carry a receipt.
+  if (trip.bookingMode === "booking" && trip.priceEgp !== undefined) steps.push("payment");
+  else if (trip.paymentProofRequired) steps.push("payment");
   steps.push("review");
   return steps;
 }
@@ -63,6 +68,6 @@ export const STEP_LABELS: Record<BookingStep, string> = {
   selection: "Your choices",
   custom: "Trip questions",
   guest: "Your details",
-  payment: "Payment proof",
+  payment: "Payment",
   review: "Review",
 };

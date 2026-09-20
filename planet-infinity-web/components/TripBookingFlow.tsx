@@ -20,7 +20,12 @@ import {
   type BookingFormAnswer,
 } from "@/lib/booking-form";
 import { TripCustomQuestions } from "./TripCustomQuestions";
-import { PaymentProofStep, type PaymentProofValue } from "./PaymentProofStep";
+import {
+  BookingPaymentStep,
+  type BookingPaymentMethod,
+  type PaymentProofValue,
+} from "./BookingPaymentStep";
+import { createPaymobCheckout } from "@/app/actions/payments";
 import { trackMetaCustomEvent, trackMetaEvent } from "@/lib/meta-pixel";
 
 /**
@@ -37,7 +42,15 @@ import { trackMetaCustomEvent, trackMetaEvent } from "@/lib/meta-pixel";
  *
  * A step that does not apply is never rendered and never counted.
  */
-export function TripBookingFlow({ trip }: { trip: Trip }) {
+export function TripBookingFlow({
+  trip,
+  paymobCardEnabled = false,
+  paymobWalletEnabled = false,
+}: {
+  trip: Trip;
+  paymobCardEnabled?: boolean;
+  paymobWalletEnabled?: boolean;
+}) {
   const steps = useMemo(() => bookingSteps(trip), [trip]);
   const [stepIndex, setStepIndex] = useState(0);
   const [done, setDone] = useState(false);
@@ -50,6 +63,13 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
   const [customAnswers, setCustomAnswers] = useState<Record<string, BookingFormAnswer>>({});
   const [songRequest, setSongRequest] = useState("");
   const [paymentProof, setPaymentProof] = useState<PaymentProofValue | null>(null);
+  // Paying online is the default whenever Paymob is live; the manual transfer
+  // stays available underneath it.
+  const [paymentMethod, setPaymentMethod] = useState<BookingPaymentMethod>(
+    paymobCardEnabled ? "paymob_card" : paymobWalletEnabled ? "paymob_wallet" : "manual",
+  );
+  const [paymentLink, setPaymentLink] = useState<string | null>(null);
+  const [handoffError, setHandoffError] = useState<string | null>(null);
   const [agreed, setAgreed] = useState(false);
   const [whatsappOptIn, setWhatsappOptIn] = useState(false);
   const [requestNumber, setRequestNumber] = useState<string | undefined>();
@@ -139,7 +159,9 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
       return required.every((g) => Boolean(selection[g.id]));
     }
     if (current === "custom") return guestCountNumber >= 1 && bookingFormAnswersComplete(trip.bookingFormFields ?? [], customAnswers, guestCountNumber);
-    if (current === "payment") return Boolean(paymentProof?.path);
+    // Online methods are settled after the booking is created, so only the
+    // manual transfer has anything to complete here.
+    if (current === "payment") return paymentMethod === "manual" ? Boolean(paymentProof?.path) : true;
     if (current === "guest") {
       return guestCountNumber >= 1 && guests.length === guestCountNumber && guests.every((guest) => guest.name.trim().length >= 2 && guest.phone.trim().length >= 6) && guestEmail.trim() !== "" && agreed;
     }
@@ -148,20 +170,28 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
 
   if (done) {
     return (
-      <BookingConfirmation
-        details={{
-          tripTitle: trip.title,
-          selections: selectionLabels,
-          seats: undefined,
-          guestName,
-          guestEmail,
-          guestPhone,
-          guestCount: guestCountNumber,
-          totalEgp: total,
-          mode: trip.bookingMode,
-          requestNumber,
-        }}
-      />
+      <>
+        {handoffError ? (
+          <p className="pi-flow__error" role="alert">
+            {handoffError}
+            {paymentLink ? <> You can pay any time from <Link href={paymentLink}>your booking payment page</Link>.</> : null}
+          </p>
+        ) : null}
+        <BookingConfirmation
+          details={{
+            tripTitle: trip.title,
+            selections: selectionLabels,
+            seats: undefined,
+            guestName,
+            guestEmail,
+            guestPhone,
+            guestCount: guestCountNumber,
+            totalEgp: total,
+            mode: trip.bookingMode,
+            requestNumber,
+          }}
+        />
+      </>
     );
   }
 
@@ -201,7 +231,8 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
             })(),
           })),
           ...(songRequest.trim() ? { songRequest: songRequest.trim() } : {}),
-          paymentProof: paymentProof
+          paymentMethod,
+          paymentProof: paymentMethod === "manual" && paymentProof
             ? { method: paymentProof.method, path: paymentProof.path }
             : null,
         },
@@ -232,6 +263,21 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
         ...eventParameters,
         booking_number: completedNumber,
       });
+
+      // The booking now exists. For an online method, hand the guest straight
+      // to Paymob; if that hand-off fails the booking still stands, so fall
+      // through to the confirmation and point at the payment page instead.
+      const paymentToken = "paymentToken" in result ? result.paymentToken : null;
+      if (paymentMethod !== "manual" && paymentToken) {
+        setPaymentLink(`/pay/${paymentToken}`);
+        const checkout = await createPaymobCheckout(paymentToken);
+        if (checkout.ok) {
+          window.location.assign(checkout.checkoutUrl);
+          return;
+        }
+        setHandoffError(checkout.error);
+      }
+
       setRequestNumber(completedNumber);
       setDone(true);
     });
@@ -348,8 +394,17 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
         {step === "payment" ? (
           <>
             <h2 className="pi-flow__title">{STEP_LABELS.payment}</h2>
-            <p className="pi-flow__hint">Transfer the confirmed amount, then upload the receipt. Uploading a receipt does not confirm payment until our admin checks it.</p>
-            <PaymentProofStep tripId={trip.id} totalEgp={total} value={paymentProof} onChange={setPaymentProof} />
+            <p className="pi-flow__hint">Choose how you would like to settle this booking.</p>
+            <BookingPaymentStep
+              tripId={trip.id}
+              totalEgp={total}
+              cardEnabled={paymobCardEnabled}
+              walletEnabled={paymobWalletEnabled}
+              method={paymentMethod}
+              onMethodChange={setPaymentMethod}
+              proof={paymentProof}
+              onProofChange={setPaymentProof}
+            />
           </>
         ) : null}
 
@@ -403,6 +458,18 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
                     : "Price not set"}
                 </dd>
               </div>
+              {steps.includes("payment") ? (
+                <div>
+                  <dt>Payment</dt>
+                  <dd>
+                    {paymentMethod === "paymob_card"
+                      ? "Card — Paymob secure checkout"
+                      : paymentMethod === "paymob_wallet"
+                        ? "Mobile wallet — Paymob secure checkout"
+                        : "InstaPay / Vodafone Cash transfer"}
+                  </dd>
+                </div>
+              ) : null}
               {paymentProof ? (
                 <div>
                   <dt>Payment proof</dt>
@@ -411,9 +478,11 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
               ) : null}
             </dl>
             <p className="pi-flow__hint">
-              {trip.bookingMode === "booking"
-                ? "This completes your booking and securely sends the receipt for payment verification. Your final Booking Confirmation follows after our team verifies it."
-                : "This sends your application for review. No booking is created until our team accepts it."}
+              {trip.bookingMode !== "booking"
+                ? "This sends your application for review. No booking is created until our team accepts it."
+                : paymentMethod === "manual"
+                  ? "This completes your booking and securely sends the receipt for payment verification. Your final Booking Confirmation follows after our team verifies it."
+                  : "This creates your booking and takes you to Paymob's secure checkout to pay. Your final Booking Confirmation follows once the payment clears."}
             </p>
           </>
         ) : null}
@@ -440,10 +509,14 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
         ) : (
           <Button disabled={!canContinue(step) || isPending} onClick={submitRequest}>
             {isPending
-              ? "Sending…"
-              : trip.bookingMode === "booking"
-                ? "Complete booking"
-                : "Send for confirmation"}
+              ? paymentMethod !== "manual" && trip.bookingMode === "booking"
+                ? "Opening secure checkout…"
+                : "Sending…"
+              : trip.bookingMode !== "booking"
+                ? "Send for confirmation"
+                : paymentMethod === "manual"
+                  ? "Complete booking"
+                  : "Continue to secure payment"}
           </Button>
         )}
       </div>

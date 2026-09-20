@@ -18,6 +18,15 @@ export function isPaymobConfigured(): boolean {
   );
 }
 
+/**
+ * Whether a mobile wallet integration is available alongside the card one.
+ * Wallets are optional: the card integration is what makes Paymob usable.
+ */
+export function isPaymobWalletConfigured(): boolean {
+  const walletIntegrationId = Number(process.env.PAYMOB_INTEGRATION_ID_WALLET);
+  return isPaymobConfigured() && Number.isInteger(walletIntegrationId) && walletIntegrationId > 0;
+}
+
 export function getPaymobConfig(): PaymobConfig {
   const secretKey = process.env.PAYMOB_SECRET_KEY;
   const publicKey = process.env.PAYMOB_PUBLIC_KEY;
