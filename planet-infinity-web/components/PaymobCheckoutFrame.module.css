@@ -1,11 +1,12 @@
+/*
+  The panel carries no chrome of its own: it is always placed inside a card
+  that already has one, and a box drawn inside a box reads as clutter on the
+  screen where a guest is least willing to be confused.
+*/
 .panel {
   display: grid;
   gap: var(--pi-s2);
-  margin-top: var(--pi-s3);
-  padding: var(--pi-s3);
-  border: 1px solid var(--pi-line);
-  border-radius: var(--pi-r-card);
-  background: #fff;
+  margin-top: var(--pi-s2);
 }
 
 .head {
@@ -40,10 +41,15 @@
   background: var(--pi-ivory);
 }
 
+/*
+  Tall enough for the provider's form to finish inside it. A frame shorter
+  than its content puts a scrollbar inside a scrollbar, which is the one thing
+  guaranteed to make a payment form feel broken.
+*/
 .frame {
   display: block;
   width: 100%;
-  min-height: 640px;
+  min-height: 800px;
   border: 0;
 }
 
@@ -70,10 +76,7 @@
 }
 
 @media (max-width: 640px) {
-  .panel {
-    padding: var(--pi-s2);
-  }
   .frame {
-    min-height: 560px;
+    min-height: 760px;
   }
 }

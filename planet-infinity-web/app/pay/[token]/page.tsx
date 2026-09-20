@@ -122,9 +122,9 @@ export default async function PaymentPage({ params }: { params: Promise<{ token:
         ) : (
           <div className={styles.paymentOptions}>
             {isPaymobConfigured() ? (
-              <div className={styles.option}>
-                <p className={styles.optionLabel}>Card payment</p>
-                <p>Pay on a secure checkout page. Planet Infinity does not receive or store your card details.</p>
+              <div className={`${styles.option} ${styles.optionPrimary}`}>
+                <p className={styles.optionLabel}>Pay by card</p>
+                <p>Visa or Mastercard. Your card details are never seen or stored by Planet Infinity.</p>
                 <PaymobCheckoutButton
                   paymentToken={token}
                   amountLabel={`${balance.toLocaleString("en-US")} ${booking.currency}`}

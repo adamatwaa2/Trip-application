@@ -1153,7 +1153,9 @@
   gap: 6px;
 }
 .pi-payment-method strong {
+  font-size: var(--pi-body-size);
   font-weight: 800;
+  line-height: 1.3;
 }
 .pi-payment-method:has(input:checked) strong {
   color: var(--pi-ember);
