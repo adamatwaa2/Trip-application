@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
+import { careerApplicationRole, isCareerApplication } from "@/lib/request-display";
 
 export const requestStatuses = ["pending", "accepted", "rejected", "confirmed"] as const;
 export type RequestStatus = (typeof requestStatuses)[number];
@@ -93,4 +94,10 @@ export function formatDate(value: string | null | undefined): string {
   return new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(value));
 }
 export function requestTypeLabel(type: AdminRequest["request_type"]): string { return type === "application" ? "Application" : `${type[0].toUpperCase()}${type.slice(1)} request`; }
-export function requestSubject(request: AdminRequest): string { return request.trip?.title ?? request.event?.title ?? request.subject_title ?? "Planet Infinity application"; }
+export function requestSubject(request: AdminRequest): string {
+  if (isCareerApplication(request)) {
+    const role = careerApplicationRole(request.selections);
+    return role ? `Careers · ${role}` : "Careers application";
+  }
+  return request.trip?.title ?? request.event?.title ?? request.subject_title ?? "Planet Infinity application";
+}
