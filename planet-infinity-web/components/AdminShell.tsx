@@ -9,6 +9,7 @@ import { getAdminNotificationCount } from "@/lib/admin-notifications";
 const nav = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/requests", label: "Requests" },
+  { href: "/admin/applications", label: "Applications" },
   { href: "/admin/bookings", label: "Bookings" },
   { href: "/admin/payments", label: "Payments" },
   { href: "/admin/customers", label: "Customers" },
@@ -38,7 +39,7 @@ export async function AdminShell({
           <small>Admin</small>
         </Link>
         <nav aria-label="Admin navigation">
-          {nav.slice(0, 4).map((item) => (
+          {nav.slice(0, 5).map((item) => (
             <Link
               className={current === item.href ? "is-current" : undefined}
               href={item.href}
@@ -48,7 +49,7 @@ export async function AdminShell({
             </Link>
           ))}
           <AdminNotificationLink current={current === "/admin/notifications"} initialUnreadCount={unreadCount} />
-          {nav.slice(4).map((item) => (
+          {nav.slice(5).map((item) => (
             <Link
               className={current === item.href ? "is-current" : undefined}
               href={item.href}

@@ -3,10 +3,12 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { AdminShell } from "@/components/AdminShell";
 import { RequestStatusForm } from "@/components/RequestStatusForm";
+import { ApplicationStatusForm } from "@/components/ApplicationStatusForm";
 import { RequestToBookingForm } from "@/components/RequestToBookingForm";
-import { formatDate, getPaymentProofUrl, getPrivateRequestPhotoUrls, getRequest, getRequestHistory, requestSubject, requestTypeLabel } from "@/lib/admin-requests";
+import { formatDate, getPaymentProofUrl, getPrivateRequestPhotoUrls, getRecruitmentUploadUrls, getRequest, getRequestHistory, requestSubject, requestTypeLabel } from "@/lib/admin-requests";
 import { requireAdmin } from "@/lib/admin";
 import { careerApplicationAnswers, isCareerApplication, requestAnswerContainerKeys } from "@/lib/request-display";
+import { getRecruitmentRole } from "@/content/recruitment";
 
 export const metadata = { title: "Request details" };
 
@@ -62,9 +64,10 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
   if (!request) notFound();
   const careerApplication = isCareerApplication(request);
   const privatePhotoData = request.selections.applicationPhotos ?? request.selections.careerPhotos;
-  const [paymentProofUrl, privatePhotos] = await Promise.all([
+  const [paymentProofUrl, privatePhotos, recruitmentUploads] = await Promise.all([
     getPaymentProofUrl(request.payment_proof_path),
     getPrivateRequestPhotoUrls(privatePhotoData),
+    getRecruitmentUploadUrls(request.selections.uploads),
   ]);
   const tripAnswers = [
     ...customResponses(request.selections.customResponses),
@@ -83,12 +86,16 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
       </header>
       <div className="pi-admin-detail-grid">
         <section className="pi-admin-section">
-          <div className="pi-admin-section__head"><h2>Request</h2><span className={`pi-admin-status pi-admin-status--${request.status}`}>{request.status}</span></div>
+          <div className="pi-admin-section__head"><h2>{careerApplication ? "Application" : "Request"}</h2><span className={`pi-admin-status pi-admin-status--${careerApplication ? request.application_status ?? "new" : request.status}`}>{careerApplication ? request.application_status ?? "new" : request.status}</span></div>
           <dl className="pi-admin-details">
             <div><dt>{careerApplication ? "Candidate" : "Guest"}</dt><dd>{request.customer ? <Link href={`/admin/customers/${request.customer.id}`}>{request.customer.full_name}</Link> : "Unknown"}</dd></div>
             <div><dt>Email</dt><dd>{request.customer?.email ? <a href={`mailto:${request.customer.email}`}>{request.customer.email}</a> : "Not provided"}</dd></div>
             <div><dt>Phone</dt><dd>{request.customer?.phone || "Not provided"}</dd></div>
             <div><dt>Subject</dt><dd>{requestSubject(request)}</dd></div>
+            {request.application_category ? <div><dt>Category</dt><dd>{request.application_category.replaceAll("-", " ")}</dd></div> : null}
+            {request.application_world ? <div><dt>World</dt><dd>{request.application_world.replaceAll("-", " ")}</dd></div> : null}
+            {request.application_role ? <div><dt>Role</dt><dd>{getRecruitmentRole(request.application_category ?? "", request.application_role)?.title ?? request.application_role.replaceAll("-", " ")}</dd></div> : null}
+            {request.application_country ? <div><dt>Location</dt><dd>{[request.application_city, request.application_country, request.application_work_mode].filter(Boolean).join(" · ")}</dd></div> : null}
             {!careerApplication ? <div><dt>Guests</dt><dd>{request.guest_count ?? "Not provided"}</dd></div> : null}
             {!careerApplication ? <div><dt>Booking</dt><dd>{request.booking ? <Link href={`/admin/bookings/${request.booking.id}`}>{request.booking.booking_number}</Link> : "Not created"}</dd></div> : null}
             {!careerApplication ? <div><dt>Payment method</dt><dd>{request.payment_method === "vodafone_cash" ? "Vodafone Cash" : request.payment_method === "instapay" ? "InstaPay" : "Not submitted"}</dd></div> : null}
@@ -99,6 +106,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
           </div>
           {paymentProofUrl ? <div className="pi-admin-payment-proof"><h3>Uploaded payment receipt</h3><a href={paymentProofUrl} target="_blank" rel="noreferrer"><Image src={paymentProofUrl} width={900} height={900} unoptimized alt={`Payment receipt for ${request.request_number}`} /></a><p>Review the receiving account before recording this payment. The uploaded image alone is not proof of a successful transfer.</p></div> : null}
           {privatePhotos.length ? <div className="pi-admin-payment-proof"><h3>{request.selections.applicationPhotos ? "Trip application photos" : "Candidate photos"}</h3><div className="pi-admin-gallery-list">{privatePhotos.map((photo) => <a key={photo.url} href={photo.url} target="_blank" rel="noreferrer"><Image className="pi-admin-gallery-preview" src={photo.url} width={640} height={640} unoptimized alt={photo.name} /></a>)}</div><p>Private uploads. These links expire after ten minutes.</p></div> : null}
+          {recruitmentUploads.length ? <div className="pi-admin-payment-proof"><h3>Candidate photo</h3><div className="pi-admin-gallery-list">{recruitmentUploads.map((file) => <a key={file.url} href={file.url} target="_blank" rel="noreferrer"><Image className="pi-admin-gallery-preview" src={file.url} width={640} height={640} unoptimized alt={file.name} /></a>)}</div><p>Private upload. This link expires after ten minutes.</p></div> : null}
           {careerAnswers.length ? <div className="pi-admin-submitted-answers"><h3>Career application answers</h3><dl className="pi-admin-details">{careerAnswers.map((answer, index) => <div key={`${answer.label}-${index}`}><dt>{answer.label}</dt><dd>{answer.answer}</dd></div>)}</dl></div> : null}
           {!careerApplication && tripAnswers.length ? <div className="pi-admin-submitted-answers"><h3>Trip-specific answers</h3><dl className="pi-admin-details">{tripAnswers.map((answer, index) => <div key={`${answer.label}-${index}`}><dt>{answer.label}</dt><dd>{answer.answer}</dd></div>)}</dl></div> : null}
           {submittedDetails.length || request.notes ? <div className="pi-admin-submitted-answers"><h3>Submitted details</h3><dl className="pi-admin-details">
@@ -106,11 +114,11 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
             {request.notes ? <div><dt>Notes</dt><dd>{request.notes}</dd></div> : null}
           </dl></div> : null}
         </section>
-        <aside className="pi-admin-section"><h2>Update request</h2><RequestStatusForm requestId={request.id} currentStatus={request.status} currentNote={request.admin_note} />{!careerApplication ? <><h3>Convert to booking</h3>{request.booking ? <p className="pi-admin-success">This request is linked to {request.booking.booking_number}.</p> : <RequestToBookingForm requestId={request.id} disabled={request.request_type === "application" || request.status !== "accepted"} />}</> : null}</aside>
+        <aside className="pi-admin-section"><h2>{careerApplication ? "Update application" : "Update request"}</h2>{careerApplication ? <ApplicationStatusForm requestId={request.id} currentStatus={request.application_status} currentNote={request.admin_note} /> : <RequestStatusForm requestId={request.id} currentStatus={request.status} currentNote={request.admin_note} />}{!careerApplication ? <><h3>Convert to booking</h3>{request.booking ? <p className="pi-admin-success">This request is linked to {request.booking.booking_number}.</p> : <RequestToBookingForm requestId={request.id} disabled={request.request_type === "application" || request.status !== "accepted"} />}</> : null}</aside>
       </div>
-      <section className="pi-admin-section"><div className="pi-admin-section__head"><div><p className="pi-admin-kicker">History</p><h2>Status changes</h2></div></div>
+      {!careerApplication ? <section className="pi-admin-section"><div className="pi-admin-section__head"><div><p className="pi-admin-kicker">History</p><h2>Status changes</h2></div></div>
         {history.length ? <ol className="pi-admin-history">{history.map((item) => <li key={item.id}><strong>{item.from_status ? `${item.from_status} → ${item.to_status}` : item.to_status}</strong><span>{formatDate(item.created_at)}</span>{item.note ? <p>{item.note}</p> : null}</li>)}</ol> : <div className="pi-admin-empty">No status changes yet.</div>}
-      </section>
+      </section> : null}
     </AdminShell>
   );
 }

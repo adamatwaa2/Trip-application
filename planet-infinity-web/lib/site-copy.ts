@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 const LEGACY_DEFAULTS: Partial<Record<keyof SiteCopy, string>> = {
   home_eyebrow: "Available now",
   home_lede: "Book the trips and experiences that are open now, or step into the events world.",
+  careers_lede: "We don't hire CVs. We hire people — the ones with a bit of soul, who make a bus of strangers feel like a family by hour two. Tell us who you are, what you're good at, and how you move through the world. Experience helps. Personality decides.",
 };
 
 export async function getSiteCopy(): Promise<SiteCopy> {

@@ -1,6 +1,6 @@
 export type RequestAnswer = { label: string; answer: string };
 
-const CAREER_MARKERS = ["career", "careers", "hiring", "job"];
+const CAREER_MARKERS = ["career", "careers", "hiring", "job", "recruitment"];
 const ANSWER_CONTAINERS = ["answers", "applicationAnswers", "careerAnswers", "responses"];
 
 function humaniseKey(key: string): string {
@@ -91,4 +91,7 @@ export const requestAnswerContainerKeys = new Set([
   "customResponses",
   "careerPhotos",
   "applicationPhotos",
+  "uploads",
+  "draftId",
+  "submittedVersion",
 ]);

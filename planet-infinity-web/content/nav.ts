@@ -63,7 +63,7 @@ export const PLAN_LINKS: NavItem[] = [
  */
 export const COMPANY_LINKS: NavItem[] = [
   { label: "Explore", href: "/explore", status: "ready" },
-  { label: "Careers", href: "/careers", status: "ready" },
+  { label: "Careers", href: "/join", status: "ready" },
   { label: "Contact", href: "/contact", status: "ready" },
 ];
 

@@ -99,7 +99,7 @@ export function CareersApplicationForm({ fields }: { fields: BookingFormField[] 
       <label className="agree-row"><input type="checkbox" checked={whatsappOptIn} onChange={(event) => setWhatsappOptIn(event.target.checked)} /><span>You can reach me about this application on WhatsApp.</span></label>
       {error ? <p className="pi-flow__error" role="alert">{error}</p> : null}
       <button className="submit-btn" type="submit" disabled={!canSubmit || pending}>{pending ? "Sending your application…" : "Send my application"}</button>
-      <p className="pi-careers-form__note">No CV needed. If we want to take it further, we&apos;ll ask you for the rest directly.</p>
+      <p className="pi-careers-form__note">If we want to take it further, we&apos;ll ask you for any extra details directly.</p>
     </section>
   </form>;
 }

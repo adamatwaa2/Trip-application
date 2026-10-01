@@ -59,7 +59,7 @@ export const SITE_COPY_FIELDS = [
   { key: "careers_eyebrow", label: "Careers header eyebrow", fallback: "Planet Infinity · Careers", multiline: false },
   { key: "careers_title", label: "Careers page headline", fallback: "Join the story", multiline: false },
   { key: "careers_subtitle", label: "Careers header subheadline", fallback: "We're looking for characters, not employees.", multiline: false },
-  { key: "careers_lede", label: "Careers header introduction", fallback: "We don't hire CVs. We hire people — the ones with a bit of soul, who make a bus of strangers feel like a family by hour two. Tell us who you are, what you're good at, and how you move through the world. Experience helps. Personality decides.", multiline: true },
+  { key: "careers_lede", label: "Careers header introduction", fallback: "We’re looking for people with a bit of soul — the ones who make a bus of strangers feel like a family by hour two. Tell us who you are, what you’re good at, and how you move through the world. Experience helps. Personality decides.", multiline: true },
   { key: "careers_roles_question", label: "Careers roles question", fallback: "Which role are you applying for?", multiline: false },
   { key: "careers_roles_options", label: "Careers role choices — one per line", fallback: "Content Creator\nVideographer\nTravel Consultant\nSales\nTrip Counselor\nExperience Crew\nOperations", multiline: true },
   { key: "careers_music_question", label: "Careers music question", fallback: "Your music taste (this matters more than you think)", multiline: false },

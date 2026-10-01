@@ -3,6 +3,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Container } from "@/components/Container";
 import { ExploreUniverse } from "@/components/ExploreUniverse";
 import { getCrossListedTrips, getListedEvents, getListedTrips } from "@/content/source";
+import { planetInfinityBuilds } from "@/content/explore-builds";
 import { getSiteCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
@@ -53,6 +54,22 @@ export default async function ExplorePage() {
           <h1>{copy.explore_title}</h1>
           <p>{copy.explore_lede}</p>
         </div>
+        <section className="pi-explore-builds" aria-labelledby="explore-builds-title">
+          <header>
+            <p>THE BIGGER PICTURE</p>
+            <h2 id="explore-builds-title">What we’re building.</h2>
+            <span>Planet Infinity is growing beyond individual trips and events.</span>
+          </header>
+          <div className="pi-explore-builds__grid">
+            {planetInfinityBuilds.map((item) => (
+              <article key={item.id}>
+                <span>{item.number}</span>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </article>
+            ))}
+          </div>
+        </section>
         <ExploreUniverse
           trips={exploreTrips}
           events={exploreEvents}

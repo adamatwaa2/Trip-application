@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function HiringPage() {
-  redirect("/careers");
+  redirect("/join");
 }
