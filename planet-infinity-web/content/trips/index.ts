@@ -54,7 +54,10 @@ export function bookingSteps(trip: Trip): BookingStep[] {
   // an unpaid request from locking a seat for other guests.
   if (trip.bookingFormFields?.length) steps.push("custom");
   steps.push("guest");
-  if (trip.paymentProofRequired) steps.push("payment");
+  // Direct bookings always show the payment choice. Card payments continue to
+  // the secure Paymob checkout after the booking reference is created, while
+  // manual transfers collect a private receipt here.
+  if (trip.bookingMode === "booking" || trip.paymentProofRequired) steps.push("payment");
   steps.push("review");
   return steps;
 }
@@ -63,6 +66,6 @@ export const STEP_LABELS: Record<BookingStep, string> = {
   selection: "Your choices",
   custom: "Trip questions",
   guest: "Your details",
-  payment: "Payment proof",
+  payment: "Payment",
   review: "Review",
 };

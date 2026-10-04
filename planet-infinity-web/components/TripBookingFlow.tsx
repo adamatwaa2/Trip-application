@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   bookingSteps,
   STEP_LABELS,
@@ -20,7 +21,8 @@ import {
   type BookingFormAnswer,
 } from "@/lib/booking-form";
 import { TripCustomQuestions } from "./TripCustomQuestions";
-import { PaymentProofStep, type PaymentProofValue } from "./PaymentProofStep";
+import type { PaymentProofValue } from "./PaymentProofStep";
+import { TripPaymentStep, type TripPaymentMethod } from "./TripPaymentStep";
 import { trackMetaCustomEvent, trackMetaEvent } from "@/lib/meta-pixel";
 
 /**
@@ -38,6 +40,7 @@ import { trackMetaCustomEvent, trackMetaEvent } from "@/lib/meta-pixel";
  * A step that does not apply is never rendered and never counted.
  */
 export function TripBookingFlow({ trip }: { trip: Trip }) {
+  const router = useRouter();
   const steps = useMemo(() => bookingSteps(trip), [trip]);
   const [stepIndex, setStepIndex] = useState(0);
   const [done, setDone] = useState(false);
@@ -50,6 +53,7 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
   const [customAnswers, setCustomAnswers] = useState<Record<string, BookingFormAnswer>>({});
   const [songRequest, setSongRequest] = useState("");
   const [paymentProof, setPaymentProof] = useState<PaymentProofValue | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<TripPaymentMethod>("paymob");
   const [agreed, setAgreed] = useState(false);
   const [whatsappOptIn, setWhatsappOptIn] = useState(false);
   const [requestNumber, setRequestNumber] = useState<string | undefined>();
@@ -139,7 +143,9 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
       return required.every((g) => Boolean(selection[g.id]));
     }
     if (current === "custom") return guestCountNumber >= 1 && bookingFormAnswersComplete(trip.bookingFormFields ?? [], customAnswers, guestCountNumber);
-    if (current === "payment") return Boolean(paymentProof?.path);
+    if (current === "payment") {
+      return paymentMethod === "paymob" || (paymentMethod === "manual" && Boolean(paymentProof?.path));
+    }
     if (current === "guest") {
       return guestCountNumber >= 1 && guests.length === guestCountNumber && guests.every((guest) => guest.name.trim().length >= 2 && guest.phone.trim().length >= 6) && guestEmail.trim() !== "" && agreed;
     }
@@ -201,6 +207,7 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
             })(),
           })),
           ...(songRequest.trim() ? { songRequest: songRequest.trim() } : {}),
+          preferredPaymentMethod: paymentMethod,
           paymentProof: paymentProof
             ? { method: paymentProof.method, path: paymentProof.path }
             : null,
@@ -220,6 +227,14 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
         return;
       }
       const completedNumber = "bookingNumber" in result ? result.bookingNumber : result.requestNumber;
+      if (trip.bookingMode === "booking" && paymentMethod === "paymob") {
+        if ("paymentToken" in result && result.paymentToken) {
+          router.push(`/pay/${result.paymentToken}`);
+          return;
+        }
+        setSubmitError(`Booking ${completedNumber} was created, but secure payment could not open. Please contact us with this booking number.`);
+        return;
+      }
       const eventParameters = {
         content_ids: [trip.id],
         content_name: trip.title,
@@ -348,8 +363,17 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
         {step === "payment" ? (
           <>
             <h2 className="pi-flow__title">{STEP_LABELS.payment}</h2>
-            <p className="pi-flow__hint">Transfer the confirmed amount, then upload the receipt. Uploading a receipt does not confirm payment until our admin checks it.</p>
-            <PaymentProofStep tripId={trip.id} totalEgp={total} value={paymentProof} onChange={setPaymentProof} />
+            <TripPaymentStep
+              tripId={trip.id}
+              totalEgp={total}
+              method={paymentMethod}
+              proof={paymentProof}
+              onMethodChange={(nextMethod) => {
+                setPaymentMethod(nextMethod);
+                if (nextMethod === "paymob") setPaymentProof(null);
+              }}
+              onProofChange={setPaymentProof}
+            />
           </>
         ) : null}
 
@@ -409,10 +433,13 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
                   <dd>{paymentProof.method === "instapay" ? "InstaPay" : "Vodafone Cash"} · {paymentProof.fileName}</dd>
                 </div>
               ) : null}
+              {paymentMethod === "paymob" ? <div><dt>Payment</dt><dd>Secure online payment via Paymob</dd></div> : null}
             </dl>
             <p className="pi-flow__hint">
               {trip.bookingMode === "booking"
-                ? "This completes your booking and securely sends the receipt for payment verification. Your final Booking Confirmation follows after our team verifies it."
+                ? paymentMethod === "paymob"
+                  ? "This creates your booking reference, then opens Paymob's secure card checkout."
+                  : "This completes your booking and securely sends the receipt for payment verification. Your final Booking Confirmation follows after our team verifies it."
                 : "This sends your application for review. No booking is created until our team accepts it."}
             </p>
           </>

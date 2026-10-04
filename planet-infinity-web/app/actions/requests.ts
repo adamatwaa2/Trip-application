@@ -50,7 +50,7 @@ export type PublicTripBookingInput = Omit<
 > & { productId: string };
 
 export type TripBookingActionResult =
-  | { ok: true; bookingNumber: string }
+  | { ok: true; bookingNumber: string; paymentToken?: string }
   | { ok: false; error: string };
 
 export type PaymentProofUploadResult =
@@ -331,7 +331,18 @@ export async function submitPublicTripBooking(input: PublicTripBookingInput): Pr
       url: "/admin/bookings",
     });
   });
-  return { ok: true, bookingNumber: data[0].booking_number };
+  let paymentToken: string | undefined;
+  if (isSupabaseServiceConfigured() && data[0].id) {
+    const { data: paymentBooking } = await createServiceClient()
+      .from("bookings")
+      .select("payment_token")
+      .eq("id", data[0].id)
+      .maybeSingle();
+    if (typeof paymentBooking?.payment_token === "string" && UUID.test(paymentBooking.payment_token)) {
+      paymentToken = paymentBooking.payment_token;
+    }
+  }
+  return { ok: true, bookingNumber: data[0].booking_number, paymentToken };
 }
 
 export async function updateRequestStatus(
