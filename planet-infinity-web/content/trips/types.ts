@@ -24,7 +24,7 @@
 import type { AvailabilityState } from "../cta";
 import type { BookingFormField } from "@/lib/booking-form";
 
-export type Currency = "EGP";
+export type Currency = "EGP" | "USD";
 
 /** How a trip is transacted. Not every trip uses the same path. */
 export type BookingMode =
@@ -175,6 +175,8 @@ export type Trip = {
   /** Base price. Omit entirely when unset — never 0, never "from". */
   priceEgp?: number;
   currency: Currency;
+  /** USD package price, kept separate from the EGP checkout. */
+  priceUsd?: number;
   /** The unit the price is quoted in. */
   priceUnit?: string;
 

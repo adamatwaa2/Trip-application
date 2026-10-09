@@ -42,7 +42,7 @@ export function TripCard({ trip }: { trip: Trip }) {
         ) : null}
 
         <div className="pi-card__foot">
-          <Price egp={trip.priceEgp} unit={trip.priceUnit ?? "per person"} />
+          <Price egp={trip.priceEgp} usd={trip.priceUsd} unit={trip.priceUnit ?? "per person"} />
           <AvailabilityPill state={trip.availability} />
         </div>
       </div>

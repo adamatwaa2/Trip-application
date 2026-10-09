@@ -11,6 +11,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 import { EVENTS, FEATURED_EVENTS, allEvents, findEvent, type PlanetEvent } from "./events";
 import { FEATURED_TRIPS, TRIPS, allTrips, findTrip, type Trip } from "./trips";
+import { SOCOTRA_TRIP } from "./socotra";
 
 type DatabaseTrip = {
   id: string;
@@ -122,16 +123,20 @@ async function databaseEvents(): Promise<PlanetEvent[] | null> {
 }
 
 export function dataSource(): "local" | "supabase" { return isSupabaseConfigured() ? "supabase" : "local"; }
-export async function getTrips(): Promise<Trip[]> { return (await databaseTrips()) ?? TRIPS; }
+function withSocotra(trips: Trip[]): Trip[] {
+  return [...trips.filter(trip => trip.slug !== SOCOTRA_TRIP.slug), SOCOTRA_TRIP];
+}
+export async function getTrips(): Promise<Trip[]> { return withSocotra((await databaseTrips()) ?? TRIPS); }
 export async function getListedTrips(): Promise<{ trips: Trip[]; usingDemoData: boolean }> {
   const items = await databaseTrips();
   // Architecture fixtures are useful for direct developer testing, but they
   // must never become public catalogue content when Supabase is unavailable.
-  const trips = items ?? TRIPS;
+  const trips = withSocotra(items ?? TRIPS);
   return { trips: trips.filter((item) => (item.media.visualTheme?.channels ?? ["trips"]).includes("trips")), usingDemoData: false };
 }
-export async function getFeaturedTrips(): Promise<Trip[]> { const items = await databaseTrips(); return items === null ? FEATURED_TRIPS : items.filter((item) => item.featured); }
+export async function getFeaturedTrips(): Promise<Trip[]> { const items = await databaseTrips(); return withSocotra(items === null ? FEATURED_TRIPS : items.filter((item) => item.featured)); }
 export async function getTripBySlug(slug: string): Promise<Trip | undefined> {
+  if (slug === SOCOTRA_TRIP.slug) return SOCOTRA_TRIP;
   const items = await databaseTrips();
   if (items === null) return findTrip(slug);
   const trip = items.find((item) => item.slug === slug);
@@ -150,7 +155,7 @@ export async function getTripBySlug(slug: string): Promise<Trip | undefined> {
     },
   };
 }
-export async function getTripSlugs(): Promise<string[]> { const items = await databaseTrips(); return items === null ? allTrips().map((trip) => trip.slug) : items.map((trip) => trip.slug); }
+export async function getTripSlugs(): Promise<string[]> { const items = await databaseTrips(); return Array.from(new Set([...(items === null ? allTrips().map((trip) => trip.slug) : items.map((trip) => trip.slug)), SOCOTRA_TRIP.slug])); }
 export async function getEvents(): Promise<PlanetEvent[]> { return (await databaseEvents()) ?? EVENTS; }
 export async function getListedEvents(): Promise<{ events: PlanetEvent[]; usingDemoData: boolean }> {
   const items = await databaseEvents();

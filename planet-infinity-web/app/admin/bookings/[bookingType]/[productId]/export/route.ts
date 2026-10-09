@@ -113,5 +113,5 @@ export async function GET(request: Request, { params }: { params: Promise<{ book
   const output = await workbook.xlsx.writeBuffer();
   const dateSuffix = scheduledAts[0] ? `-${scheduledAts[0].slice(0, 10)}` : "";
   const filename = `${title.toLowerCase().replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || "experience"}-bookings${dateSuffix}.xlsx`;
-  return new NextResponse(Buffer.from(output), { headers: { "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Content-Disposition": `attachment; filename="${filename}"`, "Cache-Control": "no-store" } });
+  return new NextResponse(new Uint8Array(Buffer.from(output)), { headers: { "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Content-Disposition": `attachment; filename="${filename}"`, "Cache-Control": "no-store" } });
 }

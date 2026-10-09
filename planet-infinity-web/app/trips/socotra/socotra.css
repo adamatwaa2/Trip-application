@@ -1,0 +1,79 @@
+/* Socotra inherits the production typefaces, components and layout rules. */
+.pi-socotra { --pi-ember:#247b92; --pi-gold:#247b92; --pi-cyan:#73cfe4; --pi-g-cta:linear-gradient(105deg,#b7eafa,#73cfe4); --pi-g-flame:linear-gradient(105deg,#b7eafa,#73cfe4); }
+.pi-socotra .pi-catalog-theme { background:radial-gradient(ellipse at 95% 3%,#bfeaf2 0,transparent 44%),linear-gradient(140deg,#f7f4ed,#fcfaf4 54%,#e7f6f8); }
+.pi-socotra .pi-catalog-theme .pi-section { background:transparent; }
+.pi-socotra .pi-catalog-booking { min-height:calc(100svh - 72px); }
+.pi-socotra .pi-catalog-booking .pi-flow { max-width:860px; }
+.pi-socotra .pi-catalog-theme .pi-btn--primary { background:var(--pi-g-cta); color:#0f3544; border-color:#73cfe4; box-shadow:0 10px 30px #73cfe42b; }
+.pi-socotra .pi-choice--checked,.pi-socotra .pi-catalog-booking .pi-choice--checked { border-color:#60b9d0; background:linear-gradient(105deg,#e4f7fa,#f8f6ed); box-shadow:0 0 0 2px #73cfe42b,0 12px 26px #163d4910; }
+.pi-socotra .pi-choice__indicator { border-color:#b0c8cd; }
+.pi-socotra .pi-choice--checked .pi-choice__indicator { border-color:#318aa0; background:#318aa0; }
+.pi-socotra .pi-flow__step--current .pi-flow__step-num { background:#247b92; border-color:#247b92; color:#fff; }
+.pi-socotra .pi-booking__overview { box-shadow:inset 4px 0 0 #73cfe4; }
+.pi-socotra .pi-booking__overview > span { color:#247b92; }
+.pi-socotra .pi-socotra-hero { padding-block:clamp(56px,8vw,100px); }
+.pi-socotra .pi-socotra-hero h1 { margin:12px 0 18px; font:700 var(--pi-h1)/1 var(--pi-display); letter-spacing:-.035em; }
+.pi-socotra .pi-socotra-hero p { max-width:620px; color:var(--pi-soft); line-height:1.7; }
+.pi-socotra .pi-socotra-estimate { display:grid; gap:6px; padding:20px; margin-top:24px; border:1px solid #b9dce4; border-radius:var(--pi-r-chip); background:linear-gradient(135deg,#e5f6fa,#fffaf0); }
+.pi-socotra .pi-socotra-estimate strong { font-family:var(--pi-display); font-size:28px; }
+.pi-socotra .pi-socotra-estimate small { color:var(--pi-soft); line-height:1.6; }
+.pi-socotra .pi-socotra-preview { margin:0 0 18px; color:#4f6f79; font-size:12px; }
+.pi-socotra .pi-review dd { overflow-wrap:anywhere; }
+.pi-socotra .pi-choice:focus-within { outline:3px solid #247b92; outline-offset:3px; }
+html[data-socotra] .pi-brand__logo-slot { position:relative; }
+html[data-socotra] .pi-brand__logo-slot .pi-logo { visibility:hidden; }
+html[data-socotra] .pi-brand__logo-slot::after { content:""; position:absolute; inset:0; background:url('/brand/planet-infinity-violet.png') center/contain no-repeat; filter:grayscale(1) sepia(1) hue-rotate(125deg) saturate(1.5) brightness(1.55); }
+html[data-socotra] .pi-header--solid { background:#fcfaf4e8; border-color:#d8e6e5; }
+html[data-socotra] .pi-header__cta { background:linear-gradient(105deg,#b7eafa,#73cfe4); color:#0f3544; }
+.pi-socotra .pi-catalog-theme { background:radial-gradient(ellipse at 95% 3%,#c5eaf1 0,transparent 40%),radial-gradient(ellipse at 2% 80%,#e9d8b7 0,transparent 42%),linear-gradient(140deg,#faf3e6,#fcfaf4 54%,#eef7f6); }
+.pi-socotra .pi-catalog-booking .pi-flow__actions .pi-btn--secondary { color:#153943; border:2px solid #527f88; background:#fff9ec; opacity:1; box-shadow:0 5px 14px #6049290b; }
+.pi-socotra .pi-catalog-booking .pi-flow__actions .pi-btn--secondary:hover { background:#f1e4c9; color:#153943; }
+.socotra-field { display:grid; gap:8px; margin-bottom:20px; }
+.socotra-field label,.socotra-date label { margin:0; color:#193844; font-weight:800; font-size:14px; letter-spacing:0; text-transform:none; }
+.socotra-field input,.socotra-date select { width:100%; min-width:0; min-height:56px; padding:14px 16px; border:1.5px solid #b5cace; border-radius:16px; background:#fffdf7; color:#17313d; font:600 16px/1.4 var(--pi-body); box-shadow:inset 0 2px 6px #a7864905; }
+.socotra-field input::placeholder { color:#73878b; font-weight:400; }
+.socotra-field input:focus,.socotra-date select:focus { border-color:#318fa7; outline:3px solid #73cfe42b; }
+.socotra-field small,.socotra-help small { color:#587078; line-height:1.6; font-size:12px; }
+.socotra-field-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+.socotra-route-card,.socotra-help,.socotra-passport,.socotra-policies { padding:24px; margin:24px 0; border:1px solid #dcd8c8; border-radius:22px; background:linear-gradient(135deg,#fffaf0,#f1f9f8); }
+.socotra-route-card h3,.socotra-help h3,.socotra-policies h3 { font:700 24px/1.15 var(--pi-display); margin:10px 0; }
+.socotra-route-card p,.socotra-help p,.socotra-passport p { margin:0 0 20px; color:#506974; font-size:14px; line-height:1.6; }
+.socotra-micro { font:800 11px/1.5 var(--pi-mono); letter-spacing:.12em; text-transform:uppercase; color:#377386; }
+.socotra-help { border-color:#b2dce1; background:linear-gradient(135deg,#e5f7f9,#fff5df); }
+.socotra-help small { display:block; margin-top:12px; }
+.socotra-help .pi-btn--secondary { color:#19404d; background:#fffdf7; border:1.5px solid #558993; width:100%; white-space:normal; text-align:center; }
+.socotra-passport h4 { margin:0 0 6px; font-size:17px; font-weight:800; }
+.socotra-date { display:grid; grid-template-columns:.7fr 1.4fr .9fr; gap:12px; }
+.socotra-date > div { display:grid; gap:8px; min-width:0; }
+.pi-socotra .pi-socotra-estimate { background:linear-gradient(125deg,#e5f6fa,#fff1d8); border-color:#b9d9dc; padding:26px; gap:10px; }
+.pi-socotra .pi-socotra-estimate strong { font-size:38px; color:#143a47; letter-spacing:-.03em; }
+.pi-socotra .pi-socotra-estimate strong small { font:800 15px/1 var(--pi-body); color:#38555d; }
+.socotra-review-hero { padding:26px; border-radius:22px; background:linear-gradient(130deg,#d6eff4,#fff0d4); margin-bottom:24px; }
+.socotra-review-hero h3 { font:700 clamp(24px,4vw,34px)/1.15 var(--pi-display); margin:10px 0; }
+.socotra-review-hero p { font-weight:800; margin:0 0 16px; color:#25434d; }
+.socotra-review-tag { display:inline-flex; padding:8px 12px; border-radius:99px; background:#fffaf0; border:1px solid #c8d9d8; font-size:12px; font-weight:700; }
+.pi-socotra .socotra-review-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+.socotra-review-grid > div { padding:18px; border:1px solid #d8e1df; background:#fffdf7; border-radius:16px; }
+.pi-socotra .socotra-review-grid dt { font-size:11px; font-weight:800; color:#537078; margin-bottom:8px; }
+.pi-socotra .socotra-review-grid dd { font-size:17px; font-weight:800; color:#14313d; line-height:1.45; }
+.socotra-review-travelers { display:grid; gap:12px; margin:24px 0; }
+.socotra-review-travelers > div { display:grid; gap:8px; padding:22px; border-left:4px solid #80c9d4; border-radius:0 18px 18px 0; background:#f7f3e9; }
+.socotra-review-travelers strong { font:700 23px/1.3 var(--pi-display); }
+.socotra-review-travelers small { color:#526d76; }
+.socotra-review-assistance { font-weight:800; color:#246b7d; }
+.socotra-policies .agree-row { background:#fffdf7; padding:16px; border:1px solid #dedecd; border-radius:16px; }
+html[data-socotra][data-catalog-theme] .pi-footer { background:radial-gradient(ellipse at 0 0,#785b3c,transparent 65%),linear-gradient(135deg,#463d32,#2f3735); border-top:3px solid #dcc69d; }
+html[data-socotra] .pi-footer__heading { color:#e9cf9e; }
+html[data-socotra] .pi-footer__line,html[data-socotra] .pi-footer__contact,html[data-socotra] .pi-footer__link,html[data-socotra] .pi-footer__bottom { color:#f4ead7; }
+@media(max-width:640px) { .socotra-field-grid { grid-template-columns:1fr; gap:0; } .socotra-route-card,.socotra-help,.socotra-passport,.socotra-policies { padding:20px 16px; } .socotra-date { gap:8px; } .socotra-date select { padding:12px 8px; font-size:14px; } .pi-socotra .socotra-review-grid { grid-template-columns:1fr; } }
+.pi-socotra .pi-trip-cinema__media .pi-media__overlay { background:linear-gradient(90deg,#102e39a6,transparent 85%),linear-gradient(0deg,#183c4977,transparent 80%); }
+.pi-socotra .pi-trip-cinema__content .pi-btn { margin-top:16px; }
+.socotra-booking-intro { max-width:860px; margin-bottom:28px; }
+.socotra-booking-intro .pi-flow__heading { margin-bottom:8px; }
+.socotra-booking-intro > p { margin:0 0 20px; color:#5b6e70; font-weight:600; }
+.socotra-booking-photo { max-height:200px; border-radius:24px; box-shadow:0 14px 35px #77604117; }
+.socotra-booking-photo .pi-media__img { object-position:50% 48%; }
+.pi-socotra .pi-trip-cinema__content :is(h1,p) { color:#fffaf1; }
+.pi-socotra .pi-trip-cinema__content .pi-eyebrow { color:#dff4f6; }
+.pi-socotra .pi-trip-cinema__content .pi-breadcrumbs,.pi-socotra .pi-trip-cinema__content .pi-breadcrumbs a,.pi-socotra .pi-trip-cinema__content .pi-breadcrumbs span { color:#fffaf1; }
+.pi-socotra .pi-trip-cinema .pi-breadcrumbs :is(a,li,span) { color:#fffaf1 !important; opacity:1; }
