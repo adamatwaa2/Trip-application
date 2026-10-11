@@ -1,6 +1,7 @@
 "use client";
 
 import { PaymentProofStep, type PaymentProofValue } from "./PaymentProofStep";
+import { PaymobPixelCheckout } from "./PaymobPixelCheckout";
 
 export type TripPaymentMethod = "paymob" | "manual";
 
@@ -11,6 +12,10 @@ export function TripPaymentStep({
   proof,
   onMethodChange,
   onProofChange,
+  paymentToken,
+  paymobPending,
+  paymobError,
+  onStartPaymob,
 }: {
   tripId: string;
   totalEgp?: number;
@@ -18,6 +23,10 @@ export function TripPaymentStep({
   proof: PaymentProofValue | null;
   onMethodChange: (method: TripPaymentMethod) => void;
   onProofChange: (proof: PaymentProofValue | null) => void;
+  paymentToken?: string;
+  paymobPending: boolean;
+  paymobError: string | null;
+  onStartPaymob: () => void;
 }) {
   return (
     <div className="pi-payment-methods">
@@ -31,7 +40,7 @@ export function TripPaymentStep({
             <strong>Pay online</strong>
             <span className="pi-payment-badge pi-payment-badge--paymob">Paymob</span>
           </span>
-          <span className="pi-payment-method__copy">Secure card checkout opens as soon as your booking reference is created.</span>
+          <span className="pi-payment-method__copy">Pay securely here without leaving this page.</span>
           <span className="pi-payment-method__badges" aria-label="Secure card payment">
             <span className="pi-payment-badge">Visa</span>
             <span className="pi-payment-badge">Mastercard</span>
@@ -54,9 +63,17 @@ export function TripPaymentStep({
       </div>
 
       {method === "paymob" ? (
-        <div className="pi-payment-methods__notice">
-          <strong>Next:</strong> review your booking, then continue to Paymob&apos;s secure checkout.
-        </div>
+        paymentToken ? (
+          <PaymobPixelCheckout paymentToken={paymentToken} />
+        ) : (
+          <div className="pi-paymob-inline">
+            <p>Your booking reference will be created, then the secure Paymob card form will open directly below.</p>
+            <button className="pi-paymob-inline__button" type="button" onClick={onStartPaymob} disabled={paymobPending}>
+              {paymobPending ? "Opening secure payment…" : `Pay online${totalEgp !== undefined ? ` · ${totalEgp.toLocaleString("en-US")} EGP` : ""}`}
+            </button>
+            {paymobError ? <p className="pi-flow__error" role="alert">{paymobError}</p> : null}
+          </div>
+        )
       ) : null}
       {method === "manual" ? (
         <PaymentProofStep tripId={tripId} totalEgp={totalEgp} value={proof} onChange={onProofChange} />

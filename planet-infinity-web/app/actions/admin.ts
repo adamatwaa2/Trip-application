@@ -101,6 +101,8 @@ type CatalogItemInput = {
   transportation: string;
   importantInformation: string[];
   price?: number;
+  currency: "EGP" | "USD";
+  priceUnit: string;
   capacity?: number;
   bookingMode: (typeof bookingModes)[number];
   applicationRequired: boolean;
@@ -315,6 +317,8 @@ export async function createCatalogItem(input: CatalogItemInput): Promise<Action
           package_label: text(input.packageLabel, 160) || null,
           accommodation: text(input.accommodation, 1000) || null,
           transportation: text(input.transportation, 1000) || null,
+          currency: input.currency,
+          price_unit: text(input.priceUnit, 120) || null,
           seat_selection_enabled: input.seatSelectionEnabled,
           song_request_enabled: input.songRequestEnabled,
           seat_config: seatConfig,
@@ -335,6 +339,8 @@ export async function createCatalogItem(input: CatalogItemInput): Promise<Action
           package_label: text(input.packageLabel, 160) || null,
           accommodation: text(input.accommodation, 1000) || null,
           transportation: text(input.transportation, 1000) || null,
+          currency: input.currency,
+          price_unit: text(input.priceUnit, 120) || null,
           seat_selection_enabled: input.seatSelectionEnabled,
           song_request_enabled: input.songRequestEnabled,
           seat_config: seatConfig,

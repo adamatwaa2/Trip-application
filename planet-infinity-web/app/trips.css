@@ -913,6 +913,20 @@
 .pi-payment-badge--paymob { border-color: #e16431; background: linear-gradient(105deg, #ffdc72, #f16b36); color: #142832; }
 .pi-payment-badge--instapay { border-color: #6757b4; background: #eeeaff; color: #493b98; }
 .pi-payment-methods__notice { padding: 14px 16px; border: 1px solid #9fd9b9; border-radius: 14px; background: #effcf5; color: #176d45; line-height: 1.5; }
+.pi-paymob-inline { display: grid; gap: 14px; padding: 18px; border: 1px solid #f1c66e; border-radius: 18px; background: linear-gradient(135deg, #fff7df, #fffaf2); color: #071821; }
+.pi-paymob-inline p { margin: 0; color: #405d6a; line-height: 1.55; }
+.pi-paymob-inline__button { min-height: 58px; padding: 14px 20px; border: 1px solid #d58b19; border-radius: 16px; background: linear-gradient(105deg, #fff1c9, #f2b441); color: #071821; font: 900 1rem/1.2 var(--pi-body); cursor: pointer; box-shadow: 0 12px 24px rgba(213,139,25,.22); }
+.pi-paymob-inline__button:hover { transform: translateY(-1px); box-shadow: 0 15px 28px rgba(213,139,25,.28); }
+.pi-paymob-inline__button:focus-visible { outline: 3px solid #38a6ca; outline-offset: 3px; }
+.pi-paymob-inline__button:disabled { cursor: wait; opacity: .7; transform: none; }
+.pi-paymob-pixel { display: grid; gap: 16px; padding: clamp(16px, 3vw, 24px); border: 2px solid #f2a33a; border-radius: 22px; background: #fffaf2; color: #071821; box-shadow: 0 16px 36px rgba(2,10,18,.16); }
+.pi-paymob-pixel__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.pi-paymob-pixel__head > div { display: grid; gap: 4px; }
+.pi-paymob-pixel__head strong { color: #071821; font-family: var(--pi-display); font-size: 1.2rem; }
+.pi-paymob-pixel__head span:not(.pi-payment-badge) { color: #405d6a; font-size: .9rem; line-height: 1.5; }
+.pi-paymob-pixel__status { margin: 0; color: #405d6a; }
+.pi-paymob-pixel__success { margin: 0; padding: 12px 14px; border-radius: 12px; background: #e9f9ef; color: #176d45; font-weight: 800; }
+.pi-paymob-pixel__mount { width: 100%; min-height: 220px; }
 .pi-custom-question,
 .pi-payment-proof fieldset {
   display: grid;

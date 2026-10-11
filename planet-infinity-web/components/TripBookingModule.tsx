@@ -24,7 +24,7 @@ export function TripBookingModule({ trip }: { trip: Trip }) {
     return (
       <aside className="pi-booking">
         <div className="pi-booking__head">
-          <Price egp={trip.priceEgp} unit={trip.priceUnit} size="large" />
+          <Price egp={trip.priceEgp} currency={trip.currency} unit={trip.priceUnit} size="large" />
           <AvailabilityPill state={trip.availability} />
         </div>
         <p className="pi-booking__note">
@@ -47,7 +47,7 @@ export function TripBookingModule({ trip }: { trip: Trip }) {
   return (
     <aside className="pi-booking">
       <div className="pi-booking__head">
-        <Price egp={trip.priceEgp} unit={trip.priceUnit} size="large" />
+        <Price egp={trip.priceEgp} currency={trip.currency} unit={trip.priceUnit} size="large" />
         <AvailabilityPill state={trip.availability} />
       </div>
 

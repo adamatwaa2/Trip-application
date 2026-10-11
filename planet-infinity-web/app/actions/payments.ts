@@ -11,7 +11,7 @@ import {
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 type CheckoutResult =
-  | { ok: true; checkoutUrl: string }
+  | { ok: true; checkoutUrl: string; publicKey: string; clientSecret: string }
   | { ok: false; error: string };
 
 type PaymentBooking = {
@@ -68,7 +68,16 @@ export async function createPaymobCheckout(paymentToken: string): Promise<Checko
     ? Date.now() - new Date(existing.created_at).getTime()
     : Number.POSITIVE_INFINITY;
   if (existing?.checkout_url && existingAge >= 0 && existingAge < 10 * 60 * 1000) {
-    return { ok: true, checkoutUrl: existing.checkout_url };
+    try {
+      const existingUrl = new URL(existing.checkout_url);
+      const publicKey = existingUrl.searchParams.get("publicKey");
+      const clientSecret = existingUrl.searchParams.get("clientSecret");
+      if (publicKey && clientSecret) {
+        return { ok: true, checkoutUrl: existing.checkout_url, publicKey, clientSecret };
+      }
+    } catch {
+      // An older malformed checkout is ignored and a fresh intention is made.
+    }
   }
 
   const config = getPaymobConfig();
@@ -131,5 +140,10 @@ export async function createPaymobCheckout(paymentToken: string): Promise<Checko
   });
   if (insertError) return { ok: false, error: "The payment attempt could not be saved." };
 
-  return { ok: true, checkoutUrl };
+  return {
+    ok: true,
+    checkoutUrl,
+    publicKey: config.publicKey,
+    clientSecret: intention.clientSecret,
+  };
 }

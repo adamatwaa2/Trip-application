@@ -11,6 +11,7 @@ export type ConfirmationDetails = {
   guestPhone?: string;
   guestCount?: number;
   totalEgp?: number;
+  currency?: "EGP" | "USD";
   requestNumber?: string;
   /** Direct bookings receive a booking reference; exceptional flows receive an application reference. */
   mode: "booking" | "request" | "application";
@@ -79,7 +80,7 @@ export function BookingConfirmation({ details }: { details: ConfirmationDetails 
           <dt>Total</dt>
           <dd>
             {details.totalEgp !== undefined ? (
-              `${details.totalEgp.toLocaleString("en-US")} EGP`
+              `${details.totalEgp.toLocaleString("en-US")} ${details.currency ?? "EGP"}`
             ) : (
               <Placeholder id="pricePerSeat" label="Price not set" />
             )}

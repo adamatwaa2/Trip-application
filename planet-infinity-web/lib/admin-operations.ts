@@ -44,6 +44,8 @@ export type AdminProduct = {
   application_required: boolean;
   seat_selection_enabled?: boolean;
   price_egp: number | null;
+  currency?: "EGP" | "USD";
+  price_unit?: string | null;
   departure_at?: string | null;
   starts_at?: string | null;
   updated_at: string;
@@ -173,7 +175,7 @@ export async function getProducts(kind: "trips" | "events") {
   if (kind === "trips") {
     const { data, error } = await supabase
       .from("trips")
-      .select("id, slug, title, is_published, is_featured, application_required, seat_selection_enabled, price_egp, departure_at, updated_at")
+      .select("id, slug, title, is_published, is_featured, application_required, seat_selection_enabled, price_egp, currency, departure_at, updated_at")
       .order("updated_at", { ascending: false });
     return {
       items: (data ?? []) as unknown as AdminProduct[],
@@ -195,7 +197,7 @@ export async function getProduct(kind: "trips" | "events", id: string) {
   if (kind === "trips") {
     const { data } = await supabase
       .from("trips")
-      .select("id, slug, title, short_description, description, destination, duration_label, meeting_point, departure_at, return_at, departure_point, return_point, package_label, accommodation, transportation, important_information, price_egp, capacity, booking_mode, application_required, seat_selection_enabled, seat_config, booking_form_fields, request_form_fields, request_form_theme, payment_proof_required, song_request_enabled, media, inclusions, exclusions, document_url, document_label, is_published, is_featured")
+      .select("id, slug, title, short_description, description, destination, duration_label, meeting_point, departure_at, return_at, departure_point, return_point, package_label, accommodation, transportation, important_information, price_egp, currency, price_unit, capacity, booking_mode, application_required, seat_selection_enabled, seat_config, booking_form_fields, request_form_fields, request_form_theme, payment_proof_required, song_request_enabled, media, inclusions, exclusions, document_url, document_label, is_published, is_featured")
       .eq("id", id)
       .maybeSingle();
     return data as unknown as AdminProductDetail | null;

@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   bookingSteps,
   STEP_LABELS,
@@ -40,7 +39,6 @@ import { trackMetaCustomEvent, trackMetaEvent } from "@/lib/meta-pixel";
  * A step that does not apply is never rendered and never counted.
  */
 export function TripBookingFlow({ trip }: { trip: Trip }) {
-  const router = useRouter();
   const steps = useMemo(() => bookingSteps(trip), [trip]);
   const [stepIndex, setStepIndex] = useState(0);
   const [done, setDone] = useState(false);
@@ -57,6 +55,7 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
   const [agreed, setAgreed] = useState(false);
   const [whatsappOptIn, setWhatsappOptIn] = useState(false);
   const [requestNumber, setRequestNumber] = useState<string | undefined>();
+  const [paymentToken, setPaymentToken] = useState<string | undefined>();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const checkoutTracked = useRef(false);
@@ -78,10 +77,10 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
       content_ids: [trip.id],
       content_name: trip.title,
       content_type: "product",
-      currency: "EGP",
+      currency: trip.currency,
       value: trip.priceEgp,
     });
-  }, [trip.id, trip.priceEgp, trip.title]);
+  }, [trip.currency, trip.id, trip.priceEgp, trip.title]);
 
   function resizeGuestList(value: string) {
     setGuestCount(value);
@@ -164,6 +163,7 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
           guestPhone,
           guestCount: guestCountNumber,
           totalEgp: total,
+          currency: trip.currency,
           mode: trip.bookingMode,
           requestNumber,
         }}
@@ -229,7 +229,8 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
       const completedNumber = "bookingNumber" in result ? result.bookingNumber : result.requestNumber;
       if (trip.bookingMode === "booking" && paymentMethod === "paymob") {
         if ("paymentToken" in result && result.paymentToken) {
-          router.push(`/pay/${result.paymentToken}`);
+          setRequestNumber(completedNumber);
+          setPaymentToken(result.paymentToken);
           return;
         }
         setSubmitError(`Booking ${completedNumber} was created, but secure payment could not open. Please contact us with this booking number.`);
@@ -239,7 +240,7 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
         content_ids: [trip.id],
         content_name: trip.title,
         content_type: "product",
-        currency: "EGP",
+        currency: trip.currency,
         value: total,
       };
       trackMetaEvent("Lead", eventParameters);
@@ -373,6 +374,10 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
                 if (nextMethod === "paymob") setPaymentProof(null);
               }}
               onProofChange={setPaymentProof}
+              paymentToken={paymentToken}
+              paymobPending={isPending}
+              paymobError={submitError}
+              onStartPaymob={submitRequest}
             />
           </>
         ) : null}
@@ -423,7 +428,7 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
                 <dt>Total</dt>
                 <dd>
                   {total !== undefined
-                    ? `${total.toLocaleString("en-US")} EGP`
+                    ? `${total.toLocaleString("en-US")} ${trip.currency}`
                     : "Price not set"}
                 </dd>
               </div>
@@ -437,9 +442,7 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
             </dl>
             <p className="pi-flow__hint">
               {trip.bookingMode === "booking"
-                ? paymentMethod === "paymob"
-                  ? "This creates your booking reference, then opens Paymob's secure card checkout."
-                  : "This completes your booking and securely sends the receipt for payment verification. Your final Booking Confirmation follows after our team verifies it."
+                ? "Review the details above. The next step lets you pay securely with Paymob here or upload an InstaPay / Vodafone Cash receipt."
                 : "This sends your application for review. No booking is created until our team accepts it."}
             </p>
           </>
@@ -464,7 +467,7 @@ export function TripBookingFlow({ trip }: { trip: Trip }) {
           >
             Continue
           </Button>
-        ) : (
+        ) : step === "payment" && paymentMethod === "paymob" ? null : (
           <Button disabled={!canContinue(step) || isPending} onClick={submitRequest}>
             {isPending
               ? "Sending…"

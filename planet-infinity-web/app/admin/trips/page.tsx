@@ -56,11 +56,12 @@ export default async function AdminTripsPage() {
                     </td>
                     <td>{formatDate(item.departure_at)}</td>
                     <td>
-                      {item.price_egp === null ? "Not set" : `${item.price_egp} EGP`}
+                      {item.price_egp === null ? "Not set" : `${item.price_egp} ${item.currency ?? "EGP"}`}
                     </td>
                     <td>
                       {[
                         item.application_required ? "Application" : null,
+                        !item.application_required && !item.seat_selection_enabled ? "Request" : null,
                         item.seat_selection_enabled ? "Seat choice" : null,
                       ]
                         .filter(Boolean)

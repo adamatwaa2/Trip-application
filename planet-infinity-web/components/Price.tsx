@@ -11,6 +11,7 @@ import type { PlaceholderId } from "@/content/placeholders";
 type PriceProps = {
   egp?: number;
   usd?: number;
+  currency?: "EGP" | "USD";
   /** e.g. "per person", "per seat", "per ticket". */
   unit?: string;
   size?: "default" | "large";
@@ -21,6 +22,7 @@ type PriceProps = {
 export function Price({
   egp,
   usd,
+  currency = "EGP",
   unit,
   size = "default",
   placeholderId = "pricePerSeat",
@@ -37,7 +39,7 @@ export function Price({
   return (
     <span className={`pi-price pi-price--${size}`}>
       <span className="pi-price__amount">{amount.toLocaleString("en-US")}</span>
-      <span className="pi-price__currency">{usd === undefined ? "EGP" : "USD"}</span>
+      <span className="pi-price__currency">{usd === undefined ? currency : "USD"}</span>
       {unit ? <span className="pi-price__unit">{unit}</span> : null}
     </span>
   );

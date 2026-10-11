@@ -66,6 +66,8 @@ export type CatalogEditorItem = {
   departure_at?: string | null;
   starts_at?: string | null;
   price_egp: number | null;
+  currency?: "EGP" | "USD";
+  price_unit?: string | null;
   capacity?: number | null;
   booking_mode: "booking" | "request" | "application";
   application_required: boolean;
@@ -375,6 +377,8 @@ export function AdminCatalogForm({
   const [transportation, setTransportation] = useState(item?.transportation ?? "");
   const [importantInformation, setImportantInformation] = useState((item?.important_information ?? []).join("\n"));
   const [price, setPrice] = useState(item?.price_egp?.toString() ?? "");
+  const [currency, setCurrency] = useState<"EGP" | "USD">(item?.currency ?? "EGP");
+  const [priceUnit, setPriceUnit] = useState(item?.price_unit ?? "per person");
   const [capacity, setCapacity] = useState(item?.capacity?.toString() ?? "");
   const [bookingMode, setBookingMode] = useState<
     "booking" | "request" | "application"
@@ -552,6 +556,8 @@ export function AdminCatalogForm({
     setTransportation("");
     setImportantInformation("");
     setPrice("");
+    setCurrency("EGP");
+    setPriceUnit("per person");
     setCapacity("");
     setBookingMode("booking");
     setApplicationRequired(false);
@@ -615,6 +621,8 @@ export function AdminCatalogForm({
             transportation,
             importantInformation: lines(importantInformation),
             price: price ? Number(price) : undefined,
+            currency,
+            priceUnit,
             capacity: capacity ? Number(capacity) : undefined,
             bookingMode,
             applicationRequired,
@@ -763,7 +771,7 @@ export function AdminCatalogForm({
             />
           </label>
           <label>
-            Price (EGP)
+            Price
             <input
               type="number"
               min="0"
@@ -772,6 +780,21 @@ export function AdminCatalogForm({
               onChange={(event) => setPrice(event.target.value)}
             />
           </label>
+          {isTrip ? (
+            <label>
+              Currency
+              <select value={currency} onChange={(event) => setCurrency(event.target.value as "EGP" | "USD")}>
+                <option value="EGP">EGP</option>
+                <option value="USD">USD</option>
+              </select>
+            </label>
+          ) : null}
+          {isTrip ? (
+            <label>
+              Price label
+              <input maxLength={120} value={priceUnit} onChange={(event) => setPriceUnit(event.target.value)} placeholder="per person" />
+            </label>
+          ) : null}
           <label>
             Capacity
             <input
