@@ -1085,6 +1085,7 @@
 .pi-experience-deck__empty { position: absolute; inset-block: 0; inset-inline-start: calc(var(--deck-position, 0) * 17%); width: 66%; z-index: var(--deck-layer, 1); overflow: hidden; border: 1px solid rgba(255,255,255,.58); border-radius: 28px; background: var(--pi-ink); color: #fff; box-shadow: 0 22px 50px rgba(15,30,40,.2); text-decoration: none; transform: translateY(calc(var(--deck-position, 0) * 10px)); transform-origin: center bottom; transition: inset-inline-start 300ms var(--pi-e-ui), transform 300ms var(--pi-e-ui), box-shadow 260ms var(--pi-e-ui), opacity 180ms ease; }
 .pi-experience-deck--count-1 .pi-experience-deck__card { width: 100%; }
 .pi-experience-deck--count-2 .pi-experience-deck__card { inset-inline-start: calc(var(--deck-position, 0) * 28%); width: 72%; }
+.pi-experience-deck--count-4 .pi-experience-deck__card { inset-inline-start: calc(var(--deck-position, 0) * 14%); width: 58%; }
 .pi-experience-deck__card { padding: 0; text-align: start; cursor: pointer; }
 .pi-experience-deck__card:hover { box-shadow: 0 28px 60px rgba(15,30,40,.27); }
 .pi-experience-deck__card--peek:hover { z-index: 20; transform: translateY(0) scale(1.018); }

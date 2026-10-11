@@ -14,7 +14,7 @@ function ExperienceDeck({ label, items, tone }: { label: string; items: DeckItem
   const [active, setActive] = useState(0);
   const router = useRouter();
   const hoverLocked = useRef(false);
-  const visibleCount = Math.min(items.length, 3);
+  const visibleCount = Math.min(items.length, 4);
 
   return (
     <section className={`pi-experience-deck pi-experience-deck--${tone} pi-experience-deck--count-${visibleCount}`} aria-label={label}>
@@ -22,7 +22,8 @@ function ExperienceDeck({ label, items, tone }: { label: string; items: DeckItem
         {items.length ? items.map((item, index) => {
           const offset = (index - active + items.length) % items.length;
           const hidden = offset >= visibleCount;
-          const style = { "--deck-position": Math.min(offset, 2), "--deck-layer": visibleCount - Math.min(offset, 2) } as CSSProperties;
+          const deckPosition = Math.min(offset, 3);
+          const style = { "--deck-position": deckPosition, "--deck-layer": visibleCount - deckPosition } as CSSProperties;
           return (
             <button className={`pi-experience-deck__card${offset === 0 ? " is-active" : " pi-experience-deck__card--peek"}${hidden ? " is-hidden" : ""}`} type="button" key={item.id} style={style} aria-label={offset === 0 ? `View ${item.title}` : `Bring ${item.title} to the front`} aria-current={offset === 0 ? "true" : undefined} tabIndex={hidden ? -1 : 0} onPointerEnter={(event) => { if (event.pointerType !== "mouse" || offset === 0 || hoverLocked.current) return; hoverLocked.current = true; setActive(index); }} onClick={() => offset === 0 ? router.push(item.href) : setActive(index)}>
               <div className="pi-experience-deck__media">
