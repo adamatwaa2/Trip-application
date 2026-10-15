@@ -91,9 +91,11 @@ export async function SiteFooter() {
         </div>
 
         <div className="pi-footer__bottom">
-          <span>Planet Infinity Entertainment</span>
+          <span>Planet Infinity Entertainment · Egypt</span>
           <span>
-            <Placeholder id="instagramHandle" />
+            <a href="https://www.instagram.com/planetinfinity.ent/" rel="me">
+              <Placeholder id="instagramHandle" />
+            </a>
           </span>
           <Link href="/admin" className="pi-footer__team-access">
             Team access

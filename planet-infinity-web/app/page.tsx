@@ -12,9 +12,17 @@ import { getEvents, getTrips } from "@/content/source";
 import { getSiteCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
-  title: { absolute: "Planet Infinity | Entertainment, Community & Experiences" },
-  description: "Discover Planet Infinity: curated gatherings, events, experiences and selected trips — with clear details, galleries and secure booking when available.",
+  title: { absolute: "Planet Infinity Entertainment | Trips & Events in Egypt" },
+  description: "Planet Infinity Entertainment is an Egyptian company based in Dokki, Giza. Discover our trips, events and community experiences in Egypt and selected destinations.",
   alternates: { canonical: "/" },
+  openGraph: {
+    title: "Planet Infinity Entertainment | Trips & Events in Egypt",
+    description: "An Egyptian entertainment and experiences company based in Dokki, Giza, Egypt.",
+    url: "https://planetinfinity.online/",
+    siteName: "Planet Infinity",
+    locale: "en_EG",
+    type: "website",
+  },
 };
 
 export default async function HomePage() {
@@ -27,6 +35,7 @@ export default async function HomePage() {
             <p className="pi-home-hero__eyebrow">{copy.home_eyebrow}</p>
             <h1>{copy.home_title}</h1>
             <p className="pi-home-hero__lede">{copy.home_lede}</p>
+            <p>Planet Infinity Entertainment · Based in Dokki, Giza, Egypt.</p>
           </div>
 
           <div className="pi-home-hero__visual">

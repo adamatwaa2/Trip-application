@@ -8,7 +8,7 @@ import { getSiteCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   title: "Explore",
-  description: "Move through the travel and events worlds of Planet Infinity.",
+  description: "Meet Planet Infinity Entertainment, an Egyptian company based in Dokki, Giza, creating travel, events and community experiences.",
   alternates: { canonical: "/explore" },
 };
 
@@ -58,7 +58,7 @@ export default async function ExplorePage() {
           <header>
             <p>THE BIGGER PICTURE</p>
             <h2 id="explore-builds-title">What we’re building.</h2>
-            <span>Planet Infinity is growing beyond individual trips and events.</span>
+            <span>Planet Infinity Entertainment is based in Dokki, Giza, Egypt. We create trips, events and community experiences, and are growing beyond individual trips and events.</span>
           </header>
           <div className="pi-explore-builds__grid">
             {planetInfinityBuilds.map((item) => (
