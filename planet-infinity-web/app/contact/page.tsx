@@ -10,7 +10,7 @@ import { getSiteCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Talk to Planet Infinity about a trip, an event, or anything else.",
+  description: "Contact Planet Infinity Entertainment in Dokki, Giza, Egypt about trips, events and community experiences. Find our official Instagram, email and WhatsApp.",
   alternates: { canonical: "/contact" },
 };
 
@@ -65,12 +65,16 @@ export default async function ContactPage() {
             <div>
               <dt>Instagram</dt>
               <dd>
-                <Placeholder id="instagramHandle" />
+                <a href="https://www.instagram.com/planetinfinity.ent/" rel="me"><Placeholder id="instagramHandle" /></a>
               </dd>
             </div>
             <div>
               <dt>Company</dt>
-              <dd>Planet Infinity Entertainment</dd>
+              <dd>Planet Infinity Entertainment · Egypt</dd>
+            </div>
+            <div>
+              <dt>Address</dt>
+              <dd>{copy.contact_address}</dd>
             </div>
           </dl>
 

@@ -14,6 +14,31 @@ try {
 }
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
+  async redirects() {
+    return [{
+      source: "/:path*",
+      has: [{ type: "host", value: "www.planetinfinity.online" }],
+      destination: "https://planetinfinity.online/:path*",
+      permanent: true,
+    }];
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+        ],
+      },
+      ...["/admin/:path*", "/api/:path*", "/auth/:path*", "/pay/:path*", "/payment/:path*", "/book", "/apply", "/trips/:slug/book", "/events/:slug/book"].map((source) => ({
+        source,
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      })),
+    ];
+  },
   turbopack: {
     root: projectRoot,
   },

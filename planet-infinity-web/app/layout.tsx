@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://planetinfinity.online"),
   applicationName: "Planet Infinity",
   title: {
-    default: "Planet Infinity | Entertainment, Community & Experiences",
+    default: "Planet Infinity Entertainment | Egypt",
     template: "%s — Planet Infinity",
   },
   description:
@@ -44,7 +44,6 @@ export const metadata: Metadata = {
   creator: "Planet Infinity Entertainment",
   publisher: "Planet Infinity Entertainment",
   category: "entertainment",
-  alternates: { canonical: "/" },
   icons: {
     icon: [
       { url: "/icon", type: "image/png", sizes: "512x512" },
@@ -53,17 +52,16 @@ export const metadata: Metadata = {
     apple: [{ url: "/apple-icon", type: "image/png", sizes: "512x512" }],
   },
   openGraph: {
-    title: "Planet Infinity | Entertainment, Community & Experiences",
+    title: "Planet Infinity Entertainment | Egypt",
     description: "An entertainment and community platform for curated gatherings, events, experiences and selected trips in Egypt.",
     siteName: "Planet Infinity",
     locale: "en_EG",
     type: "website",
-    url: "https://planetinfinity.online",
     images: [{ url: "/opengraph-image?brand=20260829", width: 1200, height: 630, alt: "Planet Infinity — entertainment, community and experiences" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Planet Infinity | Entertainment, Community & Experiences",
+    title: "Planet Infinity Entertainment | Egypt",
     description: "An entertainment and community platform for curated gatherings, events, experiences and selected trips in Egypt.",
     images: ["/opengraph-image?brand=20260829"],
   },
@@ -92,10 +90,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 {
                   "@type": "Organization",
                   "@id": "https://planetinfinity.online/#organization",
-                  name: "Planet Infinity",
-                  alternateName: "Planet Infinity Entertainment",
-                  legalName: "V Topia Estates Realty",
-                  description: "Planet Infinity is an entertainment and community platform for curated gatherings, cultural moments, events, experiences and selected trips in Egypt.",
+                  name: "Planet Infinity Entertainment",
+                  alternateName: ["Planet Infinity", "Planet Infinity Egypt"],
+                  description: "Planet Infinity Entertainment is an Egyptian entertainment and experiences company based in Dokki, Giza, Egypt, creating trips, events and community gatherings.",
                   url: "https://planetinfinity.online/",
                   logo: {
                     "@type": "ImageObject",
@@ -105,6 +102,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     height: 512,
                   },
                   telephone: "+20 103 729 9464",
+                  email: "planetinfinity2023@gmail.com",
+                  address: {
+                    "@type": "PostalAddress",
+                    streetAddress: "45 Sheikh Mohamed El Ghazali Street, Dokki",
+                    addressLocality: "Giza",
+                    addressCountry: "EG",
+                  },
                   contactPoint: {
                     "@type": "ContactPoint",
                     telephone: "+20 103 729 9464",
@@ -118,6 +122,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   "@id": "https://planetinfinity.online/#website",
                   url: "https://planetinfinity.online/",
                   name: "Planet Infinity",
+                  alternateName: ["Planet Infinity Entertainment", "Planet Infinity Egypt"],
                   publisher: { "@id": "https://planetinfinity.online/#organization" },
                   inLanguage: "en-EG",
                 },

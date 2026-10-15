@@ -28,6 +28,7 @@ export async function generateMetadata({
   return {
     title: policy.title,
     description: `${policy.title} for Planet Infinity bookings and guest experiences.`,
+    alternates: { canonical: `/policies/${policy.slug}` },
   };
 }
 
