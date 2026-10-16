@@ -32,8 +32,8 @@ export function HalloweenMusic(){
  useEffect(()=>{
   if(!url)return;
   function start(event:Event){
-   const link=event.target instanceof Element?event.target.closest("a"):null;
-   const entering=link?.getAttribute("href")?.startsWith(EVENT);
+   const link=event.target instanceof Element?event.target.closest("a, [data-event-href]"):null;
+   const entering=(link?.getAttribute("href")??link?.getAttribute("data-event-href"))?.startsWith(EVENT);
    if((entering||active.current)&&!muted.current){
     if(entering){active.current=true;try{sessionStorage.setItem("pi-halloween-music-active","yes");}catch{}}
     void audio.current?.play().catch(()=>{});
