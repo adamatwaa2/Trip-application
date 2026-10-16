@@ -1544,3 +1544,6 @@
   .pi-theme-world-card__visual { min-height: 410px; }
   .pi-theme-world-card__copy { min-height: 420px; padding: 34px 24px; }
 }
+
+/* A small reduction to the single event card; trip cards retain their original dimensions. */
+.pi-experience-deck--event.pi-experience-deck--count-1 .pi-experience-deck__card{width:90%;inset-inline-start:5%;inset-block:6px}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { preload } from "react-dom";
 import { SITE_COPY_DEFAULTS } from "@/content/site-copy";
 import type { PlanetEvent } from "@/content/events";
 import { HALLOWEEN_TERMS } from "@/content/events/halloween";
@@ -24,6 +25,7 @@ export function HalloweenTicket({ event, children, appearance = "paper" }: { eve
 }
 
 export function HalloweenEventPage({ event, appearance = "paper", whatsapp = SITE_COPY_DEFAULTS.contact_whatsapp }: { event: PlanetEvent; appearance?: HalloweenAppearance; whatsapp?: string }) {
+  preload(appearance === "paper" ? "/halloween/poster.webp" : "/halloween/poster-night.webp", {as:"image",type:"image/webp"});
   const titleWords = event.title.split(" ");
   return <div className={halloweenClassName(appearance)}>
     {process.env.NODE_ENV === "development" ? <HalloweenPreviewBar appearance={appearance} /> : null}
