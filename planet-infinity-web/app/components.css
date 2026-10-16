@@ -1544,15 +1544,3 @@
   .pi-theme-world-card__visual { min-height: 410px; }
   .pi-theme-world-card__copy { min-height: 420px; padding: 34px 24px; }
 }
-
-/* Keep event listings close to the travel card proportions on phones. */
-@media(max-width:640px){
- .pi-eventcard>.pi-media{aspect-ratio:16/10;max-height:230px}
- .pi-eventcard .pi-card__body{padding:18px}
- .pi-eventcard .pi-card__title{font-size:25px;line-height:1.15}
- .pi-eventcard .pi-card__summary{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;line-height:1.7}
- .pi-eventcard .pi-card__meta{font-size:10px;line-height:1.6}
-}
-
-.pi-experience-deck--event.pi-experience-deck--count-1 .pi-experience-deck__card{width:82%;inset-inline-start:9%;inset-block:7px}
-@media(max-width:640px){.pi-experience-deck--trip.pi-experience-deck--count-4 .pi-experience-deck__card{width:66%;inset-inline-start:calc(var(--deck-position,0)*11%)}.pi-experience-deck--event.pi-experience-deck--count-1 .pi-experience-deck__card{width:82%;inset-inline-start:9%;inset-block:6px}}

@@ -35,7 +35,7 @@ export default async function HomePage() {
             <p className="pi-home-hero__eyebrow">{copy.home_eyebrow}</p>
             <h1>{copy.home_title}</h1>
             <p className="pi-home-hero__lede">{copy.home_lede}</p>
-            <p>Planet Infinity Entertainment · Based in Dokki, Giza, Egypt.</p>
+
           </div>
 
           <div className="pi-home-hero__visual">
