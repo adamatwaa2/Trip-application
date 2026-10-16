@@ -10,6 +10,8 @@ import {
   isSupabaseServiceConfigured,
 } from "@/lib/supabase/service";
 import styles from "./page.module.css";
+import { getEventTicketState } from "@/lib/event-ticket";
+import { EventTicketStatus } from "@/components/EventTicketStatus";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -44,7 +46,7 @@ type PublicPaymentBooking = {
   confirmation_issued_at: string | null;
   confirmation_pdf_path: string | null;
   currency: string;
-  event: { title: string } | null;
+  event: { title: string; slug: string } | null;
   customer: { full_name: string } | null;
   guest_count: number;
   scheduled_at: string | null;
@@ -60,12 +62,16 @@ export default async function PaymentPage({ params }: { params: Promise<{ token:
   const supabase = createServiceClient();
   const { data } = await supabase
     .from("bookings")
-    .select("id, trip_id, booking_number, status, total_amount, amount_paid, confirmation_issued_at, confirmation_pdf_path, currency, guest_count, scheduled_at, selections, customer:customers(full_name), trip:trips(title, seat_selection_enabled, seat_config), event:events(title), payments(status, payment_proof_path)")
+    .select("id, trip_id, booking_number, status, total_amount, amount_paid, confirmation_issued_at, confirmation_pdf_path, currency, guest_count, scheduled_at, selections, customer:customers(full_name), trip:trips(title, seat_selection_enabled, seat_config), event:events(title, slug), payments(status, payment_proof_path)")
     .eq("payment_token", token)
     .maybeSingle();
   if (!data) notFound();
 
   const booking = data as unknown as PublicPaymentBooking;
+  if (booking.event?.slug === "halloween-party-2026") {
+    const ticket = await getEventTicketState(token);
+    if (ticket) return <EventTicketStatus token={token} initial={ticket} />;
+  }
   const balance = Math.max(0, Number(booking.total_amount) - Number(booking.amount_paid));
   const proofAwaitingVerification = (booking.payments ?? []).some(
     (payment) => payment.status === "pending" && Boolean(payment.payment_proof_path),

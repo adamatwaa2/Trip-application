@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createPaymobCheckout } from "@/app/actions/payments";
 
-export function PaymobPixelCheckout({ paymentToken }: { paymentToken: string }) {
+export function PaymobPixelCheckout({ paymentToken, returnPath }: { paymentToken: string; returnPath?: string }) {
+  const router = useRouter();
   const reactId = useId();
   const elementId = `paymob-pixel-${reactId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const [status, setStatus] = useState<"loading" | "ready" | "submitted" | "error">("loading");
@@ -38,7 +40,7 @@ export function PaymobPixelCheckout({ paymentToken }: { paymentToken: string }) 
           showSaveCard: false,
           forceSaveCard: false,
           showPaymobLogo: true,
-          afterPaymentComplete: () => setStatus("submitted"),
+          afterPaymentComplete: () => { setStatus("submitted"); if (returnPath) router.push(returnPath); },
           customStyle: {
             Color_Primary: "#f2a33a",
             Color_Container: "#fffaf2",
@@ -67,7 +69,7 @@ export function PaymobPixelCheckout({ paymentToken }: { paymentToken: string }) 
       cancelled = true;
       if (container) container.replaceChildren();
     };
-  }, [elementId, paymentToken]);
+  }, [elementId, paymentToken, returnPath, router]);
 
   return (
     <section className="pi-paymob-pixel" aria-live="polite">

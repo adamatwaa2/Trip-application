@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getPaymobConfig } from "@/lib/paymob/config";
 import { verifyPaymobRedirectHmac } from "@/lib/paymob/hmac";
 import { createServiceClient, isSupabaseServiceConfigured } from "@/lib/supabase/service";
@@ -12,7 +13,7 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 type PaymentResult = {
   status: string;
   gateway_status: string | null;
-  booking: { payment_token: string; booking_number: string } | null;
+  booking: { payment_token: string; booking_number: string; event_id: string | null } | null;
 };
 
 function first(value: string | string[] | undefined): string {
@@ -41,7 +42,7 @@ export default async function PaymentResultPage({ searchParams }: { searchParams
     const transactionId = first(raw.id);
     const orderId = first(raw.order);
     const providerReference = first(raw.merchant_order_id);
-    const select = "status, gateway_status, booking:bookings(payment_token, booking_number)";
+    const select = "status, gateway_status, booking:bookings(payment_token, booking_number, event_id)";
 
     if (transactionId) {
       const result = await supabase.from("payments").select(select)
@@ -61,6 +62,7 @@ export default async function PaymentResultPage({ searchParams }: { searchParams
     }
   }
 
+  if (signatureValid && payment?.booking?.event_id && payment.booking.payment_token) redirect(`/pay/${payment.booking.payment_token}`);
   const succeeded = payment?.gateway_status === "succeeded" && payment.status === "recorded";
   const failed = payment?.gateway_status === "failed" || first(raw.success) === "false";
   const title = !signatureValid

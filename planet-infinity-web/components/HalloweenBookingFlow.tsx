@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 import type { PlanetEvent } from "@/content/events";
 import { HALLOWEEN_TERMS } from "@/content/events/halloween";
@@ -14,6 +15,7 @@ type Guest = { name: string; phone: string };
 const steps = ["Tickets & details", "Payment"];
 
 export function HalloweenBookingFlow({ event, preview, appearance = "paper" }: { event: PlanetEvent; preview: boolean; appearance?: HalloweenAppearance }) {
+  const router = useRouter();
   const [step, setStep] = useState(0);
   const [guests, setGuests] = useState<Record<number, Guest>>({0:{name:"",phone:""}});
   const [quantityInput, setQuantityInput] = useState("1");
@@ -63,6 +65,7 @@ export function HalloweenBookingFlow({ event, preview, appearance = "paper" }: {
       const result = await submitPublicEventBooking({eventId:event.id,submissionId:submissionId.current!,email,guests:activeGuests,termsAccepted:agreed,paymentMethod:method,paymentProof:method === "manual" ? proof : null});
       if (!result.ok) { setError(result.error); return; }
       setBooking({number:result.bookingNumber,token:result.paymentToken});
+      if (method === "manual" && result.paymentToken) router.push(`/pay/${result.paymentToken}`);
     });
   }
   return <div className={halloweenClassName(appearance)}>
@@ -76,7 +79,8 @@ export function HalloweenBookingFlow({ event, preview, appearance = "paper" }: {
             {booking ? <div aria-live="polite">
               <h2>{preview ? "Preview booking saved." : method === "paymob" ? "Complete your payment." : "Receipt awaiting verification."}</h2>
               <p className="hw-notice">Reference: <strong>{booking.number}</strong><br/>{preview ? "This is a local demonstration. No money has been charged and no ticket has been issued. Your entry is visible in the admin preview in this browser." : "Your booking is not an entry ticket. Full verified payment and Planet Infinity review are required before final confirmation. Door selection applies."}</p>
-              {booking.token && method === "paymob" ? <PaymobPixelCheckout paymentToken={booking.token}/> : null}
+              {booking.token && method === "paymob" ? <PaymobPixelCheckout paymentToken={booking.token} returnPath={`/pay/${booking.token}`}/> : null}
+              {booking.token ? <Link className="hw-text-link" href={`/pay/${booking.token}`}>View booking and ticket status ↗</Link> : null}
               {preview ? <Link className="hw-button" href="/preview/halloween/admin">View in admin preview ↗</Link> : null}
             </div> : <>
               <ol className="hw-progress" aria-label="Booking progress">{steps.map((label,index)=><li key={label} aria-current={step === index ? "step" : undefined}>0{index+1} / {label}</li>)}</ol>
