@@ -83,6 +83,8 @@ type CatalogMediaInput = {
 };
 
 type CatalogItemInput = {
+  bookingFee?: number;
+  ticketLabel?: string;
   id?: string;
   kind: "trips" | "events";
   title: string;
@@ -242,6 +244,7 @@ export async function createCatalogUploadTarget(input: {
 
 export async function createCatalogItem(input: CatalogItemInput): Promise<ActionResult> {
   await requireAdmin();
+  if (input.kind === "events" && input.bookingFee !== undefined && (!Number.isFinite(input.bookingFee) || input.bookingFee < 0 || input.bookingFee > 9999999999)) return {ok:false,error:"Enter a valid booking fee."};
   if (
     !text(input.title, 160) ||
     !slugPattern.test(input.slug) ||
@@ -352,6 +355,8 @@ export async function createCatalogItem(input: CatalogItemInput): Promise<Action
     : isUpdate
       ? await supabase.from("events").update({
           ...shared,
+          booking_fee_egp: input.bookingFee ?? 0,
+          ticket_label: text(input.ticketLabel ?? "", 120) || null,
           category: text(input.destinationOrCategory, 160) || null,
           venue: text(input.durationOrVenue, 500) || null,
           starts_at: date?.toISOString() ?? null,
@@ -359,6 +364,8 @@ export async function createCatalogItem(input: CatalogItemInput): Promise<Action
         }).eq("id", input.id!)
       : await supabase.from("events").insert({
           ...shared,
+          booking_fee_egp: input.bookingFee ?? 0,
+          ticket_label: text(input.ticketLabel ?? "", 120) || null,
           category: text(input.destinationOrCategory, 160) || null,
           venue: text(input.durationOrVenue, 500) || null,
           starts_at: date?.toISOString() ?? null,

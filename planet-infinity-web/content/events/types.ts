@@ -62,6 +62,8 @@ export type EventGalleryImage = { src: string; alt: string; type?: "image" | "vi
 export type FaqItem = { question: string; answer: string };
 
 export type PlanetEvent = {
+  bookingFeeEgp?: number;
+  ticketLabel?: string;
   id: string;
   slug: string;
   title: string;

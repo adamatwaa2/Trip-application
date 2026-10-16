@@ -13,8 +13,11 @@ import { MediaBlock } from "@/components/MediaBlock";
 import { Section } from "@/components/Section";
 import { getEventBySlug } from "@/content/source";
 import { getSiteCopy } from "@/lib/site-copy";
+import { HalloweenEventPage } from "@/components/HalloweenEventPage";
+import { HALLOWEEN_SLUG } from "@/content/events/halloween";
+import { halloweenAppearance } from "@/lib/halloween-appearance";
 
-type Params = { params: Promise<{ slug: string }> };
+type Params = { params: Promise<{ slug: string }>; searchParams: Promise<{ look?: string }> };
 
 // Catalogue items are read from Supabase and use request cookies for SSR auth.
 // These pages must render dynamically rather than during the production build.
@@ -44,11 +47,15 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  * ticketed. There is no ticket picker, no quantity control and no seat map on
  * this page — events have no seat model at all.
  */
-export default async function EventPage({ params }: Params) {
+export default async function EventPage({ params, searchParams }: Params) {
   const { slug } = await params;
   const [event, copy] = await Promise.all([getEventBySlug(slug), getSiteCopy()]);
   if (!event) notFound();
   if (event.media.linkedTripSlug) redirect(`/trips/${event.media.linkedTripSlug}`);
+  if (event.slug === HALLOWEEN_SLUG) {
+    const appearance = halloweenAppearance((await searchParams).look);
+    return <HalloweenEventPage event={event} appearance={appearance} />;
+  }
 
   const gallerySource = event.media.gallery?.length
     ? event.media.gallery

@@ -45,6 +45,8 @@ type CatalogMedia = {
 };
 
 export type CatalogEditorItem = {
+  booking_fee_egp?: number;
+  ticket_label?: string | null;
   id: string;
   title: string;
   slug: string;
@@ -377,6 +379,8 @@ export function AdminCatalogForm({
   const [transportation, setTransportation] = useState(item?.transportation ?? "");
   const [importantInformation, setImportantInformation] = useState((item?.important_information ?? []).join("\n"));
   const [price, setPrice] = useState(item?.price_egp?.toString() ?? "");
+  const [bookingFee, setBookingFee] = useState(String(item?.booking_fee_egp ?? 0));
+  const [ticketLabel, setTicketLabel] = useState(item?.ticket_label ?? "");
   const [currency, setCurrency] = useState<"EGP" | "USD">(item?.currency ?? "EGP");
   const [priceUnit, setPriceUnit] = useState(item?.price_unit ?? "per person");
   const [capacity, setCapacity] = useState(item?.capacity?.toString() ?? "");
@@ -556,6 +560,8 @@ export function AdminCatalogForm({
     setTransportation("");
     setImportantInformation("");
     setPrice("");
+    setBookingFee("0");
+    setTicketLabel("");
     setCurrency("EGP");
     setPriceUnit("per person");
     setCapacity("");
@@ -621,6 +627,8 @@ export function AdminCatalogForm({
             transportation,
             importantInformation: lines(importantInformation),
             price: price ? Number(price) : undefined,
+            bookingFee: isTrip ? undefined : Number(bookingFee),
+            ticketLabel: isTrip ? undefined : ticketLabel,
             currency,
             priceUnit,
             capacity: capacity ? Number(capacity) : undefined,
@@ -789,6 +797,7 @@ export function AdminCatalogForm({
               </select>
             </label>
           ) : null}
+          {!isTrip ? <><label>Booking fee per ticket (EGP)<input type="number" min="0" step="0.01" value={bookingFee} onChange={event=>setBookingFee(event.target.value)} /></label><label>Ticket label<input maxLength={120} value={ticketLabel} onChange={event=>setTicketLabel(event.target.value)} placeholder="Early Bird · Very limited" /></label></> : null}
           {isTrip ? (
             <label>
               Price label

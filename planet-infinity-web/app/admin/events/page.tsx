@@ -4,6 +4,7 @@ import { AdminShell } from "@/components/AdminShell";
 import { formatDate } from "@/lib/admin-requests";
 import { getProducts } from "@/lib/admin-operations";
 import { requireAdmin } from "@/lib/admin";
+import { HalloweenDraftButton } from "@/components/HalloweenDraftButton";
 
 export const metadata = { title: "Admin events" };
 
@@ -21,6 +22,12 @@ export default async function AdminEventsPage() {
           an application first.
         </p>
       </header>
+
+      <section className="pi-admin-section">
+        <h2>Halloween 2026</h2>
+        <p className="pi-admin-help">Create the event with the approved poster details, then set its ticket price and capacity. It starts as a draft and does not open sales.</p>
+        <HalloweenDraftButton />
+      </section>
 
       <section className="pi-admin-section">
         <h2>Add event</h2>

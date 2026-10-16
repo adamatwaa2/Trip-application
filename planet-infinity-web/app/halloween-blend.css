@@ -1,0 +1,27 @@
+/* A third composition: night artwork above, paper and sage below. */
+.hw--blend .hw-dawn-transition{height:210px;position:relative;background:linear-gradient(180deg,#11120f 0%,#282e24 19%,#69705c 43%,#b4b8a2 68%,#e0e2d4 86%,#e8eadd 100%);display:flex;align-items:flex-end;justify-content:center;padding:0 22px 35px}
+.hw--blend .hw-dawn-transition:after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.16;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath filter='url(%23n)' opacity='.7' d='M0 0h160v160H0z'/%3E%3C/svg%3E")}
+.hw--blend .hw-dawn-transition span{font-size:9px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:#3d4733;position:relative;z-index:1}
+.hw--blend #hw-experience{padding-bottom:20px}
+.hw--blend .hw-ticket-section{--hw-ink:#141713;--hw-paper:#efede6;color:#141713;background:linear-gradient(180deg,#e8eadd 0%,#e1e6d5 58%,#eeece4 100%);border:0;padding-top:18px;padding-bottom:90px}
+.hw--blend .hw-ticket-layout>div>.hw-eyebrow{color:#526044}
+.hw--blend .hw-ticket-layout>div>p:not(.hw-eyebrow){color:#4d5744}
+.hw--blend .hw-ticket{background:#f4f0e6;border:1px solid #3b493755;box-shadow:9px 9px 0 #80916b24;transform:rotate(1deg)}
+.hw--blend .hw-ticket:before,.hw--blend .hw-ticket:after{background:#e3e7d8;border-color:#3b493755}
+.hw--blend .hw-ticket .hw-button{background:#172011;color:#f4f0e6!important;border-color:#172011}
+.hw--blend .hw-ticket .hw-button:hover{background:#384a2b}
+.hw--blend .hw-light-ending{--hw-paper:#eeece4;--hw-ink:#141713;background:#eeece4;color:#141713;position:relative}
+.hw--blend .hw-light-ending:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.055;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath filter='url(%23n)' d='M0 0h180v180H0z'/%3E%3C/svg%3E")}
+.hw--blend .hw-light-ending>.hw-wrap{position:relative}
+.hw--blend .hw-light-ending .hw-eyebrow{color:#647452}
+.hw--blend .hw-light-ending .hw-section-head h2{color:#141713}
+.hw--blend .hw-light-ending .hw-smallprint{color:#59644e}
+.hw--blend .hw-light-ending .hw-term-list li{color:#30362a;border-color:#26331d33}
+.hw--blend .hw-light-ending .hw-term-list li>span{color:#7d608f}
+.hw--blend .hw-light-ending .hw-location{background:linear-gradient(130deg,#ded6e7,#e9e3ee);border-color:#8c749e55}
+.hw--blend .hw-light-ending .hw-location p{color:#4b4053}
+.hw--blend .hw-light-ending .hw-faq,.hw--blend .hw-light-ending .hw-faq details{border-color:#26331d33}
+.hw--blend .hw-light-ending .hw-faq details p{color:#505a46}
+.hw--blend .hw-light-ending .hw-bottom{color:#5a6550;border-color:#26331d33}
+.hw--blend .hw-checkout .hw-ticket:before,.hw--blend .hw-checkout .hw-ticket:after{background:#11120f}
+@media(max-width:640px){.hw--blend .hw-dawn-transition{height:155px;padding-bottom:25px}.hw--blend .hw-dawn-transition span{font-size:8px;letter-spacing:.12em}.hw--blend .hw-ticket-section{padding-bottom:50px}.hw--blend .hw-ticket{transform:none}}

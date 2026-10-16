@@ -8,13 +8,14 @@
  * when there are no real events, always badged, and never on the homepage.
  */
 import { DEMO_EVENTS } from "./demo";
+import { HALLOWEEN_EVENT } from "./halloween";
 import type { PlanetEvent, TicketOption } from "./types";
 
 export * from "./types";
 export { DEMO_EVENTS };
 
 /** Real events only. */
-export const EVENTS: PlanetEvent[] = [];
+export const EVENTS: PlanetEvent[] = [HALLOWEEN_EVENT];
 
 /** Real featured events for the homepage. Demo data never appears there. */
 export const FEATURED_EVENTS: PlanetEvent[] = EVENTS.filter(

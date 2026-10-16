@@ -215,6 +215,7 @@ function validatePublicRequest(input: PublicRequestInput): string | null {
 
 export async function createPaymentProofUploadTarget(input: {
   tripId: string;
+  productType?: "trip" | "event";
   mimeType: string;
   size: number;
 }): Promise<PaymentProofUploadResult> {
@@ -228,13 +229,8 @@ export async function createPaymentProofUploadTarget(input: {
   }
 
   const supabase = createServiceClient();
-  const { data: trip } = await supabase
-    .from("trips")
-    .select("id")
-    .eq("id", input.tripId)
-    .eq("is_published", true)
-    .eq("payment_proof_required", true)
-    .maybeSingle();
+  const query = supabase.from(input.productType === "event" ? "events" : "trips").select("id").eq("id", input.tripId).eq("is_published", true);
+  const { data: trip } = await (input.productType === "event" ? query : query.eq("payment_proof_required", true)).maybeSingle();
   if (!trip) return { ok: false, error: "Receipt upload is not available for this trip." };
 
   const month = new Date().toISOString().slice(0, 7);

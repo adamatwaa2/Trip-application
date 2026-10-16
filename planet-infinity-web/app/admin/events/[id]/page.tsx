@@ -2,7 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminCatalogForm } from "@/components/AdminCatalogForm";
 import { AdminShell } from "@/components/AdminShell";
-import { getProduct } from "@/lib/admin-operations";
+import { getProduct, getBookingsForProduct } from "@/lib/admin-operations";
+import { HalloweenAdminOverview } from "@/components/HalloweenAdminOverview";
+import { HALLOWEEN_SLUG } from "@/content/events/halloween";
 import { requireAdmin } from "@/lib/admin";
 
 type Props = { params: Promise<{ id: string }> };
@@ -14,6 +16,7 @@ export default async function AdminEventEditPage({ params }: Props) {
   const { id } = await params;
   const item = await getProduct("events", id);
   if (!item) notFound();
+  const bookings = item.slug === HALLOWEEN_SLUG ? await getBookingsForProduct("event", id) : null;
 
   return (
     <AdminShell profile={profile} current="/admin/events">
@@ -26,6 +29,7 @@ export default async function AdminEventEditPage({ params }: Props) {
         <Link href="/admin/events">Back to events</Link>
       </header>
 
+      {bookings ? <HalloweenAdminOverview bookings={bookings.items} eventId={id} error={bookings.error} /> : null}
       <section className="pi-admin-section">
         <AdminCatalogForm kind="events" item={item} />
       </section>

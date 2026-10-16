@@ -17,11 +17,13 @@ export function PaymentProofStep({
   totalEgp,
   value,
   onChange,
+  productType = "trip",
 }: {
   tripId: string;
   totalEgp?: number;
   value: PaymentProofValue | null;
   onChange: (value: PaymentProofValue | null) => void;
+  productType?: "trip" | "event";
 }) {
   const [method, setMethod] = useState<PaymentProofValue["method"]>(value?.method ?? "instapay");
   const [uploading, setUploading] = useState(false);
@@ -33,7 +35,7 @@ export function PaymentProofStep({
     setUploading(true);
     setError(null);
     try {
-      const target = await createPaymentProofUploadTarget({ tripId, mimeType: file.type, size: file.size });
+      const target = await createPaymentProofUploadTarget({ tripId, productType, mimeType: file.type, size: file.size });
       if (!target.ok) throw new Error(target.error);
       const supabase = createClient();
       const { error: uploadError } = await supabase.storage

@@ -6,8 +6,13 @@ import { EventBookingFlow } from "@/components/EventBookingFlow";
 import { Section } from "@/components/Section";
 import { getEventBySlug } from "@/content/source";
 import { CatalogThemeFrame } from "@/components/CatalogThemeFrame";
+import { HalloweenBookingFlow } from "@/components/HalloweenBookingFlow";
+import { HALLOWEEN_SLUG } from "@/content/events/halloween";
+import { halloweenAppearance } from "@/lib/halloween-appearance";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
+import "@/app/halloween.css";
 
-type Params = { params: Promise<{ slug: string }> };
+type Params = { params: Promise<{ slug: string }>; searchParams: Promise<{ look?: string }> };
 
 // The event catalogue is operational data, so booking pages are rendered on
 // demand and never call cookies() during generateStaticParams at build time.
@@ -26,11 +31,15 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  *
  * The final step saves a request. It does not charge or confirm attendance.
  */
-export default async function EventBookingPage({ params }: Params) {
+export default async function EventBookingPage({ params, searchParams }: Params) {
   const { slug } = await params;
   const event = await getEventBySlug(slug);
   if (!event) notFound();
   if (event.media.linkedTripSlug) redirect(`/trips/${event.media.linkedTripSlug}/book`);
+  if (event.slug === HALLOWEEN_SLUG) {
+    const appearance = halloweenAppearance((await searchParams).look);
+    return <HalloweenBookingFlow event={event} appearance={appearance} preview={process.env.NODE_ENV === "development" && !isSupabaseConfigured()} />;
+  }
   if (event.applicationRequired || event.bookingMode === "application") {
     redirect(`/apply?product=${encodeURIComponent(event.id)}&type=event&title=${encodeURIComponent(event.title)}`);
   }

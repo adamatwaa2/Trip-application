@@ -1,4 +1,7 @@
+import { EVENT_PAYMENT_SECTIONS, HALLOWEEN_POLICY_VERSION } from "./events/halloween";
+
 export type PolicySlug =
+  | "events-payment"
   | "booking"
   | "payment"
   | "cancellation"
@@ -712,6 +715,15 @@ export const POLICY_DOCUMENTS: readonly PolicyDocument[] = [
       },
     ],
   },
+  {
+    slug: "events-payment",
+    title: "Events — Payment & Booking Confirmation",
+    shortTitle: "Event payments",
+    sourcePart: "Owner-requested event terms",
+    sourceStatus: "owner-requested",
+    intro: ["Event tickets are paid in full. Trip deposit and instalment rules do not apply."],
+    sections: EVENT_PAYMENT_SECTIONS.map(section => ({title:section.title,blocks:[paragraph(section.text)]})),
+  },
 ] as const;
 
 export const POLICY_PAGES = POLICY_DOCUMENTS.map(({ slug, title }) => ({ slug, title }));
@@ -755,7 +767,7 @@ export function policyToPlainText(policy: PolicyDocument): string {
 export const POLICY_SEED_RECORDS = POLICY_DOCUMENTS.map((policy) => ({
   slug: policy.slug,
   title: policy.title,
-  version: policy.sourceStatus === "supplied"
+  version: policy.slug === "events-payment" ? HALLOWEEN_POLICY_VERSION : policy.sourceStatus === "supplied"
     ? "supplied-policy-pack"
     : policy.sourceStatus === "owner-requested"
       ? "privacy-2026-08-25"

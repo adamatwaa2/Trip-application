@@ -51,6 +51,8 @@ export type AdminProduct = {
   updated_at: string;
 };
 export type AdminProductDetail = Omit<AdminProduct, "updated_at"> & {
+  booking_fee_egp?: number;
+  ticket_label?: string | null;
   short_description: string;
   description: string;
   destination?: string | null;
@@ -205,7 +207,7 @@ export async function getProduct(kind: "trips" | "events", id: string) {
 
   const { data } = await supabase
     .from("events")
-    .select("id, slug, title, short_description, description, category, venue, starts_at, ends_at, important_information, price_egp, capacity, booking_mode, application_required, media, inclusions, exclusions, document_url, document_label, is_published, is_featured")
+    .select("id, slug, title, short_description, description, category, venue, starts_at, ends_at, important_information, price_egp, booking_fee_egp, ticket_label, capacity, booking_mode, application_required, media, inclusions, exclusions, document_url, document_label, is_published, is_featured")
     .eq("id", id)
     .maybeSingle();
   return data as unknown as AdminProductDetail | null;

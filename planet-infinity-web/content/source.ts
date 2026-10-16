@@ -51,6 +51,8 @@ type DatabaseTrip = {
   options: Trip["optionGroups"];
 };
 type DatabaseEvent = {
+  booking_fee_egp: number;
+  ticket_label: string | null;
   id: string;
   slug: string;
   title: string;
@@ -87,7 +89,7 @@ function mapTrip(row: DatabaseTrip): Trip {
 }
 function mapEvent(row: DatabaseEvent): PlanetEvent {
   const starts = dateParts(row.starts_at); const ends = dateParts(row.ends_at);
-  return { id: row.id, slug: row.slug, title: row.title, shortDescription: row.short_description, description: row.description ? row.description.split("\n").filter(Boolean) : [], category: row.category ?? "Event", venue: row.venue ?? undefined, eventDate: starts.date, startTime: starts.time, endTime: ends.time, priceEgp: row.price_egp ?? undefined, currency: "EGP", capacity: row.capacity ?? undefined, featured: row.is_featured, bookingMode: row.booking_mode, applicationRequired: row.application_required, ticketSelectionEnabled: Array.isArray(row.ticket_options) && row.ticket_options.length > 0, quantityEnabled: false, ticketOptions: row.ticket_options, document: row.document_url ? { url: row.document_url, label: row.document_label ?? "Event information PDF" } : undefined, media: row.media ?? {}, whatIsIncluded: row.inclusions, whatIsNotIncluded: row.exclusions, importantInformation: row.important_information };
+  return { id: row.id, slug: row.slug, title: row.title, shortDescription: row.short_description, description: row.description ? row.description.split("\n").filter(Boolean) : [], bookingFeeEgp: Number(row.booking_fee_egp ?? 0), ticketLabel: row.ticket_label ?? undefined, category: row.category ?? "Event", venue: row.venue ?? undefined, eventDate: starts.date, startTime: starts.time, endTime: ends.time, priceEgp: row.price_egp ?? undefined, currency: "EGP", capacity: row.capacity ?? undefined, featured: row.is_featured, bookingMode: row.booking_mode, applicationRequired: row.application_required, ticketSelectionEnabled: Array.isArray(row.ticket_options) && row.ticket_options.length > 0, quantityEnabled: false, ticketOptions: row.ticket_options, document: row.document_url ? { url: row.document_url, label: row.document_label ?? "Event information PDF" } : undefined, media: row.media ?? {}, whatIsIncluded: row.inclusions, whatIsNotIncluded: row.exclusions, importantInformation: row.important_information };
 }
 
 async function databaseTrips(): Promise<Trip[] | null> {
@@ -116,7 +118,7 @@ async function databaseTrips(): Promise<Trip[] | null> {
 async function databaseEvents(): Promise<PlanetEvent[] | null> {
   if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
-  let eventQuery = supabase.from("events").select("id, slug, title, short_description, description, category, venue, starts_at, ends_at, important_information, price_egp, capacity, booking_mode, application_required, document_url, document_label, is_featured, media, ticket_options, inclusions, exclusions").order("starts_at", { ascending: true, nullsFirst: false });
+  let eventQuery = supabase.from("events").select("id, slug, title, short_description, description, category, venue, starts_at, ends_at, important_information, price_egp, booking_fee_egp, ticket_label, capacity, booking_mode, application_required, document_url, document_label, is_featured, media, ticket_options, inclusions, exclusions").order("starts_at", { ascending: true, nullsFirst: false });
   if (process.env.NODE_ENV !== "development") eventQuery = eventQuery.eq("is_published", true);
   const { data, error } = await eventQuery;
   // See databaseTrips: an empty table must not blank out the public listing.
