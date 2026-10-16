@@ -1,4 +1,4 @@
-export type CatalogMediaKind = "image" | "video" | "document";
+export type CatalogMediaKind = "image" | "video" | "document" | "audio";
 
 const IMAGE_TYPES = [
   "image/jpeg",
@@ -7,23 +7,27 @@ const IMAGE_TYPES = [
 ] as const;
 
 const VIDEO_TYPES = ["video/mp4", "video/webm", "video/quicktime"] as const;
+const AUDIO_TYPES = ["audio/mpeg","audio/mp3","audio/mp4","audio/x-m4a","audio/wav","audio/x-wav","audio/ogg","audio/webm"] as const;
 const DOCUMENT_TYPES = ["application/pdf"] as const;
 
 export const CATALOG_MEDIA_LIMITS: Record<CatalogMediaKind, number> = {
   image: 10 * 1024 * 1024,
   video: 150 * 1024 * 1024,
+  audio: 30 * 1024 * 1024,
   document: 15 * 1024 * 1024,
 };
 
 export const CATALOG_MEDIA_ACCEPT: Record<CatalogMediaKind, string> = {
   image: IMAGE_TYPES.join(","),
   video: VIDEO_TYPES.join(","),
+  audio: AUDIO_TYPES.join(","),
   document: DOCUMENT_TYPES.join(","),
 };
 
 const TYPES: Record<CatalogMediaKind, readonly string[]> = {
   image: IMAGE_TYPES,
   video: VIDEO_TYPES,
+  audio: AUDIO_TYPES,
   document: DOCUMENT_TYPES,
 };
 
@@ -35,6 +39,7 @@ const EXTENSIONS: Record<string, string> = {
   "video/webm": "webm",
   "video/quicktime": "mov",
   "application/pdf": "pdf",
+  "audio/mpeg":"mp3","audio/mp3":"mp3","audio/mp4":"m4a","audio/x-m4a":"m4a","audio/wav":"wav","audio/x-wav":"wav","audio/ogg":"ogg","audio/webm":"webm",
 };
 
 export function validateCatalogMedia(

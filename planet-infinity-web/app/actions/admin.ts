@@ -73,6 +73,7 @@ export async function inviteAdmin(input: { fullName: string; email: string }): P
 }
 
 type CatalogMediaInput = {
+  backgroundAudio?: string;
   hero?: string;
   heroAlt?: string;
   gallery?: { src: string; alt: string; type?: "image" | "video"; poster?: string }[];
@@ -136,6 +137,7 @@ function textList(values: string[]) {
 }
 
 function normaliseMedia(media: CatalogMediaInput): CatalogMediaInput | null {
+  const backgroundAudio = text(media.backgroundAudio ?? "",2000);
   const hero = text(media.hero ?? "", 2000);
   const video = text(media.video ?? "", 2000);
   const rawTheme = media.visualTheme;
@@ -160,6 +162,7 @@ function normaliseMedia(media: CatalogMediaInput): CatalogMediaInput | null {
     .slice(0, 20);
 
   if (
+    !isSafeCatalogUrl(backgroundAudio) ||
     !isSafeCatalogUrl(hero) ||
     !isSafeCatalogUrl(video) ||
     gallery.some((image) => !isSafeCatalogUrl(image.src)) ||
@@ -181,6 +184,7 @@ function normaliseMedia(media: CatalogMediaInput): CatalogMediaInput | null {
   }
 
   return {
+    ...(backgroundAudio ? { backgroundAudio } : {}),
     ...(hero ? { hero, heroAlt: text(media.heroAlt ?? "", 240) } : {}),
     ...(gallery.length ? { gallery } : {}),
     ...(galleryLayout ? { galleryLayout } : {}),

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Script from "next/script";
+import { HalloweenMusic } from "@/components/HalloweenMusic";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { fontVariables } from "./fonts";
@@ -130,6 +131,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             }).replace(/</g, "\\u003c"),
           }}
         />
+        <HalloweenMusic />
         <SiteHeader />
         <main id="main">{children}</main>
         <SiteFooter />

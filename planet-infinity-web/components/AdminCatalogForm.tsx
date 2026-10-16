@@ -35,6 +35,7 @@ function withGuideSeatReserved(seats: number[] | undefined) {
 }
 
 type CatalogMedia = {
+  backgroundAudio?: string;
   hero?: string;
   heroAlt?: string;
   gallery?: { src: string; alt: string; type?: "image" | "video"; poster?: string }[];
@@ -418,6 +419,7 @@ export function AdminCatalogForm({
   const [exclusions, setExclusions] = useState(
     (item?.exclusions ?? []).join("\n"),
   );
+  const [backgroundAudio,setBackgroundAudio] = useState(initialMedia.backgroundAudio??"");
   const [hero, setHero] = useState(initialMedia.hero ?? "");
   const [heroAlt, setHeroAlt] = useState(initialMedia.heroAlt ?? "");
   const [video, setVideo] = useState(initialMedia.video ?? "");
@@ -453,7 +455,7 @@ export function AdminCatalogForm({
   async function uploadOne(file: File, mediaKind: CatalogMediaKind) {
     const mimeType = mediaKind === "video" && /\.mov$/i.test(file.name)
       ? "video/quicktime"
-      : file.type;
+      : mediaKind === "audio" && /\.mp3$/i.test(file.name) ? "audio/mpeg" : file.type;
     const validationError = validateCatalogMedia(mediaKind, mimeType, file.size);
     if (validationError) throw new Error(validationError);
 
@@ -576,6 +578,7 @@ export function AdminCatalogForm({
     setPaymentProofRequired(true);
     setInclusions("");
     setExclusions("");
+    setBackgroundAudio("");
     setHero("");
     setHeroAlt("");
     setVideo("");
@@ -644,6 +647,7 @@ export function AdminCatalogForm({
             inclusions: lines(inclusions),
             exclusions: lines(exclusions),
             media: {
+              backgroundAudio: !isTrip ? backgroundAudio || undefined : initialMedia.backgroundAudio,
               hero: hero || undefined,
               heroAlt: heroAlt || undefined,
               gallery,
@@ -1375,6 +1379,7 @@ export function AdminCatalogForm({
         </label>
       </fieldset>
 
+      {!isTrip ? <fieldset className="pi-admin-fieldset"><legend>Event background music</legend><p className="pi-admin-help">Upload MP3, M4A, WAV, OGG or WebM up to 30 MB. Starts on entering Halloween and continues through booking. Visitors can mute it. Save after uploading.</p><UploadControl kind="audio" label="Upload / replace event song" disabled={uploading} onFiles={(files)=>uploadFiles(files.slice(0,1),"audio",url=>setBackgroundAudio(url))}/>{backgroundAudio?<><audio src={backgroundAudio} controls preload="metadata"/><button type="button" onClick={()=>setBackgroundAudio("")}>Remove event song</button></>:<p className="pi-admin-help">No song selected.</p>}</fieldset>:null}
       {message ? (
         <p
           className={
