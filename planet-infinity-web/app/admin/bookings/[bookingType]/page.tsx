@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { getEventTicketState } from "@/lib/event-ticket";
+import { EventTicketAdminPanel } from "@/components/EventTicketAdminPanel";
 import { notFound } from "next/navigation";
 import { AdminShell } from "@/components/AdminShell";
 import { BookingConfirmationAdminActions } from "@/components/BookingConfirmationAdminActions";
@@ -40,6 +42,7 @@ export default async function BookingDetailPage({
   const booking = await getBooking(bookingId);
   if (!booking) notFound();
 
+  const eventTicket = booking.booking_type === "event" ? await getEventTicketState(booking.payment_token) : null;
   const balance = Number(booking.total_amount) - Number(booking.amount_paid);
   const subject = booking.trip?.title ?? booking.event?.title ?? booking.booking_type;
   const proofUrls = await Promise.all(
@@ -88,7 +91,7 @@ export default async function BookingDetailPage({
         </section>
 
         <section className="pi-admin-section">
-          <h2>Trip answers</h2>
+          <h2>{booking.booking_type === "event" ? "Event guests" : "Trip answers"}</h2>
           {bookingGuests.length > 0 ? (
             <>
               <h3>Guest roster</h3>
@@ -129,7 +132,8 @@ export default async function BookingDetailPage({
         </section>
 
         <section className="pi-admin-section">
-          <h2>Booking Confirmation</h2>
+          <h2>{eventTicket ? "Event ticket" : "Booking Confirmation"}</h2>
+          {eventTicket ? <EventTicketAdminPanel ticket={eventTicket} token={booking.payment_token} phone={booking.customer?.phone??null}/> : <>
           <p>
             {booking.whatsapp_opt_in
               ? "When Meta is connected, the issued PDF can be sent automatically to this customer's WhatsApp."
@@ -155,6 +159,7 @@ export default async function BookingDetailPage({
             totalAmount={Number(booking.total_amount)}
             confirmationIssued={Boolean(booking.confirmation_issued_at)}
           />
+          </>}
         </section>
       </div>
     </AdminShell>

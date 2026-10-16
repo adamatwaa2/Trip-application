@@ -25,3 +25,5 @@
 .hw--blend .hw-light-ending .hw-bottom{color:#5a6550;border-color:#26331d33}
 .hw--blend .hw-checkout .hw-ticket:before,.hw--blend .hw-checkout .hw-ticket:after{background:#11120f}
 @media(max-width:640px){.hw--blend .hw-dawn-transition{height:155px;padding-bottom:25px}.hw--blend .hw-dawn-transition span{font-size:8px;letter-spacing:.12em}.hw--blend .hw-ticket-section{padding-bottom:50px}.hw--blend .hw-ticket{transform:none}}
+
+.hw--blend .hw-light-ending:after{content:"";position:absolute;right:0;top:12%;width:220px;height:280px;pointer-events:none;opacity:.035;background:url('/halloween/poster-night.png') right bottom / 750px no-repeat;mix-blend-mode:multiply;mask-image:radial-gradient(ellipse,#000 8%,transparent 68%)}

@@ -13,3 +13,37 @@
 @media(prefers-reduced-motion:reduce){.hw *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 .hw-fee-note{font-size:10px;line-height:1.5;margin:4px 0 12px;color:inherit;opacity:.75}.hw-early-bird{font-size:9px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin:0 auto 16px;display:table;padding:7px 12px;border:1px solid currentColor;border-radius:30px}.hw-hero-content .hw-early-bird{color:inherit}
+
+/* Event checkout uses its own palette, including manual transfer details. */
+.hw-help{margin:32px 0;padding:22px 0;border-top:1px solid currentColor;border-bottom:1px solid currentColor;border-color:#83947744;position:relative;z-index:1}.hw-help p{font-size:13px;margin:0 0 12px}.hw-help a span{display:block;font-size:12px;letter-spacing:.04em;margin-top:9px}
+.hw .pi-payment-proof{display:grid;gap:18px;margin:22px 0;padding:22px;border:1px solid #78816d55;background:#e8e6dd;border-radius:3px;color:#171b14}
+.hw .pi-payment-proof__details{display:grid;grid-template-columns:1fr;gap:0}
+.hw .pi-payment-proof__details p{display:grid;gap:7px;margin:0;padding:14px 0;border-bottom:1px solid #78816d44;background:transparent;border-radius:0;color:inherit;font-size:15px;line-height:1.6;overflow-wrap:anywhere}
+.hw .pi-payment-proof__details strong{color:inherit;font-size:10px;letter-spacing:.08em;text-transform:uppercase;opacity:.7}
+.hw .pi-payment-proof fieldset{margin:0;padding:18px;border-color:#78816d55}.hw .pi-payment-proof .agree-row{display:flex;align-items:center;gap:10px;margin:12px 0;color:inherit;font-size:13px}
+.hw .pi-receipt-upload{display:flex;justify-content:center;min-height:48px;width:100%;border-radius:3px;background:#20291a;color:#f4f0e6;font-size:12px;letter-spacing:.03em}
+.hw .pi-payment-proof .pi-flow__hint{font-size:11px;line-height:1.7;color:inherit;opacity:.75;margin:0}
+.hw .pi-payment-proof .pi-flow__success{font-size:12px;color:#4b633d}.hw .pi-payment-proof .pi-flow__error{font-size:12px;color:#a54224}
+.hw--night .pi-payment-proof{background:#1b2118;color:#eee9de;border-color:#a7b79355}
+.hw--night .pi-receipt-upload{background:#dfab7c;color:#171b12}.hw--night .pi-payment-proof .pi-flow__success{color:#c2d6ac}.hw--night .pi-payment-proof .pi-flow__error{color:#ffbd90}
+.hw-facts>div{min-width:0}.hw-facts dd{white-space:normal;overflow-wrap:break-word;line-height:1.6}
+@media(max-width:640px){
+ .hw-topline{gap:10px;flex-wrap:wrap}.hw-topline>span{font-size:8px;letter-spacing:.08em}
+ .hw-facts{grid-template-columns:minmax(0,1fr) minmax(0,1fr);margin-inline:0}
+ .hw-facts>div:nth-child(n){padding:20px 12px}.hw-facts>div:nth-child(odd){padding-left:0}
+ .hw-facts dd{font-size:12px;line-height:1.7;letter-spacing:0}
+ .hw-ticket-heading{gap:12px;align-items:flex-start}.hw-ticket-heading h3{font-size:16px}.hw-ticket-heading>span{max-width:135px;font-size:8px;line-height:1.6}
+ .hw-ticket ul{margin:18px 0}.hw-ticket-bottom{font-size:8px;letter-spacing:.03em}
+ .hw-checkout-grid>*{min-width:0}.hw-form-actions{flex-wrap:wrap}.hw-form-actions .hw-button{min-height:46px}
+ .hw-input,.hw-field input,.hw-field select,.hw-quantity-control input{font-size:16px}
+ .hw .pi-payment-proof{padding:18px}.hw .pi-payment-proof__details p{font-size:16px}
+ .hw-review>div{gap:12px;line-height:1.6}.hw-review dt{min-width:0}.hw-review dd{flex-shrink:0}
+}
+
+.hw .hw-entry-ticket{border-top:4px solid #dfab7c;padding:30px}
+.hw .hw-entry-ticket .hw-ticket-heading h3{font-size:10px;letter-spacing:.14em;color:#59644e}
+.hw .hw-entry-ticket h2{font-size:clamp(36px,8vw,55px)!important;text-transform:uppercase;line-height:.95;margin:35px 0 22px!important}
+.hw .hw-entry-ticket .hw-review{padding-top:12px;margin-top:25px;border-top:1px dashed #67725b88}
+.hw .hw-entry-ticket .hw-review>div{border-color:#67725b33;color:#161a12}
+.hw .hw-entry-ticket .hw-review dt{font-size:10px;color:#59644e}.hw .hw-entry-ticket .hw-smallprint{color:#59644e}
+@media(max-width:640px){.hw .hw-entry-ticket{padding:24px}.hw .hw-entry-ticket .hw-ticket-heading>span{font-size:7px}.hw .hw-entry-ticket .hw-review dd{overflow-wrap:anywhere;flex-shrink:1;max-width:65%}}

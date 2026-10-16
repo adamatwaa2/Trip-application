@@ -18,12 +18,14 @@ export function PaymentProofStep({
   value,
   onChange,
   productType = "trip",
+  preview = false,
 }: {
   tripId: string;
   totalEgp?: number;
   value: PaymentProofValue | null;
   onChange: (value: PaymentProofValue | null) => void;
   productType?: "trip" | "event";
+  preview?: boolean;
 }) {
   const [method, setMethod] = useState<PaymentProofValue["method"]>(value?.method ?? "instapay");
   const [uploading, setUploading] = useState(false);
@@ -32,6 +34,7 @@ export function PaymentProofStep({
   const paymentNumber = process.env.NEXT_PUBLIC_VODAFONE_CASH_NUMBER ?? "01096896247";
 
   async function upload(file: File) {
+    if (preview) { onChange({method,path:"demo-only",fileName:file.name}); return; }
     setUploading(true);
     setError(null);
     try {

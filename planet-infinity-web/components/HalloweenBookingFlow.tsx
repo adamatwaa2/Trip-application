@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { EventTicketStatus } from "./EventTicketStatus";
+import { SITE_COPY_DEFAULTS } from "@/content/site-copy";
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 import type { PlanetEvent } from "@/content/events";
@@ -14,7 +16,7 @@ import { halloweenClassName, halloweenHref, type HalloweenAppearance } from "@/l
 type Guest = { name: string; phone: string };
 const steps = ["Tickets & details", "Payment"];
 
-export function HalloweenBookingFlow({ event, preview, appearance = "paper" }: { event: PlanetEvent; preview: boolean; appearance?: HalloweenAppearance }) {
+export function HalloweenBookingFlow({ event, preview, appearance = "paper", whatsapp = SITE_COPY_DEFAULTS.contact_whatsapp }: { event: PlanetEvent; preview: boolean; appearance?: HalloweenAppearance; whatsapp?: string }) {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [guests, setGuests] = useState<Record<number, Guest>>({0:{name:"",phone:""}});
@@ -68,6 +70,7 @@ export function HalloweenBookingFlow({ event, preview, appearance = "paper" }: {
       if (method === "manual" && result.paymentToken) router.push(`/pay/${result.paymentToken}`);
     });
   }
+  if(preview && booking) return <EventTicketStatus token="demo" preview previewMethod={method} initial={{reference:booking.number,title:event.title,name:guests[0].name,guests:activeGuests.map(g=>g.name),quantity,date:"2026-10-30T19:00:00+02:00",endDate:"2026-10-31T02:00:00+02:00",venue:event.venue??"Cairo",ticketLabel:event.ticketLabel??"Early Bird",subtotal:subtotal??0,fees:bookingFees,total:total??0,paid:0,status:method==="manual"?"pending":"unpaid",issuedAt:null}}/>;
   return <div className={halloweenClassName(appearance)}>
     {preview ? <HalloweenPreviewBar appearance={appearance} booking/> : null}
     <div className="hw-wrap">
@@ -104,16 +107,18 @@ export function HalloweenBookingFlow({ event, preview, appearance = "paper" }: {
                 <dl className="hw-review"><div><dt>{event.ticketLabel ?? "Tickets"}</dt><dd>{quantity} × {event.priceEgp?.toLocaleString("en-US")} EGP</dd></div><div><dt>Ticket subtotal</dt><dd>{subtotal?.toLocaleString("en-US")} EGP</dd></div><div><dt>Booking fees · {event.bookingFeeEgp ?? 0} EGP × {quantity}</dt><dd>{bookingFees.toLocaleString("en-US")} EGP</dd></div><div><dt>Total due now · 100%</dt><dd>{total ? total.toLocaleString("en-US")+" EGP" : "Price not set"}</dd></div></dl>
                 {preview ? <p className="hw-notice">Local preview. No money will be transferred or charged. You can save a demonstration booking to see how it appears in admin.</p> : null}
                 <label className="hw-choice"><input type="radio" name="event-payment" checked={method === "manual"} onChange={()=>setMethod("manual")}/><span><strong>InstaPay / Vodafone Cash</strong><small>Transfer in full, then upload your receipt for verification.</small></span></label>
-                <label className="hw-choice"><input type="radio" name="event-payment" checked={method === "paymob"} onChange={()=>setMethod("paymob")}/><span><strong>Pay online with Paymob</strong><small>Visa · Mastercard · Secure card checkout</small></span></label>
-                {method === "manual" && !preview && total ? <PaymentProofStep tripId={event.id} productType="event" totalEgp={total} value={proof} onChange={setProof}/> : null}
+                <label className="hw-choice"><input type="radio" name="event-payment" checked={method === "paymob"} onChange={()=>setMethod("paymob")}/><span><strong>Pay online with Visa</strong><small>Visa · Mastercard · Secure card checkout</small></span></label>
+                {preview && method === "manual" ? <div className="hw-notice"><p>Preview receipt upload · no transfer is required.</p><button className="hw-button" type="button" onClick={()=>setProof({method:"instapay",path:"demo-only",fileName:"demo-receipt.png"})}>{proof?"Demo screenshot attached ✓":"Use demo transfer screenshot"}</button></div> : null}
+                {method === "manual" && total ? <PaymentProofStep preview={preview} tripId={event.id} productType="event" totalEgp={total} value={proof} onChange={setProof}/> : null}
                 <p className="hw-smallprint">Payment does not guarantee admission. Door selection applies. Exact location sent one day before the event.</p>
               </> : null}
               <div className="hw-form-actions">
                 <button type="button" className="hw-button hw-button--light" disabled={step===0 || pending} onClick={()=>{setError("");setStep(0);}}>← Back</button>
-                {step === 0 ? <button type="button" className="hw-button" disabled={!valid} onClick={()=>setStep(1)}>Continue to payment →</button> : <button type="button" className="hw-button" onClick={submit} disabled={pending || (!preview && (!total || (method === "manual" && !proof)))}>{pending ? "Saving…" : preview ? "Save preview booking ↗" : method === "paymob" ? "Continue to Paymob ↗" : "Submit for verification ↗"}</button>}
+                {step === 0 ? <button type="button" className="hw-button" disabled={!valid} onClick={()=>setStep(1)}>Continue to payment →</button> : <button type="button" className="hw-button" onClick={submit} disabled={pending || (!preview && (!total || (method === "manual" && !proof)))}>{pending ? "Saving…" : preview ? "Continue demo booking ↗" : method === "paymob" ? "Continue to Visa ↗" : "Submit for verification ↗"}</button>}
               </div>
               {error ? <p role="alert" className="hw-error">{error}</p> : null}
             </>}
+            <div className="hw-help"><p>Need help booking?</p><a className="hw-text-link" href={`https://wa.me/${whatsapp.replace(/\D/g,"")}?text=${encodeURIComponent("Hi Planet Infinity! I need help booking the Halloween party.")}`} target="_blank" rel="noreferrer">Chat on WhatsApp ↗ <span>{whatsapp}</span></a></div>
           </div>
           <HalloweenTicket event={event} appearance={appearance}><div className="hw-smallprint" aria-live="polite">{quantityValid ? quantity : "—"} ticket{quantity>1?"s":""} · <strong>{total ? total.toLocaleString("en-US")+" EGP total" : "Choose a quantity"}</strong><br/>Full payment required. No trip deposit.</div></HalloweenTicket>
         </div>

@@ -6,7 +6,7 @@ export const HALLOWEEN_TERMS = [
   "Men: 21+. Women: 18+.",
   "Mixed groups, couples, or women-only groups.",
   "Entry by electronic ticket only. Bring your original, valid physical ID.",
-  "Halloween costumes are encouraged.",
+  "Costume is a must.",
   "Door selection applies. A confirmed reservation does not guarantee entry.",
   "Tickets are non-refundable and non-transferable, including if entry is refused through selection, subject to applicable law.",
   "Follow all security instructions and venue rules. Respect guests, artists and staff.",

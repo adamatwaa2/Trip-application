@@ -54,7 +54,7 @@ export default async function EventPage({ params, searchParams }: Params) {
   if (event.media.linkedTripSlug) redirect(`/trips/${event.media.linkedTripSlug}`);
   if (event.slug === HALLOWEEN_SLUG) {
     const appearance = halloweenAppearance((await searchParams).look);
-    return <HalloweenEventPage event={event} appearance={appearance} />;
+    return <HalloweenEventPage event={event} appearance={appearance} whatsapp={copy.contact_whatsapp} />;
   }
 
   const gallerySource = event.media.gallery?.length

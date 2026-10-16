@@ -9,6 +9,7 @@ import { CatalogThemeFrame } from "@/components/CatalogThemeFrame";
 import { HalloweenBookingFlow } from "@/components/HalloweenBookingFlow";
 import { HALLOWEEN_SLUG } from "@/content/events/halloween";
 import { halloweenAppearance } from "@/lib/halloween-appearance";
+import { getSiteCopy } from "@/lib/site-copy";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import "@/app/halloween.css";
 
@@ -38,7 +39,8 @@ export default async function EventBookingPage({ params, searchParams }: Params)
   if (event.media.linkedTripSlug) redirect(`/trips/${event.media.linkedTripSlug}/book`);
   if (event.slug === HALLOWEEN_SLUG) {
     const appearance = halloweenAppearance((await searchParams).look);
-    return <HalloweenBookingFlow event={event} appearance={appearance} preview={process.env.NODE_ENV === "development" && !isSupabaseConfigured()} />;
+    const copy = await getSiteCopy();
+    return <HalloweenBookingFlow event={event} appearance={appearance} whatsapp={copy.contact_whatsapp} preview={process.env.NODE_ENV === "development" && !isSupabaseConfigured()} />;
   }
   if (event.applicationRequired || event.bookingMode === "application") {
     redirect(`/apply?product=${encodeURIComponent(event.id)}&type=event&title=${encodeURIComponent(event.title)}`);

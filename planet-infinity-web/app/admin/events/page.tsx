@@ -25,7 +25,7 @@ export default async function AdminEventsPage() {
 
       <section className="pi-admin-section">
         <h2>Halloween 2026</h2>
-        <p className="pi-admin-help">Create the event with the approved poster details, then set its ticket price and capacity. It starts as a draft and does not open sales.</p>
+        <p className="pi-admin-help">Open Halloween to edit the event details, price, booking fee and capacity, or view its bookings and payment overview.</p>
         <HalloweenDraftButton />
       </section>
 
