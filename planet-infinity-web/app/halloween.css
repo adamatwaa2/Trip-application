@@ -47,3 +47,7 @@
 .hw .hw-entry-ticket .hw-review>div{border-color:#67725b33;color:#161a12}
 .hw .hw-entry-ticket .hw-review dt{font-size:10px;color:#59644e}.hw .hw-entry-ticket .hw-smallprint{color:#59644e}
 @media(max-width:640px){.hw .hw-entry-ticket{padding:24px}.hw .hw-entry-ticket .hw-ticket-heading>span{font-size:7px}.hw .hw-entry-ticket .hw-review dd{overflow-wrap:anywhere;flex-shrink:1;max-width:65%}}
+
+.hw .pi-payment-proof .agree-row{background:transparent;border:1px solid #78816d55;border-radius:3px;padding:12px;color:inherit}
+.hw .pi-payment-proof .agree-row span{color:inherit}.hw .pi-payment-proof .agree-row input{accent-color:#b88961;width:18px;height:18px;margin:0}
+.hw .hw-button:active{background:#35432d;color:#f7f0e1!important;border-color:#35432d}

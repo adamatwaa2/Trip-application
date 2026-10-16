@@ -46,9 +46,9 @@ export function HalloweenEventPage({ event, appearance = "paper", whatsapp = SIT
       <section className="hw-section" id="hw-experience">
         <div className="hw-section-head"><div><p className="hw-eyebrow">Not your ordinary night</p><h2>Expect the<br/>unexpected.</h2></div><p>{event.description[0] ?? event.shortDescription}</p></div>
         <div className="hw-experiences">
-          <article className="hw-experience"><span>01 / THE SOUND</span><b aria-hidden="true">↯</b><div><h3>DJ sets.</h3><p>A dance floor, your people, and a night with its own pulse.</p></div></article>
+          <article className="hw-experience"><span>01 / THE SOUND</span><div><h3>DJ sets.</h3><p>A dance floor, your people, and a night with its own pulse.</p></div></article>
           <article className="hw-experience"><span>02 / THE ENERGY</span><div><h3>Live acts.</h3><p>Out of the ordinary. Right in the middle of your night.</p></div></article>
-          <article className="hw-experience"><span>03 / THE UNKNOWN</span><b aria-hidden="true">?</b><div><h3>Surprise moments.</h3><p>Some things are better kept secret. Until you are there.</p></div></article>
+          <article className="hw-experience"><span>03 / THE UNKNOWN</span><div><h3>Surprise moments.</h3><p>Some things are better kept secret. Until you are there.</p></div></article>
         </div>
         <p className="hw-smallprint">The final line-up and food & drink details will be announced here. Only inclusions explicitly listed with your ticket are included.</p>
       </section>

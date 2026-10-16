@@ -31,3 +31,7 @@
 }
 
 .hw--night .hw-hero-note{display:table;padding:6px 10px;background:#e7e0d2cc;border-radius:2px;color:#242d1d;margin-inline:auto}
+
+.hw--night .hw-hero-note{background:none;border:0;border-radius:0;padding:0;color:#eee9de;text-shadow:0 1px 5px #11120f;letter-spacing:.06em}
+.hw--night .hw-hero .hw-button:hover,.hw--night .hw-hero .hw-button:active,.hw--night .hw-hero .hw-button:focus-visible{background:#35432d;border-color:#35432d;color:#f7f0e1!important}
+.hw--night .hw-button:active{background:#536345;color:#f7f0e1!important;transform:translateY(0)}

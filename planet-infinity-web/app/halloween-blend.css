@@ -27,3 +27,8 @@
 @media(max-width:640px){.hw--blend .hw-dawn-transition{height:155px;padding-bottom:25px}.hw--blend .hw-dawn-transition span{font-size:8px;letter-spacing:.12em}.hw--blend .hw-ticket-section{padding-bottom:50px}.hw--blend .hw-ticket{transform:none}}
 
 .hw--blend .hw-light-ending:after{content:"";position:absolute;right:0;top:12%;width:220px;height:280px;pointer-events:none;opacity:.035;background:url('/halloween/poster-night.png') right bottom / 750px no-repeat;mix-blend-mode:multiply;mask-image:radial-gradient(ellipse,#000 8%,transparent 68%)}
+
+.hw--blend .hw-light-ending:after{opacity:.065}
+.hw--blend .hw-ticket-section{position:relative;isolation:isolate;overflow:hidden}
+.hw--blend .hw-ticket-section:after{content:"";position:absolute;left:-65px;bottom:-45px;width:260px;height:320px;z-index:-1;pointer-events:none;opacity:.045;background:url('/halloween/poster.png') left top / 850px no-repeat;mix-blend-mode:multiply;mask-image:radial-gradient(ellipse,#000 10%,transparent 70%)}
+.hw--blend .hw-ticket .hw-button:hover,.hw--blend .hw-ticket .hw-button:active,.hw--blend .hw-ticket .hw-button:focus-visible{background:#384a2b;color:#f4f0e6!important;border-color:#384a2b}
