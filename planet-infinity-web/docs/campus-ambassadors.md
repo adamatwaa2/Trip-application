@@ -81,9 +81,10 @@ ambassador to satisfy university admission and the original physical ID checks.
 
 General admission text remains men 21+, women 18+, door selection. A validated
 active university code shows 18+ for both, mixed groups exactly 50:50, couples or
-girls-only. Age is checked at the event date and the university ratio is checked
-in the database before payment. Date of birth and gender are stored privately in
-the existing guest-roster booking snapshot, under the existing admin access rules.
+girls-only. At the owner's request, checkout no longer collects date of birth or gender.
+Admission requirements are displayed and acknowledged with the event policy; age and group
+ratio are not automatically verified. New guest snapshots retain name and phone only.
+Historical booking snapshots are preserved without alteration.
 
 `/preview/campus` is explicitly a demonstration. It accepts FOFA-D1 and AUC-D1 as
 sample codes only, uses no real customer records and cannot charge or issue entry.

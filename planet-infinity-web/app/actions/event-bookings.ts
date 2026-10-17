@@ -11,7 +11,7 @@ import { HALLOWEEN_EVENT, HALLOWEEN_TERMS } from "@/content/events/halloween";
 import type { EventQuote } from "@/lib/campus-pricing";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-type Input = { eventId: string; submissionId: string; sessionId: string; quoteId: string; email: string; guests: { name: string; phone: string; gender: string; dateOfBirth: string }[]; termsAccepted: boolean; paymentMethod: "manual" | "paymob"; paymentProof: { method: string; path: string } | null };
+type Input = { eventId: string; submissionId: string; sessionId: string; quoteId: string; email: string; guests: { name: string; phone: string; }[]; termsAccepted: boolean; paymentMethod: "manual" | "paymob"; paymentProof: { method: string; path: string } | null };
 
 function checkoutError(message: string | undefined) {
   return message && /price|unavailable|capacity|receipt|group|code|polic|already|age|guest|birth|gender|reserv|quantity|tickets/i.test(message) && !/function|schema|column|relation/i.test(message)
@@ -40,7 +40,7 @@ export async function submitPublicEventBooking(input: Input): Promise<{ok:true;b
   // It validates the published product, price, capacity, receipt and policy version.
   if (!UUID.test(input.quoteId) || !UUID.test(input.sessionId) || input.guests.length>500) return {ok:false,error:"Refresh your ticket total before continuing."};
   const {data,error} = await createServiceClient().rpc("submit_campus_event_booking",{
-    p_quote_id:input.quoteId,p_session_id:input.sessionId,p_submission_id:input.submissionId,p_email:input.email.trim().toLowerCase(),p_guests:input.guests.map(g=>({name:g.name.trim(),phone:g.phone.trim(),gender:g.gender,dateOfBirth:g.dateOfBirth})),p_payment_method:input.paymentMethod,p_payment_proof:input.paymentProof,p_terms_accepted:input.termsAccepted,
+    p_quote_id:input.quoteId,p_session_id:input.sessionId,p_submission_id:input.submissionId,p_email:input.email.trim().toLowerCase(),p_guests:input.guests.map(g=>({name:g.name.trim(),phone:g.phone.trim()})),p_payment_method:input.paymentMethod,p_payment_proof:input.paymentProof,p_terms_accepted:input.termsAccepted,
   });
   const row=data?.[0];
   if (error || !row?.booking_number) {

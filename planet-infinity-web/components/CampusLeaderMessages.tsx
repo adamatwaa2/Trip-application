@@ -12,7 +12,9 @@ ${tierText}.
 
 Bring your people and book together to unlock a bigger discount. Separate bookings are not combined for group discounts. Booking fees are shown separately before payment.
 
-Early Bird tickets are limited and prices rise as tickets sell. Your exact total appears before payment. Admission requirements and door selection apply.
+Early Bird tickets are limited and prices rise as tickets sell. Your exact total appears before payment.
+
+With this university code: men and women 18+. Mixed groups must be 50:50, couples or girls-only.
 
 www.PlanetInfinity.online
 Instagram: @planetinfinity.ent`;
@@ -23,7 +25,9 @@ ${tierText}.
 
 اتجمعوا واحجزوا مع بعض عشان تاخدوا خصم أكبر! الحجوزات المنفصلة مش بتتجمع لحساب خصم الجروب. رسوم الحجز بتظهر منفصلة قبل الدفع.
 
-تذاكر Early Bird محدودة والأسعار بتزيد مع التذاكر المباعة. الإجمالي الدقيق بيظهر قبل الدفع. شروط الدخول وdoor selection بتطبق.
+تذاكر Early Bird محدودة والأسعار بتزيد مع التذاكر المباعة. الإجمالي الدقيق بيظهر قبل الدفع.
+
+بالكود الجامعي ده: الشباب والبنات 18 سنة أو أكتر، والجروبات المختلطة بنسبة 50:50، أو couples أو girls-only.
 
 www.PlanetInfinity.online
 Instagram: @planetinfinity.ent`;
