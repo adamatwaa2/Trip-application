@@ -90,6 +90,17 @@ export async function SiteFooter() {
           </div>
         </div>
 
+        <section className="pi-footer__app-strip" id="get-the-app" aria-labelledby="pi-footer-app-title">
+          <div>
+            <h2 id="pi-footer-app-title">Take Planet Infinity with you.</h2>
+            <p>Available for iPhone and Android.</p>
+          </div>
+          <div className="pi-footer__app-links">
+            <a href="https://play.google.com/store/apps/details?id=dev.m1hisham.planetinfinity" target="_blank" rel="noopener noreferrer" aria-label="Download Planet Infinity on Google Play (opens in a new tab)">Google Play <span aria-hidden="true">↗</span></a>
+            <a href="https://apps.apple.com/eg/app/planet-infinity/id6788810860" target="_blank" rel="noopener noreferrer" aria-label="Download Planet Infinity on the App Store (opens in a new tab)">App Store <span aria-hidden="true">↗</span></a>
+          </div>
+        </section>
+
         <div className="pi-footer__bottom">
           <span>Planet Infinity Entertainment · Egypt</span>
           <span>
