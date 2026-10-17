@@ -5,7 +5,7 @@ import type {PercentTier} from "@/lib/campus-pricing";
 export function CampusLeaderMessages({code,discounts}:{code:string;discounts:PercentTier[]}){
  const [status,setStatus]=useState('');
  const tierText=discounts.map((tier,i)=>`${tier.from}${discounts[i+1]?`–${discounts[i+1].from-1}`:'+'}: ${tier.percent}%`).join(' · ');
- const english=`Our next group night? Planet Infinity Halloween — 30 October 🎃🔥
+ const english=`Planet Infinity Halloween — 30 October 🎃🔥
 
 Big Halloween energy: DJ sets, live performances, horror acts, a photo booth and a full-on Halloween setup. Food & drinks available!
 
@@ -16,11 +16,11 @@ Book together for a bigger discount! Booking fees are separate.
 
 Early Bird tickets could go fast — prices rise as tickets sell.
 
-With this university code: men & women 18+; mixed groups 50:50, couples or girls-only.
+With this promo code: men & women 18+; mixed groups 50:50, couples or girls-only.
 
 Book: www.PlanetInfinity.online
 Follow for updates: @planetinfinity.ent`;
- const arabic=`مين من دفعتنا جاي Halloween مع Planet Infinity يوم 30 أكتوبر؟ 🎃🔥
+ const arabic=`Planet Infinity Halloween — يوم 30 أكتوبر 🎃🔥
 
 حفلة كبيرة بـDJ sets جامدة، live performances، فقرات رعب، photo booth وHalloween setup رهيب! وأكل وشرب متاحين 🙌
 
@@ -31,7 +31,7 @@ ${tierText}.
 
 تذاكر Early Bird محدودة وممكن تخلص بسرعة، والأسعار بتزيد مع البيع.
 
-بالكود الجامعي ده: شباب وبنات 18+، mixed groups بنسبة 50:50، أو couples أو girls-only.
+بالبرومو كود ده: شباب وبنات 18+، mixed groups بنسبة 50:50، أو couples أو girls-only.
 
 الحجز: www.PlanetInfinity.online
 اعملوا Follow للتحديثات: @planetinfinity.ent`;
