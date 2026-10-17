@@ -1,0 +1,36 @@
+begin;
+do $$
+declare e uuid; application uuid; application2 uuid; ambassador uuid; admin_id uuid; v_email text:='apply-'||gen_random_uuid()||'@example.test'; rejected boolean; before_codes integer;
+begin
+ select id into e from public.events where slug='halloween-party-2026';
+ select count(*) into before_codes from public.ambassador_codes;
+ rejected:=false;begin perform public.submit_campus_interest(e,'Demo Leader','Demo Campus',v_email,'01000000000',false);exception when others then rejected:=true;end;
+ assert rejected,'Privacy consent is required';
+ perform public.submit_campus_interest(e,'Demo Leader','Demo Campus',v_email,'01000000000',true);
+ perform public.submit_campus_interest(e,'Attempted overwrite','Another Campus',upper(v_email),'01000000001',true);
+ select id into application from public.campus_ambassador_applications a where a.event_id=e and a.email=v_email;
+ assert application is not null,'Application must be saved';
+ assert (select count(*) from public.campus_ambassador_applications where event_id=e and email=v_email)=1,'Duplicate email must not create another request';
+ assert (select full_name from public.campus_ambassador_applications where id=application)='Demo Leader','Public retries must not overwrite private details';
+ assert (select count(*) from public.ambassador_codes)=before_codes,'Applying must never create a code';
+ perform set_config('request.jwt.claim.sub','',true);
+ rejected:=false;begin perform public.review_campus_application(application,true,'APPLYTEST');exception when others then rejected:=true;end;
+ assert rejected,'Only an admin may approve';
+ select id into admin_id from public.admin_users where is_active and role='admin' limit 1;
+ perform set_config('request.jwt.claim.sub',admin_id::text,true);
+ ambassador:=public.review_campus_application(application,true,'APPLYTEST');
+ assert ambassador is not null,'Approval creates an ambassador';
+ assert ambassador=public.review_campus_application(application,true,'APPLYTEST'),'Approval retries must not duplicate ambassadors';
+ assert (select status from public.campus_ambassador_applications where id=application)='approved','Review status must persist';
+ assert (select count(*) from public.ambassador_codes where ambassador_id=ambassador and is_active)=1,'Approval creates exactly one active code';
+ assert (select email from public.campus_ambassadors where id=ambassador)=v_email,'Contact details transfer from the application';
+ perform public.submit_campus_interest(e,'Second Demo Leader','Demo Campus','second-'||v_email,'01000000002',true);
+ select id into application2 from public.campus_ambassador_applications where email='second-'||v_email;
+ perform public.review_campus_application(application2,false,null);
+ assert (select status from public.campus_ambassador_applications where id=application2)='rejected','Rejection must be recorded';
+ assert (select ambassador_id from public.campus_ambassador_applications where id=application2) is null,'Rejected applications must not activate an ambassador';
+ assert not has_table_privilege('anon','public.campus_ambassador_applications','select'),'Applicants must not read private requests';
+ assert not has_function_privilege('anon','public.submit_campus_interest(uuid,text,text,text,text,boolean)','execute'),'Public writes must pass through the validating server';
+ raise notice 'PASS: consent, duplicate protection, no code before approval, admin authorization, idempotent approval and rejection';
+end $$;
+rollback;

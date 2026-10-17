@@ -55,6 +55,14 @@ saves cannot assign a duplicate. After Z it continues AA, AB, up to ZZ. Code
 regeneration retires the old code permanently and preserves existing attribution.
 No ambassadors are seeded before actual leaders have been confirmed.
 
+Leaders can register at `/ambassadors/apply`. The form collects name, university
+or group, email, phone and privacy consent. Submitting it creates a private pending
+application, never an ambassador or a code. Admin reviews the application under
+Campus Ambassadors, enters the group prefix, then chooses **Approve & generate
+code**. Approval is idempotent. The leader receives their code only after agreement
+and approval. Rejections create no active codes. Duplicate public submissions do
+not overwrite contact details or create extra applications.
+
 Issue complimentary entry once per ambassador using their real name, email and
 phone. It includes no fee and earns no commission. Entry still requires the
 ambassador to satisfy university admission and the original physical ID checks.

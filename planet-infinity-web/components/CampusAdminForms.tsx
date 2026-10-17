@@ -1,9 +1,15 @@
 "use client";
 import Link from "next/link";
 import { useState,useTransition } from "react";
-import { saveAmbassador,saveSalesRules,issueAmbassadorEntry } from "@/app/actions/campus-ambassadors";
+import { saveAmbassador,saveSalesRules,issueAmbassadorEntry,reviewCampusApplication } from "@/app/actions/campus-ambassadors";
 import type { PercentTier,PriceTier } from "@/lib/campus-pricing";
 export type Ambassador={id:string;name:string;university:string;email:string;phone:string;is_active:boolean;codes:{code:string;active:boolean}[];confirmed_tickets:number;commission:number;entry_token:string|null};
+export function CampusApplicationReview({id,status}:{id:string;status:string}){
+ const [prefix,setPrefix]=useState(''),[message,setMessage]=useState(''),[pending,startTransition]=useTransition();
+ if(status==='approved')return <span>Approved · ambassador created below</span>;
+ function review(approve:boolean){startTransition(async()=>{try{const result=await reviewCampusApplication(id,approve,prefix);setMessage(result.ok?(approve?'Approved. The personal code is in the ambassador list.':'Application rejected.'):result.error??'Could not save.');}catch{setMessage('Could not save. Try again.');}});}
+ return <div className="pi-admin-status-form"><label>Group short name<input placeholder="FOFA or AUC" maxLength={10} value={prefix} onChange={e=>setPrefix(e.target.value.toUpperCase())}/></label><button className="pi-admin-button" disabled={pending||!/^[A-Z]{2,10}$/.test(prefix)} onClick={()=>review(true)}>Approve & generate code</button>{status!=='rejected'?<button disabled={pending} onClick={()=>review(false)}>Reject application</button>:null}<p role="status">{message}</p></div>;
+}
 export function AmbassadorForm({eventId,ambassador,preview=false,usedCodes=[],onDemoSave}:{eventId:string;ambassador?:Ambassador;preview?:boolean;usedCodes?:string[];onDemoSave?:(ambassador:Ambassador)=>void}){
  const [message,setMessage]=useState("");const [pending,startTransition]=useTransition();
  const currentCode=ambassador?.codes.find(c=>c.active)?.code??ambassador?.codes.at(-1)?.code??"";

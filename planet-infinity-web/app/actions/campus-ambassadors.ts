@@ -25,3 +25,11 @@ export async function issueAmbassadorEntry(id:string){
  if(error)return {ok:false,error:/capacity|valid email|active ambassador/i.test(error.message)?error.message:"Could not issue the entry ticket."};
  revalidatePath("/admin/ambassadors");return {ok:true,token:String(data)};
 }
+
+export async function reviewCampusApplication(id:string,approve:boolean,prefix:string){
+ await requireAdmin();
+ const supabase=await createClient();
+ const {error}=await supabase.rpc("review_campus_application",{p_id:id,p_approve:approve,p_prefix:prefix.trim().toUpperCase()||null});
+ if(error)return {ok:false,error:"Could not review the application. Use a group short name such as FOFA or AUC."};
+ revalidatePath("/admin/ambassadors");return {ok:true};
+}
