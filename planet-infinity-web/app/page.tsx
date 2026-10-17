@@ -10,21 +10,25 @@ import { SectionHeading } from "@/components/SectionHeading";
 import { TripCard } from "@/components/TripCard";
 import { getEvents, getTrips } from "@/content/source";
 import { getSiteCopy } from "@/lib/site-copy";
-import { SITE_DESCRIPTION } from "@/content/brand";
+import { getSitePresentation } from "@/lib/site-presentation";
 
-export const metadata: Metadata = {
-  title: { absolute: "Planet Infinity Entertainment | Trips & Events" },
-  description: SITE_DESCRIPTION,
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSitePresentation();
+  return {
+  title: { absolute: settings.seoTitle },
+  description: settings.seoDescription,
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Planet Infinity Entertainment | Trips & Events",
-    description: SITE_DESCRIPTION,
+    title: settings.seoTitle,
+    description: settings.seoDescription,
+    images: [settings.shareImage],
     url: "https://planetinfinity.online/",
     siteName: "Planet Infinity",
     locale: "en_EG",
     type: "website",
   },
 };
+}
 
 export default async function HomePage() {
   const [trips, events, copy] = await Promise.all([getTrips(), getEvents(), getSiteCopy()]);

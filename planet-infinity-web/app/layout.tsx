@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { fontVariables } from "./fonts";
 import { SITE_DESCRIPTION } from "@/content/brand";
+import { getSitePresentation } from "@/lib/site-presentation";
 import "./globals.css";
 
 const META_PIXEL_ID = "2084127045560120";
@@ -24,7 +25,7 @@ const META_PIXEL_BOOTSTRAP = `
   window.dispatchEvent(new Event('meta-pixel-ready'));
 `;
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   metadataBase: new URL("https://planetinfinity.online"),
   applicationName: "Planet Infinity",
   title: {
@@ -73,15 +74,24 @@ export const metadata: Metadata = {
   }, verification: { google: "rFk7aGvDqquCL6uJ-lB0ktjIi36oJ9PC5UALutqDlQE" },
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSitePresentation();
+  return { ...baseMetadata, title: { default: settings.seoTitle, template: "%s — Planet Infinity" }, description: settings.seoDescription,
+    openGraph: { ...baseMetadata.openGraph, title: settings.seoTitle, description: settings.seoDescription, images: [settings.shareImage] },
+    twitter: { ...baseMetadata.twitter, title: settings.seoTitle, description: settings.seoDescription, images: [settings.shareImage] } };
+}
+
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const settings = await getSitePresentation();
+  const localPreview = process.env.PI_LOCAL_PREVIEW === "1";
   return (
     /* English-first. Arabic + RTL later: this becomes lang="ar" dir="rtl" and
        the layout flips with it — no component rewrites needed. */
     <html lang="en" dir="ltr" className={fontVariables}>
       <body>
-        <Script id="meta-pixel" strategy="afterInteractive">
+        {!localPreview ? <Script id="meta-pixel" strategy="afterInteractive">
           {META_PIXEL_BOOTSTRAP}
-        </Script>
+        </Script> : null}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -93,7 +103,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   "@id": "https://planetinfinity.online/#organization",
                   name: "Planet Infinity Entertainment",
                   alternateName: ["Planet Infinity", "Planet Infinity Egypt"],
-                  description: SITE_DESCRIPTION,
+                  description: settings.seoDescription,
                   url: "https://planetinfinity.online/",
                   logo: {
                     "@type": "ImageObject",
@@ -131,8 +141,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             }).replace(/</g, "\\u003c"),
           }}
         />
-        <HalloweenMusic />
-        <SiteHeader />
+        {!localPreview ? <HalloweenMusic /> : null}
+        <SiteHeader headerLogo={settings.headerLogo} eventLogo={settings.eventLogo} />
         <main id="main">{children}</main>
         <SiteFooter />
       </body>

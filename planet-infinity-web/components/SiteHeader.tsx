@@ -27,7 +27,7 @@ function NavLink({ item, current }: { item: NavItem; current: boolean }) {
   );
 }
 
-export function SiteHeader() {
+export function SiteHeader({ headerLogo = "", eventLogo = "" }: { headerLogo?: string; eventLogo?: string }) {
   const pathname = usePathname() ?? "/";
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -58,7 +58,7 @@ export function SiteHeader() {
         data-menu-open={menuOpen ? "true" : undefined}
       >
         <div className="pi-header__inner">
-          <BrandLockup tone={menuOpen ? "ivory" : "ink"} world={world} />
+          <BrandLockup tone={menuOpen ? "ivory" : "ink"} world={world} logoOverride={world === "events" ? eventLogo : headerLogo} />
 
           <nav className="pi-nav" aria-label="Primary">
             {PRIMARY_NAV.map((item) => (

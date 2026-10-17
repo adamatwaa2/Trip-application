@@ -4,6 +4,9 @@ import { NextResponse, type NextRequest } from "next/server";
 /** Refresh Supabase Auth cookies for the admin routes. Authorization is still
  * enforced in the page/data layer and every Server Action. */
 export async function proxy(request: NextRequest) {
+  // Preview never refreshes or contacts a live Auth session. Page/action guards
+  // still run normally and reject admin access when Supabase is disabled.
+  if (process.env.PI_LOCAL_PREVIEW === "1") return NextResponse.next({ request });
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 

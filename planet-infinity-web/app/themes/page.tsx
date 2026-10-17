@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { getPageSeoMetadata } from "@/lib/site-presentation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ButtonLink } from "@/components/Button";
 import { Container } from "@/components/Container";
@@ -8,11 +8,7 @@ import { ThemeWorldCard } from "@/components/ThemeWorldCard";
 import { getCrossListedTrips, getThemedEvents } from "@/content/source";
 import { getSiteCopy } from "@/lib/site-copy";
 
-export const metadata: Metadata = {
-  title: "Themes",
-  description: "Immersive Planet Infinity worlds for trips, events and custom experiences.",
-  alternates: { canonical: "/themes" },
-};
+export function generateMetadata() { return getPageSeoMetadata("/themes", "Themes", "Immersive Planet Infinity worlds for trips, events and custom experiences."); }
 
 export default async function ThemesPage() {
   const [trips, events, copy] = await Promise.all([

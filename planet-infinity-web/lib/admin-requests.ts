@@ -21,7 +21,7 @@ export type AdminRequest = {
   booking: { id: string; booking_number: string } | null;
 };
 export type RequestHistoryItem = { id: string; from_status: RequestStatus | null; to_status: RequestStatus; note: string | null; changed_by: string | null; created_at: string };
-export type RequestFilters = { type?: string; status?: string; query?: string; page?: string };
+export type RequestFilters = { type?: string; status?: string; query?: string; page?: string; planning?: string };
 
 const requestColumns = "id, request_number, request_type, status, subject_slug, subject_title, external_subject_id, guest_count, selections, notes, admin_note, travel_or_event_at, payment_method, payment_proof_path, application_status, application_category, application_world, application_role, application_country, application_city, application_egypt_based, application_work_mode, created_at, updated_at, customer:customers(id, full_name, email, phone), trip:trips(title), event:events(title), booking:bookings(id, booking_number)";
 
@@ -33,6 +33,7 @@ export async function getRequests(filters: RequestFilters = {}) {
   const page = Math.max(1, Number(filters.page) || 1); const pageSize = 30;
   let query = supabase.from("requests").select(requestColumns, { count: "exact" }).is("archived_at", null).order("created_at", { ascending: false });
   if (filters.type && ["trip", "event", "application"].includes(filters.type)) query = query.eq("request_type", filters.type);
+  if (filters.planning && ["individual", "organisation", "event"].includes(filters.planning)) query = query.eq("subject_slug", `planning-${filters.planning}`);
   if (filters.status && requestStatuses.includes(filters.status as RequestStatus)) query = query.eq("status", filters.status);
   const search = escapeFilterValue(filters.query ?? "");
   if (search) query = query.or(`subject_title.ilike.%${search}%,request_number.ilike.%${search}%`);

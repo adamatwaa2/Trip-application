@@ -1,0 +1,29 @@
+.pi-management-wrap { max-width: 1160px; margin: auto; padding: 64px 24px; color: var(--pi-ink, #0F1E28); }
+.pi-management-wrap h1 { font-size: clamp(30px, 4vw, 52px); line-height: 1.1; margin: 16px 0; }
+.pi-management-wrap > p { max-width: 700px; margin-bottom: 28px; }
+.pi-planning-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 32px 0; }
+.pi-planning-card { display: block; border: 1px solid #DCE6EC; border-radius: 16px; padding: 32px; background: #FDF8F1; color: #0F1E28; text-decoration: none; }
+.pi-planning-card > p { margin: 16px 0 28px; line-height: 1.7; }
+.pi-planning-card h2 { font-size: 24px; }
+.pi-planning-card .pi-admin-form { max-width: none; }
+.pi-planning-card .agree-row label { display: block; font-weight: 400; }
+.pi-planning-card .agree-row { padding: 16px; border: 1px solid #DCE6EC; background: transparent; }
+.pi-planning-card .agree-row input { flex: 0 0 18px; }
+.pi-planning-card input, .pi-planning-card textarea, .pi-planning-card select { min-width: 0; max-width: 100%; }
+.pi-planning-check, .pi-planning-services label { display: flex !important; align-items: center; gap: 10px; }
+.pi-planning-check input, .pi-planning-services input { width: 18px !important; height: 18px; }
+.pi-planning-services { display: flex; flex-wrap: wrap; gap: 20px; padding: 16px 0; }
+.pi-management-wrap details, .pi-admin-form details { border: 1px solid #DCE6EC; border-radius: 12px; padding: 20px; margin: 16px 0; }
+.pi-admin-form summary { cursor: pointer; font-weight: 700; padding-bottom: 12px; }
+.pi-footer-editor-row { display: grid; grid-template-columns: 1fr 2fr auto auto auto; gap: 12px; align-items: end; margin: 12px 0; }
+.pi-seo-preview { border: 1px solid #DCE6EC; padding: 20px; border-radius: 10px; margin-top: 20px; max-width: 680px; }
+.pi-seo-preview h3 { font-size: 20px; margin: 8px 0; }
+.pi-preview-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: 28px 0; }
+.pi-preview-tabs button { border: 1px solid #DCE6EC; padding: 12px 18px; border-radius: 30px; background: transparent; color: #0F1E28; cursor: pointer; }
+.pi-preview-tabs button[aria-pressed=true] { background: #0F1E28; color: #FDF8F1; }
+.pi-preview-notice { border: 1px solid #DCE6EC; border-radius: 12px; padding: 16px 20px; line-height: 1.7; }
+.pi-preview-footer { background: #0F1E28; color: #FDF8F1; padding: 28px; border-radius: 12px; margin: 24px 0; }
+.pi-preview-footer-columns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.pi-preview-footer p { margin: 12px 0; }
+.pi-preview-inbox article { border-bottom: 1px solid #DCE6EC; padding: 20px 0; }
+@media(max-width: 760px) { .pi-planning-options, .pi-preview-footer-columns { grid-template-columns: 1fr; } .pi-footer-editor-row { grid-template-columns: 1fr; } .pi-planning-card { padding: 24px; } }

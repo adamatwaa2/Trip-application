@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { getPageSeoMetadata } from "@/lib/site-presentation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ButtonLink } from "@/components/Button";
 import { Container } from "@/components/Container";
@@ -8,11 +8,7 @@ import { Section } from "@/components/Section";
 import { CTA } from "@/content/cta";
 import { getSiteCopy } from "@/lib/site-copy";
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description: "Contact Planet Infinity Entertainment about trips, events and community experiences. Find our official Instagram, email and WhatsApp.",
-  alternates: { canonical: "/contact" },
-};
+export function generateMetadata() { return getPageSeoMetadata("/contact", "Contact", "Contact Planet Infinity Entertainment about trips, events and community experiences. Find our official Instagram, email and WhatsApp."); }
 
 /**
  * Contact.

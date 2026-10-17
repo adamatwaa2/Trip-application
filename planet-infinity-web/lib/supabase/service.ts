@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { getSupabaseEnvironment } from "./env";
 
 export function isSupabaseServiceConfigured(): boolean {
+  if (process.env.PI_LOCAL_PREVIEW === "1") return false;
   return Boolean(
     process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY,
   );
