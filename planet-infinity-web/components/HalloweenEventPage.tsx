@@ -2,7 +2,6 @@ import Link from "next/link";
 import { preload } from "react-dom";
 import { SITE_COPY_DEFAULTS } from "@/content/site-copy";
 import type { PlanetEvent } from "@/content/events";
-import { HALLOWEEN_TERMS } from "@/content/events/halloween";
 import { halloweenClassName, halloweenHref, type HalloweenAppearance } from "@/lib/halloween-appearance";
 import "@/app/halloween.css";
 import "@/app/halloween-night.css";
@@ -41,10 +40,10 @@ export function HalloweenEventPage({ event, appearance = "paper", whatsapp = SIT
           <p className="hw-early-bird">{event.ticketLabel ?? "Early Bird · Very limited"}</p>
           <p className="hw-description">Your alter ego has an invitation.<br/>Step out of the ordinary. Into the unexpected.</p>
           <div className="hw-hero-actions"><a className="hw-button" href="#hw-tickets">Enter the night <span aria-hidden="true">↗</span></a><a className="hw-text-link" href="#hw-experience">Discover the experience ↓</a></div>
-          <p className="hw-hero-note">CAIRO · 7 PM — 2 AM · COSTUME IS A MUST</p>
+          <p className="hw-hero-note">{event.venue} · {event.startTime} — {event.endTime}</p>
         </div>
       </section>
-      <dl className="hw-facts"><div><dt>The date</dt><dd>{event.eventDate}</dd></div><div><dt>The hours</dt><dd>{event.startTime} — {event.endTime}</dd></div><div><dt>The place</dt><dd>{event.venue}</dd></div><div><dt>The dress code</dt><dd>Costume is a must</dd></div></dl>
+      <dl className="hw-facts"><div><dt>The date</dt><dd>{event.eventDate}</dd></div><div><dt>The hours</dt><dd>{event.startTime} — {event.endTime}</dd></div><div><dt>The place</dt><dd>{event.venue}</dd></div><div><dt>Before you enter</dt><dd><a href="#hw-terms">Read admission requirements ↗</a></dd></div></dl>
       <section className="hw-section" id="hw-experience">
         <div className="hw-section-head"><div><p className="hw-eyebrow">Not your ordinary night</p><h2>Expect the<br/>unexpected.</h2></div><p>{event.description[0] ?? event.shortDescription}</p></div>
         <div className="hw-experiences">
@@ -58,11 +57,10 @@ export function HalloweenEventPage({ event, appearance = "paper", whatsapp = SIT
     {appearance === "blend" ? <div className="hw-dawn-transition" aria-hidden="true"><span>One night. More than one world.</span></div> : null}
     <section className="hw-section hw-ticket-section" id="hw-tickets"><div className="hw-wrap hw-ticket-layout"><div><p className="hw-eyebrow">Your invitation to the unknown</p><h2>Bring your people.<br/>Find your world.</h2><p>Choose your tickets, add your guest details, and pay in full using InstaPay / Vodafone Cash or Visa.</p><p className="hw-smallprint">Door selection applies. Payment does not guarantee admission. Read the event terms before paying.</p></div><HalloweenTicket event={event} appearance={appearance}/></div></section>
     <div className="hw-light-ending"><div className="hw-wrap">
-      <section className="hw-section" id="hw-terms"><div className="hw-terms-layout"><div><p className="hw-eyebrow">Before you enter</p><h2>The night.<br/>The rules.</h2><div className="hw-location"><h3>A location worth the wait.</h3><p>Cairo for now. The exact location and arrival instructions will reach confirmed guests one day before the event.</p></div><p className="hw-smallprint"><Link href="/policies/events-payment">Events — Payment & Booking Confirmation ↗</Link></p></div><ol className="hw-term-list">{HALLOWEEN_TERMS.map((term,index)=><li key={term}><span>{String(index+1).padStart(2,"0")}</span>{term}</li>)}</ol></div></section>
+      <section className="hw-section" id="hw-terms"><div className="hw-terms-layout"><div><p className="hw-eyebrow">Before you enter</p><h2>The night.<br/>The rules.</h2><div className="hw-location"><h3>A location worth the wait.</h3><p>Cairo for now. The exact location and arrival instructions will reach confirmed guests one day before the event.</p></div><p className="hw-smallprint"><Link href="/policies/events-payment">Events — Payment & Booking Confirmation ↗</Link></p></div><ol className="hw-term-list">{(event.importantInformation ?? []).map((term,index)=><li key={term}><span>{String(index+1).padStart(2,"0")}</span>{term}</li>)}</ol></div></section>
       <section className="hw-section" style={{paddingTop:0}}><div className="hw-section-head"><div><p className="hw-eyebrow">A few things to know</p><h2>Before the night.</h2></div></div><div className="hw-faq">
         <details><summary>How does booking work?</summary><p>Choose your tickets, enter every guest&apos;s details, accept the event policies and pay 100% of the total. Transfers are reviewed before payment is verified. Final confirmation is issued separately.</p></details>
-        <details><summary>Can I get a refund if I am not selected?</summary><p>Tickets are non-refundable and non-transferable, including refusal through selection, subject to applicable law. Door selection applies even with a confirmed reservation.</p></details>
-        <details><summary>Do I need a costume?</summary><p>Costume is a must. Come as your alter ego — and bring your original physical ID.</p></details>
+        <details><summary>What are the admission requirements?</summary><ul>{event.importantInformation?.map(term => <li key={term}>{term}</li>)}</ul></details>
         <details><summary>Are food and drinks included?</summary><p>Food and drink arrangements have not been announced yet. They are included only if your ticket explicitly lists them.</p></details>
       </div></section>
       <div className="hw-help"><p>Need a hand with your booking?</p><a className="hw-text-link" href={`https://wa.me/${whatsapp.replace(/\D/g,"")}?text=${encodeURIComponent("Hi Planet Infinity! I need help booking the Halloween party.")}`} target="_blank" rel="noreferrer">Chat on WhatsApp ↗ <span>{whatsapp}</span></a></div><div className="hw-bottom"><span>Planet Infinity · Entertainment</span><span>One brand. More than one world.</span></div>

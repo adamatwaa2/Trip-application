@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin";
+import { parseCairoDateTime } from "@/lib/cairo-datetime";
 import {
   catalogMediaExtension,
   isSafeCatalogUrl,
@@ -285,10 +286,12 @@ export async function createCatalogItem(input: CatalogItemInput): Promise<Action
   const requestFormTheme = normaliseRequestFormTheme(input.requestFormTheme);
 
   const supabase = await createClient();
-  const date = input.date ? new Date(input.date) : null;
-  const endDate = input.endDate ? new Date(input.endDate) : null;
+  const parseDate = input.kind === "events" ? parseCairoDateTime : (value: string) => new Date(value);
+  const date = input.date ? parseDate(input.date) : null;
+  const endDate = input.endDate ? parseDate(input.endDate) : null;
   if (input.date && Number.isNaN(date?.getTime())) return { ok: false, error: "Enter a valid date and time." };
   if (input.endDate && Number.isNaN(endDate?.getTime())) return { ok: false, error: "Enter a valid end or return date and time." };
+  if (input.kind === "events" && date && endDate && endDate <= date) return { ok: false, error: "The event must end after it starts. For an overnight event, choose the following date for the end time." };
   const shared = {
     title: text(input.title, 160),
     slug: input.slug,
@@ -380,6 +383,7 @@ export async function createCatalogItem(input: CatalogItemInput): Promise<Action
   if (input.id) revalidatePath(`/admin/${input.kind}/${input.id}`);
   revalidatePath(input.kind === "trips" ? "/trips" : "/events");
   revalidatePath(input.kind === "trips" ? `/trips/${input.slug}` : `/events/${input.slug}`);
+  if (input.kind === "events") revalidatePath(`/events/${input.slug}/book`);
   revalidatePath("/");
   revalidatePath("/trips");
   revalidatePath("/events");

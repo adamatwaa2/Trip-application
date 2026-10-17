@@ -6,7 +6,6 @@ import { SITE_COPY_DEFAULTS } from "@/content/site-copy";
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 import type { PlanetEvent } from "@/content/events";
-import { HALLOWEEN_TERMS } from "@/content/events/halloween";
 import { submitPublicEventBooking } from "@/app/actions/event-bookings";
 import { PaymentProofStep, type PaymentProofValue } from "./PaymentProofStep";
 import { PaymobPixelCheckout } from "./PaymobPixelCheckout";
@@ -99,8 +98,8 @@ export function HalloweenBookingFlow({ event, preview, appearance = "paper", wha
                   <div><label className="hw-field" htmlFor={"hw-phone-"+index}>Mobile number</label><input className="hw-input" id={"hw-phone-"+index} type="tel" autoComplete={index===0 ? "tel" : "off"} required maxLength={40} value={guest.phone} onChange={e=>updateGuest(index,{phone:e.target.value})}/></div>
                 </div></fieldset>;})}
                 {pageCount > 1 ? <nav className="hw-guest-pagination" aria-label="Guest details pages"><button type="button" disabled={guestPage===0} onClick={()=>setGuestPage(page=>page-1)}>← Previous guests</button><span>Guests {guestPage*pageSize+1}–{Math.min(quantity,(guestPage+1)*pageSize)} of {quantity}</span><button type="button" disabled={guestPage+1>=pageCount} onClick={()=>setGuestPage(page=>page+1)}>Next guests →</button></nav> : null}
-                <details className="hw-faq"><summary>Admission requirements</summary><ul>{HALLOWEEN_TERMS.map(term=><li key={term}>{term}</li>)}</ul></details>
-                <label className="hw-check-row"><input type="checkbox" required checked={agreed} onChange={e=>setAgreed(e.target.checked)}/><span>I agree to the <Link href="/policies/events-payment" target="_blank">event payment and confirmation policy</Link>, admission requirements and <Link href="/policies/privacy" target="_blank">Privacy Policy</Link>. All guests meet the age and admission requirements. Tickets are non-refundable and non-transferable, including refusal through selection, subject to applicable law.</span></label>
+                <details className="hw-faq"><summary>Admission requirements</summary><ul>{event.importantInformation?.map(term=><li key={term}>{term}</li>)}</ul></details>
+                <label className="hw-check-row"><input type="checkbox" required checked={agreed} onChange={e=>setAgreed(e.target.checked)}/><span>I agree to the <Link href="/policies/events-payment" target="_blank">event payment and confirmation policy</Link>, admission requirements and <Link href="/policies/privacy" target="_blank">Privacy Policy</Link>. All guests meet the age and admission requirements.</span></label>
               </> : null}
               {step === 1 ? <>
                 <h2>One final step.</h2><p>Pay in full. Choose the method that works for you.</p>

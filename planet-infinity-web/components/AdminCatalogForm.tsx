@@ -13,6 +13,7 @@ import {
   validateCatalogMedia,
 } from "@/lib/catalog-media";
 import { createClient } from "@/lib/supabase/client";
+import { cairoDateTimeInput } from "@/lib/cairo-datetime";
 import { BookingFormBuilder } from "@/components/BookingFormBuilder";
 import type { BookingFormField } from "@/lib/booking-form";
 import type { RequestFormTheme } from "@/lib/request-form";
@@ -370,9 +371,9 @@ export function AdminCatalogForm({
     isTrip ? item?.meeting_point ?? "" : "",
   );
   const [date, setDate] = useState(
-    (item?.departure_at ?? item?.starts_at ?? "").slice(0, 16),
+    isTrip ? (item?.departure_at ?? "").slice(0, 16) : cairoDateTimeInput(item?.starts_at),
   );
-  const [endDate, setEndDate] = useState((item?.return_at ?? item?.ends_at ?? "").slice(0, 16));
+  const [endDate, setEndDate] = useState(isTrip ? (item?.return_at ?? "").slice(0, 16) : cairoDateTimeInput(item?.ends_at));
   const [departurePoint, setDeparturePoint] = useState(item?.departure_point ?? "");
   const [returnPoint, setReturnPoint] = useState(item?.return_point ?? "");
   const [packageLabel, setPackageLabel] = useState(item?.package_label ?? "");
@@ -767,7 +768,7 @@ export function AdminCatalogForm({
         ) : null}
         <div className="pi-admin-form__grid">
           <label>
-            {isTrip ? <>Departure <span className="opt">Optional</span></> : "Starts"}
+            {isTrip ? <>Departure <span className="opt">Optional</span></> : "Starts (Cairo time)"}
             <input
               type="datetime-local"
               value={date}
@@ -775,7 +776,7 @@ export function AdminCatalogForm({
             />
           </label>
           <label>
-            {isTrip ? "Return" : "Ends"}
+            {isTrip ? "Return" : "Ends (Cairo time)"}
             <input
               type="datetime-local"
               value={endDate}
