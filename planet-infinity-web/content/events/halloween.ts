@@ -1,7 +1,7 @@
 import type { PlanetEvent } from "./types";
 
 export const HALLOWEEN_SLUG = "halloween-party-2026";
-export const HALLOWEEN_POLICY_VERSION = "events-2026-10-17";
+export const HALLOWEEN_POLICY_VERSION = "events-2026-10-17-campus";
 export const HALLOWEEN_TERMS = [
   "Men: 21+. Women: 18+.",
   "Mixed groups, couples, or women-only groups.",
@@ -42,7 +42,7 @@ export const HALLOWEEN_EVENT: PlanetEvent = {
 };
 
 export const EVENT_PAYMENT_SECTIONS = [
-  { title: "01 / Full payment", text: "Pay 100% of the ticket total shown at checkout. Events do not use trip deposits, instalments or trip balance deadlines. All mandatory fees must be shown before payment." },
+  { title: "01 / Full payment", text: "Pay 100% of the total shown at checkout. Early Bird tickets are limited and prices rise as tickets sell. A booking crossing a price tier includes each applicable ticket price. Valid code discounts apply to tickets; booking fees are shown separately. Your price is saved before payment. Events do not use trip deposits or instalments." },
   { title: "02 / Choose your payment method", text: "Pay through Planet Infinity's Paymob checkout, or transfer through the official InstaPay / Vodafone Cash details displayed in your booking. Manual transfers require a receipt and verification that the funds have arrived. Uploading a receipt alone does not verify payment." },
   { title: "03 / Payment and confirmation", text: "A booking reference or payment receipt is not an entry ticket. Final confirmation is issued only after the full payment has been verified and the booking reviewed by Planet Infinity. Admission remains subject to door selection and event requirements." },
   { title: "04 / Non-refundable tickets", text: "Tickets are non-refundable and non-transferable. This includes a change of plans, failure to attend, or refusal through selection. This condition does not limit any rights or refunds required by applicable law." },

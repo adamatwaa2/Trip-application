@@ -10,7 +10,7 @@ export async function getEventTicketState(token:string):Promise<EventTicketState
  if(error||!data)return null;
  const row=data as unknown as {booking_number:string;status:string;guest_count:number;scheduled_at:string|null;total_amount:number;amount_paid:number;selections:Record<string,unknown>;event_ticket_issued_at:string|null;customer:{full_name:string}|null;event:{title:string;slug:string;venue:string|null;starts_at:string|null;ends_at:string|null}|null;guests:{full_name:string}[];payments:{status:string;payment_proof_path:string|null}[]};
  if(row.event?.slug!=="halloween-party-2026")return null;
- const ready=row.status==="confirmed"&&Number(row.amount_paid)>=Number(row.total_amount)&&Number(row.total_amount)>0&&Boolean(row.event_ticket_issued_at);
+ const ready=row.status==="confirmed"&&Number(row.amount_paid)>=Number(row.total_amount)&&(Number(row.total_amount)>0||row.selections?.complimentaryAmbassador===true)&&Boolean(row.event_ticket_issued_at);
  const pending=row.payments.some(p=>p.status==="pending"&&Boolean(p.payment_proof_path));
  return {reference:row.booking_number,title:row.event.title,name:row.customer?.full_name??"Guest",guests:row.guests.map(g=>g.full_name),quantity:row.guest_count,date:row.event.starts_at??row.scheduled_at,endDate:row.event.ends_at,venue:row.event.venue??"Cairo · Secret location",ticketLabel:String(row.selections?.ticketLabel??"General admission"),subtotal:Number(row.selections?.ticketSubtotalEgp??row.total_amount),fees:Number(row.selections?.bookingFeesEgp??0),total:Number(row.total_amount),paid:Number(row.amount_paid),status:row.status==="cancelled"?"cancelled":ready?"confirmed":pending?"pending":"unpaid",issuedAt:row.event_ticket_issued_at};
 }

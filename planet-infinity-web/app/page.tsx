@@ -10,14 +10,15 @@ import { SectionHeading } from "@/components/SectionHeading";
 import { TripCard } from "@/components/TripCard";
 import { getEvents, getTrips } from "@/content/source";
 import { getSiteCopy } from "@/lib/site-copy";
+import { SITE_DESCRIPTION } from "@/content/brand";
 
 export const metadata: Metadata = {
-  title: { absolute: "Planet Infinity Entertainment | Trips & Events in Egypt" },
-  description: "Planet Infinity Entertainment is an Egyptian company based in Dokki, Giza. Discover our trips, events and community experiences in Egypt and selected destinations.",
+  title: { absolute: "Planet Infinity Entertainment | Trips & Events" },
+  description: SITE_DESCRIPTION,
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Planet Infinity Entertainment | Trips & Events in Egypt",
-    description: "An Egyptian entertainment and experiences company based in Dokki, Giza, Egypt.",
+    title: "Planet Infinity Entertainment | Trips & Events",
+    description: SITE_DESCRIPTION,
     url: "https://planetinfinity.online/",
     siteName: "Planet Infinity",
     locale: "en_EG",

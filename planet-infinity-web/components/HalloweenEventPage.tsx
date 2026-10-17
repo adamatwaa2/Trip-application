@@ -16,7 +16,7 @@ export function HalloweenTicket({ event, children, appearance = "paper" }: { eve
     <div className="hw-ticket-heading"><h3>General admission</h3><span>{event.ticketLabel ?? "Early Bird · Very limited"}</span></div>
     <p className="hw-price">{event.priceEgp ? `${event.priceEgp.toLocaleString("en-US")} EGP` : "Price to be announced"}</p>
     {Boolean(event.bookingFeeEgp) ? <p className="hw-fee-note">+{event.bookingFeeEgp} EGP booking fee per ticket</p> : null}
-    <p className="hw-smallprint">Per person · 100% paid at booking</p>
+    <p className="hw-smallprint">Per person · 100% paid at booking<br/>Early Bird tickets are limited. Prices rise as tickets sell. Your exact total is shown at checkout.</p>
     <ul><li>{event.eventDate} · {event.startTime} — {event.endTime}</li><li>{event.venue} · location revealed one day before</li><li>Mixed groups, couples or girls only</li></ul>
     {children ?? <Link className="hw-button" href={halloweenHref(appearance,true)}>Book your night <span aria-hidden="true">↗</span></Link>}
     <div className="hw-ticket-bottom"><span>YOUR NIGHT STARTS HERE</span><strong>PI / 30.10</strong></div>
@@ -63,7 +63,7 @@ export function HalloweenEventPage({ event, appearance = "paper", whatsapp = SIT
         <details><summary>What are the admission requirements?</summary><ul>{event.importantInformation?.map(term => <li key={term}>{term}</li>)}</ul></details>
         <details><summary>Are food and drinks included?</summary><p>Food and drink arrangements have not been announced yet. They are included only if your ticket explicitly lists them.</p></details>
       </div></section>
-      <div className="hw-help"><p>Need a hand with your booking?</p><a className="hw-text-link" href={`https://wa.me/${whatsapp.replace(/\D/g,"")}?text=${encodeURIComponent("Hi Planet Infinity! I need help booking the Halloween party.")}`} target="_blank" rel="noreferrer">Chat on WhatsApp ↗ <span>{whatsapp}</span></a></div><div className="hw-bottom"><span>Planet Infinity · Entertainment</span><span>One brand. More than one world.</span></div>
+      <div className="hw-help"><p>Need a hand with your booking?</p><a className="hw-text-link" href={`https://wa.me/${whatsapp.replace(/\D/g,"")}?text=${encodeURIComponent("Hi Planet Infinity! I need help booking the Halloween party.")}`} target="_blank" rel="noreferrer">Chat on WhatsApp ↗ <span>{whatsapp}</span></a><p>Book at <a href="https://www.PlanetInfinity.online">www.PlanetInfinity.online</a> · Follow <a href="https://www.instagram.com/planetinfinity.ent/" target="_blank" rel="noreferrer">@planetinfinity.ent ↗</a></p></div><div className="hw-bottom"><span>Planet Infinity · Entertainment</span><span>One brand. More than one world.</span></div>
     </div></div>
   </div>;
 }
