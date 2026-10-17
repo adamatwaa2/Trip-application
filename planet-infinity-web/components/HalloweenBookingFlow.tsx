@@ -12,8 +12,8 @@ import { HalloweenTicket } from "./HalloweenEventPage";
 import { halloweenClassName, halloweenHref, type HalloweenAppearance } from "@/lib/halloween-appearance";
 import { SITE_COPY_DEFAULTS } from "@/content/site-copy";
 
-type Guest = {name:string;phone:string;gender:string;dateOfBirth:string};
-const emptyGuest:Guest={name:"",phone:"",gender:"",dateOfBirth:""};
+type Guest = {name:string;phone:string};
+const emptyGuest:Guest={name:"",phone:""};
 const money=(n:number)=>n.toLocaleString("en-US",{maximumFractionDigits:2});
 
 export function HalloweenBookingFlow({event,preview,appearance="paper",whatsapp=SITE_COPY_DEFAULTS.contact_whatsapp}:{event:PlanetEvent;preview:boolean;appearance?:HalloweenAppearance;whatsapp?:string}){
@@ -30,10 +30,7 @@ export function HalloweenBookingFlow({event,preview,appearance="paper",whatsapp=
  const quantityValid=Number.isSafeInteger(quantity)&&quantity>=1&&quantity<=max;
  const currentQuote=quote?.quantity===quantity&&(quote.code??"")===appliedCode?quote:null;
  const activeGuests=Array.from({length:quantityValid?quantity:0},(_,i)=>guests[i]??emptyGuest);
- const men=activeGuests.filter(g=>g.gender==="man").length,women=activeGuests.filter(g=>g.gender==="woman").length;
- const groupValid=!currentQuote?.universityAdmission||men===0||men===women;
- function meetsAge(g:Guest){return Boolean(g.dateOfBirth)&&g.dateOfBirth>='1900-01-01'&&g.dateOfBirth<=(currentQuote?.universityAdmission||g.gender==='woman'?'2008-10-30':'2005-10-30');}
- const valid=Boolean(currentQuote)&&quantityValid&&groupValid&&activeGuests.every(g=>g.name.trim().length>=2&&g.phone.trim().length>=6&&g.gender&&meetsAge(g))&&agreed&&/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
+ const valid=Boolean(currentQuote)&&quantityValid&&activeGuests.every(g=>g.name.trim().length>=2&&g.phone.trim().length>=6)&&agreed&&/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
  const upcoming=currentQuote?.code?nextDiscount(currentQuote.discountTiers,quantity):undefined;
  useEffect(()=>{
   if(!quantityValid||reservation)return;
@@ -91,16 +88,14 @@ export function HalloweenBookingFlow({event,preview,appearance="paper",whatsapp=
     <h2>Your tickets. Your people.</h2><p>Choose how many are coming. Your total updates as you go.</p>
     <label className="hw-field" htmlFor="hw-quantity">Number of tickets</label>
     <div className="hw-quantity-picker"><div className="hw-quantity-control"><button type="button" aria-label="Remove one ticket" disabled={!quantityValid||quantity<=1} onClick={()=>resize(String(quantity-1))}>−</button><input id="hw-quantity" type="number" min={1} max={max} step={1} value={quantityInput} onChange={e=>resize(e.target.value)}/><button type="button" aria-label="Add one ticket" disabled={quantity>=max} onClick={()=>resize(String(quantityValid?quantity+1:1))}>+</button></div><div className="hw-quantity-total" aria-live="polite"><span>Total including booking fees</span><strong>{currentQuote?money(currentQuote.total)+" EGP":"Updating total…"}</strong></div></div>
-    <label className="hw-field" htmlFor="hw-promo">Ambassador code (optional)</label>
+    <label className="hw-field" htmlFor="hw-promo">Promo code (optional)</label>
     <div className="hw-field-row"><input className="hw-input" id="hw-promo" autoCapitalize="characters" maxLength={24} placeholder="Enter your code" value={promoInput} onChange={e=>setPromoInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();applyCode();}}}/><button type="button" className="hw-button hw-button--light" onClick={applyCode}>Apply</button></div>
     {currentQuote?.code?<div className="hw-notice" role="status"><strong>{currentQuote.code} applied · {currentQuote.discountPercent}% off tickets</strong><p>You save {money(currentQuote.discountEgp)} EGP.</p>{upcoming?<p>Bring {upcoming.from-quantity} more {upcoming.from-quantity===1?"friend":"friends"} in this booking to unlock {upcoming.percent}% off all tickets.</p>:<p>You have unlocked the highest group discount.</p>}<details><summary>Group discounts with your code</summary><ul>{currentQuote.discountTiers.map((t,i)=><li key={t.from}>{t.from}{currentQuote.discountTiers[i+1]?`–${currentQuote.discountTiers[i+1].from-1}`:"+"} tickets: {t.percent}% off</li>)}</ul></details></div>:null}
     {pricingError?<p className="hw-error" role="alert">{pricingError}</p>:null}
     <label className="hw-field" htmlFor="hw-email">Booking email</label><input className="hw-input" id="hw-email" type="email" autoComplete="email" maxLength={254} value={email} onChange={e=>setEmail(e.target.value)}/>
-    {indexes.map(i=>{const g=guests[i]??emptyGuest;return <fieldset key={i}><legend>Guest {i+1}{i===0?" / booking contact":""}</legend><div className="hw-field-row"><div><label className="hw-field" htmlFor={`name-${i}`}>Full name</label><input className="hw-input" id={`name-${i}`} maxLength={120} value={g.name} onChange={e=>updateGuest(i,{name:e.target.value})}/></div><div><label className="hw-field" htmlFor={`phone-${i}`}>Mobile number</label><input className="hw-input" id={`phone-${i}`} type="tel" maxLength={40} value={g.phone} onChange={e=>updateGuest(i,{phone:e.target.value})}/></div></div><div className="hw-field-row"><div><label className="hw-field" htmlFor={`gender-${i}`}>Gender</label><select className="hw-input" id={`gender-${i}`} value={g.gender} onChange={e=>updateGuest(i,{gender:e.target.value})}><option value="">Select</option><option value="woman">Woman</option><option value="man">Man</option></select></div><div><label className="hw-field" htmlFor={`dob-${i}`}>Date of birth</label><input className="hw-input" id={`dob-${i}`} type="date" min="1900-01-01" max="2026-10-30" value={g.dateOfBirth} onChange={e=>updateGuest(i,{dateOfBirth:e.target.value})}/></div></div></fieldset>;})}
+    {indexes.map(i=>{const g=guests[i]??emptyGuest;return <fieldset key={i}><legend>Guest {i+1}{i===0?" / booking contact":""}</legend><div className="hw-field-row"><div><label className="hw-field" htmlFor={`name-${i}`}>Full name</label><input className="hw-input" id={`name-${i}`} maxLength={120} value={g.name} onChange={e=>updateGuest(i,{name:e.target.value})}/></div><div><label className="hw-field" htmlFor={`phone-${i}`}>Mobile number</label><input className="hw-input" id={`phone-${i}`} type="tel" maxLength={40} value={g.phone} onChange={e=>updateGuest(i,{phone:e.target.value})}/></div></div></fieldset>;})}
     {pages>1?<nav className="hw-guest-pagination" aria-label="Guest details pages"><button type="button" disabled={guestPage===0} onClick={()=>setGuestPage(p=>p-1)}>← Previous guests</button><span>Guests {guestPage*5+1}–{Math.min(quantity,(guestPage+1)*5)} of {quantity}</span><button type="button" disabled={guestPage+1>=pages} onClick={()=>setGuestPage(p=>p+1)}>Next guests →</button></nav>:null}
-    {currentQuote?.universityAdmission?<p className="hw-notice">University code admission: all guests 18+. Mixed groups must be 50:50, couples or girls-only. Bring your original physical ID. Door selection applies.</p>:<details className="hw-faq"><summary>Admission requirements</summary><ul>{event.importantInformation?.map(t=><li key={t}>{t}</li>)}</ul></details>}
-    {!groupValid?<p className="hw-error">For this university code, choose equal numbers of men and women, a couple or girls-only. Your ambassador can help you join a group.</p>:null}
-    {activeGuests.some(g=>g.gender&&g.dateOfBirth&&!meetsAge(g))?<p className="hw-error" role="alert">Check each guest&apos;s age on 30 October 2026 against the admission requirements above.</p>:null}
+    {currentQuote?.universityAdmission?<p className="hw-notice">University code admission: men and women 18+. Mixed groups must be 50:50, couples or girls-only. Bring your original physical ID.</p>:<details className="hw-faq"><summary>Admission requirements</summary><ul>{event.importantInformation?.map(t=><li key={t}>{t}</li>)}</ul></details>}
     <label className="hw-check-row"><input type="checkbox" checked={agreed} onChange={e=>setAgreed(e.target.checked)}/><span>I accept the <Link href="/policies/events-payment" target="_blank">event payment policy</Link>, admission requirements and <Link href="/policies/privacy" target="_blank">Privacy Policy</Link>. All guests meet the requirements.</span></label>
     <button type="button" className="hw-button" disabled={!valid||pending} onClick={continueToPayment}>{pending?"Reserving your tickets…":"Continue to payment →"}</button>
    </>:<>
