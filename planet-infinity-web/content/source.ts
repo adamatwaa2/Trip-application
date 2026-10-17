@@ -9,6 +9,7 @@ import "server-only";
 
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient,isSupabaseServiceConfigured } from "@/lib/supabase/service";
 import { EVENTS, FEATURED_EVENTS, allEvents, findEvent, type PlanetEvent } from "./events";
 import { FEATURED_TRIPS, TRIPS, allTrips, findTrip, type Trip } from "./trips";
 import { SOCOTRA_TRIP } from "./socotra";
@@ -123,7 +124,14 @@ async function databaseEvents(): Promise<PlanetEvent[] | null> {
   const { data, error } = await eventQuery;
   // See databaseTrips: an empty table must not blank out the public listing.
   if (error || !data?.length) return null;
-  return (data as unknown as DatabaseEvent[]).map(mapEvent);
+  const events=(data as unknown as DatabaseEvent[]).map(mapEvent);
+  if(isSupabaseServiceConfigured()){
+    await Promise.all(events.filter(e=>e.slug==="halloween-party-2026").map(async event=>{
+      const {data:summary}=await createServiceClient().rpc("event_sales_summary",{p_event_id:event.id});
+      if(summary?.nextPrice)event.priceEgp=Number(summary.nextPrice);
+    }));
+  }
+  return events;
 }
 
 export function dataSource(): "local" | "supabase" { return isSupabaseConfigured() ? "supabase" : "local"; }

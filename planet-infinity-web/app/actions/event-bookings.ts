@@ -8,9 +8,28 @@ import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createServiceClient, isSupabaseServiceConfigured } from "@/lib/supabase/service";
 import { HALLOWEEN_EVENT, HALLOWEEN_TERMS } from "@/content/events/halloween";
+import type { EventQuote } from "@/lib/campus-pricing";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-type Input = { eventId: string; submissionId: string; email: string; guests: { name: string; phone: string }[]; termsAccepted: boolean; paymentMethod: "manual" | "paymob"; paymentProof: { method: string; path: string } | null; promoCode?: string | null };
+type Input = { eventId: string; submissionId: string; sessionId: string; quoteId: string; email: string; guests: { name: string; phone: string; gender: string; dateOfBirth: string }[]; termsAccepted: boolean; paymentMethod: "manual" | "paymob"; paymentProof: { method: string; path: string } | null };
+
+function checkoutError(message: string | undefined) {
+  return message && /price|unavailable|capacity|receipt|group|code|polic|already|age|guest|birth|gender|reserv|quantity|tickets/i.test(message) && !/function|schema|column|relation/i.test(message)
+    ? message.slice(0,220) : "Event checkout is temporarily unavailable. Please try again or contact Planet Infinity.";
+}
+
+export async function reserveEventQuote(eventId: string, sessionId: string, quantity: number, code: string): Promise<{ok:true;quote:EventQuote}|{ok:false;error:string}> {
+  if (!UUID.test(eventId) || !UUID.test(sessionId) || !Number.isSafeInteger(quantity) || quantity<1 || quantity>500 || typeof code!=="string" || code.length>24) return {ok:false,error:"Choose a valid quantity and ambassador code."};
+  if (!isSupabaseServiceConfigured()) return {ok:false,error:"Event pricing is unavailable in this environment."};
+  const {data,error}=await createServiceClient().rpc("reserve_event_quote",{p_event_id:eventId,p_session_id:sessionId,p_quantity:quantity,p_code:code.trim().toUpperCase()||null});
+  return error || !data ? {ok:false,error:checkoutError(error?.message)} : {ok:true,quote:data as EventQuote};
+}
+
+export async function attachEventReceipt(token: string, proof: {method:string;path:string}): Promise<{ok:true}|{ok:false;error:string}> {
+  if (!UUID.test(token) || !proof || !["instapay","vodafone_cash"].includes(proof.method) || !/^pending\/\d{4}-\d{2}\/[0-9a-f-]{36}\.(jpg|jpeg|png|webp)$/.test(proof.path)) return {ok:false,error:"Upload a valid payment receipt."};
+  const {error}=await createServiceClient().rpc("attach_event_receipt",{p_token:token,p_method:proof.method,p_path:proof.path});
+  return error ? {ok:false,error:checkoutError(error.message)} : {ok:true};
+}
 
 export async function submitPublicEventBooking(input: Input): Promise<{ok:true;bookingNumber:string;paymentToken?:string}|{ok:false;error:string}> {
   if (!input || !UUID.test(input.eventId) || !UUID.test(input.submissionId) || input.termsAccepted !== true || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(input.email) || input.email.length>254) return {ok:false,error:"Check your booking details and accept the event policies."};
@@ -19,16 +38,14 @@ export async function submitPublicEventBooking(input: Input): Promise<{ok:true;b
   if (!isSupabaseConfigured() || !isSupabaseServiceConfigured()) return {ok:false,error:"Event bookings are not open in this environment."};
   // The privileged RPC is service-role-only and performs all writes atomically.
   // It validates the published product, price, capacity, receipt and policy version.
-  const promoCode = (input.promoCode ?? "").trim().toUpperCase();
-  if (promoCode && promoCode !== "FOFA") return {ok:false,error:"Invalid promo code."};
-  if (promoCode === "FOFA" && input.guests.length < 5) return {ok:false,error:"FOFA requires at least 5 tickets in one booking."};
-  const {data,error} = await createServiceClient().rpc(promoCode ? "submit_public_event_booking_fofa" : "submit_public_event_booking",{
-    p_event_id:input.eventId,p_submission_id:input.submissionId,p_email:input.email.trim().toLowerCase(),p_guests:input.guests.map(g=>({name:g.name.trim(),phone:g.phone.trim()})),p_payment_method:input.paymentMethod,p_payment_proof:input.paymentProof,p_terms_accepted:input.termsAccepted,...(promoCode ? {p_promo_code:promoCode} : {}),
+  if (!UUID.test(input.quoteId) || !UUID.test(input.sessionId) || input.guests.length>500) return {ok:false,error:"Refresh your ticket total before continuing."};
+  const {data,error} = await createServiceClient().rpc("submit_campus_event_booking",{
+    p_quote_id:input.quoteId,p_session_id:input.sessionId,p_submission_id:input.submissionId,p_email:input.email.trim().toLowerCase(),p_guests:input.guests.map(g=>({name:g.name.trim(),phone:g.phone.trim(),gender:g.gender,dateOfBirth:g.dateOfBirth})),p_payment_method:input.paymentMethod,p_payment_proof:input.paymentProof,p_terms_accepted:input.termsAccepted,
   });
   const row=data?.[0];
   if (error || !row?.booking_number) {
     const message = error?.message ?? "";
-    return {ok:false,error:/price|unavailable|capacity|receipt|group|promo|FOFA|polic|already|age/i.test(message) && !/function|schema|column|relation/i.test(message) ? message.slice(0,180) : "Event checkout is temporarily unavailable. Please contact Planet Infinity."};
+    return {ok:false,error:checkoutError(message)};
   }
   after(async()=>{await sendAdminPush({title:"New event booking",body:`${row.booking_number} is ready for review.`,url:"/admin/bookings"});});
   return {ok:true,bookingNumber:row.booking_number,paymentToken:typeof row.payment_token === "string" ? row.payment_token : undefined};

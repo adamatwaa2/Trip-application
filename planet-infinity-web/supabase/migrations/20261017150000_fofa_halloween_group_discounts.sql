@@ -75,3 +75,6 @@ begin
 end;$$;
 revoke all on function public.submit_public_event_booking_fofa(uuid,uuid,text,jsonb,text,jsonb,boolean,text) from public,anon,authenticated;
 grant execute on function public.submit_public_event_booking_fofa(uuid,uuid,text,jsonb,text,jsonb,boolean,text) to service_role;
+-- Superseded by campus_ambassadors_and_ticket_tiers. Keep the historical
+-- definition for migration continuity, but never expose the retired writer.
+revoke all on function public.submit_public_event_booking_fofa(uuid,uuid,text,jsonb,text,jsonb,boolean,text) from service_role;
