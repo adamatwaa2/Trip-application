@@ -78,7 +78,10 @@ deploy and verify the new checkout, then install `retire_fixed_event_checkout`.
 The initial migration leaves the old checkout available for existing deployments.
 The release migration makes stale checkout clients refresh their page.
 
-No production migration has been applied by this change until release approval.
+The preparation migration was verified locally and applied to the specified
+Supabase project. Its integration assertions also passed there with all fixtures
+rolled back. The four existing event bookings retained the same saved totals and
+snapshot checksum. The final release migration follows checkout deployment.
 
 Run `npm run typecheck`, `npm run lint`, `npm run build` and the transaction-wrapped
 `supabase/tests/campus_ambassadors.test.sql`. Database fixtures roll back. Also

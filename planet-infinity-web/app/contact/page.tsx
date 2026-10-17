@@ -10,7 +10,7 @@ import { getSiteCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Contact Planet Infinity Entertainment in Dokki, Giza, Egypt about trips, events and community experiences. Find our official Instagram, email and WhatsApp.",
+  description: "Contact Planet Infinity Entertainment about trips, events and community experiences. Find our official Instagram, email and WhatsApp.",
   alternates: { canonical: "/contact" },
 };
 

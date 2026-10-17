@@ -11,6 +11,7 @@
  */
 
 export type BrandWorld = "general" | "events";
+export const SITE_DESCRIPTION = "Entertainment, community and experiences. One brand, more than one world.";
 
 type LogoAsset = {
   src: string;

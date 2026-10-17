@@ -5,6 +5,7 @@ import { HalloweenMusic } from "@/components/HalloweenMusic";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { fontVariables } from "./fonts";
+import { SITE_DESCRIPTION } from "@/content/brand";
 import "./globals.css";
 
 const META_PIXEL_ID = "2084127045560120";
@@ -27,11 +28,10 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://planetinfinity.online"),
   applicationName: "Planet Infinity",
   title: {
-    default: "Planet Infinity Entertainment | Egypt",
+    default: "Planet Infinity Entertainment",
     template: "%s — Planet Infinity",
   },
-  description:
-    "Planet Infinity is an entertainment and community platform for curated gatherings, events, experiences and selected trips in Egypt.",
+  description: SITE_DESCRIPTION,
   keywords: [
     "Planet Infinity",
     "Planet Infinity Egypt",
@@ -53,8 +53,8 @@ export const metadata: Metadata = {
     apple: [{ url: "/apple-icon", type: "image/png", sizes: "512x512" }],
   },
   openGraph: {
-    title: "Planet Infinity Entertainment | Egypt",
-    description: "An entertainment and community platform for curated gatherings, events, experiences and selected trips in Egypt.",
+    title: "Planet Infinity Entertainment",
+    description: SITE_DESCRIPTION,
     siteName: "Planet Infinity",
     locale: "en_EG",
     type: "website",
@@ -62,8 +62,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Planet Infinity Entertainment | Egypt",
-    description: "An entertainment and community platform for curated gatherings, events, experiences and selected trips in Egypt.",
+    title: "Planet Infinity Entertainment",
+    description: SITE_DESCRIPTION,
     images: ["/opengraph-image?brand=20260829"],
   },
   robots: {
@@ -93,7 +93,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   "@id": "https://planetinfinity.online/#organization",
                   name: "Planet Infinity Entertainment",
                   alternateName: ["Planet Infinity", "Planet Infinity Egypt"],
-                  description: "Planet Infinity Entertainment is an Egyptian entertainment and experiences company based in Dokki, Giza, Egypt, creating trips, events and community gatherings.",
+                  description: SITE_DESCRIPTION,
                   url: "https://planetinfinity.online/",
                   logo: {
                     "@type": "ImageObject",
