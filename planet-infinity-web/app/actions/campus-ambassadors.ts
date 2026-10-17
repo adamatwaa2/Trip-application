@@ -30,6 +30,6 @@ export async function reviewCampusApplication(id:string,approve:boolean,prefix:s
  await requireAdmin();
  const supabase=await createClient();
  const {error}=await supabase.rpc("review_campus_application",{p_id:id,p_approve:approve,p_prefix:prefix.trim().toUpperCase()||null});
- if(error)return {ok:false,error:"Could not review the application. Use a group short name such as FOFA or AUC."};
+ if(error)return {ok:false,error:"Could not approve. Choose a unique code such as FOFA-D1 using letters, numbers or a dash."};
  revalidatePath("/admin/ambassadors");return {ok:true};
 }

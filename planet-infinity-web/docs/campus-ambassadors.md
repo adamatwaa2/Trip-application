@@ -48,17 +48,18 @@ individual codes, code retirement, free entry tickets, price/discount/commission
 tiers, and bookings filtered by their original code. Retired codes cannot be
 reassigned to another person. Rule edits and ambassador changes are audited.
 
-Enter the leader name and their university/group, email and phone. Choose a short
-group prefix such as FOFA or AUC and click **Save & generate code**. The database
-allocates FOFA-A, FOFA-B, etc. under the same event lock, so simultaneous admin
-saves cannot assign a duplicate. After Z it continues AA, AB, up to ZZ. Code
-regeneration retires the old code permanently and preserves existing attribution.
+Enter the leader name and their university/group, email and phone. Type the exact
+code you want, such as FOFA-D1, and click **Save & generate code**. The database
+checks uniqueness under the event lock and activates the chosen code. Editing a
+code retires the old code and preserves existing attribution. Retired codes cannot
+be assigned to another leader. The internal allocator remains backward compatible;
+the panel uses owner-chosen codes.
 No ambassadors are seeded before actual leaders have been confirmed.
 
 Leaders can register at `/ambassadors/apply`. The form collects name, university
 or group, email, phone and privacy consent. Submitting it creates a private pending
 application, never an ambassador or a code. Admin reviews the application under
-Campus Ambassadors, enters the group prefix, then chooses **Approve & generate
+Campus Ambassadors, types the exact chosen code, then chooses **Approve & activate
 code**. Approval is idempotent. The leader receives their code only after agreement
 and approval. Rejections create no active codes. Duplicate public submissions do
 not overwrite contact details or create extra applications.
@@ -73,10 +74,10 @@ girls-only. Age is checked at the event date and the university ratio is checked
 in the database before payment. Date of birth and gender are stored privately in
 the existing guest-roster booking snapshot, under the existing admin access rules.
 
-`/preview/campus` is explicitly a demonstration. It accepts FOFA-A and AUC-A as
+`/preview/campus` is explicitly a demonstration. It accepts FOFA-D1 and AUC-D1 as
 sample codes only, uses no real customer records and cannot charge or issue entry.
 Real codes require real ambassador assignment in the admin panel.
-`/preview/campus/admin` demonstrates adding leaders and allocating short codes
+`/preview/campus/admin` demonstrates adding leaders and saving chosen codes
 without writing to the live database.
 
 ## Verification

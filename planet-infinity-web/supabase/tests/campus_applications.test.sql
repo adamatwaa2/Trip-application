@@ -18,9 +18,10 @@ begin
  assert rejected,'Only an admin may approve';
  select id into admin_id from public.admin_users where is_active and role='admin' limit 1;
  perform set_config('request.jwt.claim.sub',admin_id::text,true);
- ambassador:=public.review_campus_application(application,true,'APPLYTEST');
+ ambassador:=public.review_campus_application(application,true,'APPLYTEST-D1');
  assert ambassador is not null,'Approval creates an ambassador';
- assert ambassador=public.review_campus_application(application,true,'APPLYTEST'),'Approval retries must not duplicate ambassadors';
+ assert ambassador=public.review_campus_application(application,true,'APPLYTEST-D1'),'Approval retries must not duplicate ambassadors';
+ assert (select code from public.ambassador_codes where ambassador_id=ambassador and is_active)='APPLYTEST-D1','Approval must preserve the exact code chosen by the owner';
  assert (select status from public.campus_ambassador_applications where id=application)='approved','Review status must persist';
  assert (select count(*) from public.ambassador_codes where ambassador_id=ambassador and is_active)=1,'Approval creates exactly one active code';
  assert (select email from public.campus_ambassadors where id=ambassador)=v_email,'Contact details transfer from the application';

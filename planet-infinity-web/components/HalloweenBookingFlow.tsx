@@ -42,7 +42,7 @@ export function HalloweenBookingFlow({event,preview,appearance="paper",whatsapp=
    sessionId.current??=crypto.randomUUID();
    try{
     if(preview){
-     if(appliedCode&&!['FOFA-A','AUC-A'].includes(appliedCode)){if(active){setQuote(null);setPricingError("Demo codes: FOFA-A or AUC-A.");}return;}
+     if(appliedCode&&!['FOFA-D1','AUC-D1'].includes(appliedCode)){if(active){setQuote(null);setPricingError("Demo codes: FOFA-D1 or AUC-D1.");}return;}
      if(active){setQuote(previewQuote(quantity,appliedCode,event.priceEgp??1000,event.bookingFeeEgp??0));setPricingError("");}return;
     }
     const result=await reserveEventQuote(event.id,sessionId.current,quantity,appliedCode);
@@ -81,7 +81,7 @@ export function HalloweenBookingFlow({event,preview,appearance="paper",whatsapp=
  const pages=quantityValid?Math.ceil(quantity/5):0;
  const indexes=Array.from({length:quantityValid?Math.min(5,quantity-guestPage*5):0},(_,i)=>guestPage*5+i);
  return <div className={halloweenClassName(appearance)}>
-  {preview?<nav className="hw-preview-bar" aria-label="Demonstration"><strong>Campus checkout preview</strong><span>Try FOFA-A or AUC-A · no real payment or ticket</span><Link href="/preview/campus/admin">Admin preview ↗</Link></nav>:null}
+  {preview?<nav className="hw-preview-bar" aria-label="Demonstration"><strong>Campus checkout preview</strong><span>Try FOFA-D1 or AUC-D1 · no real payment or ticket</span><Link href="/preview/campus/admin">Admin preview ↗</Link></nav>:null}
   <div className="hw-wrap"><div className="hw-topline"><Link href={halloweenHref(appearance)}>← Back to the night</Link><span>Halloween / 30.10.26</span></div>
   <section className="hw-checkout"><p className="hw-eyebrow">Your world starts here</p><h1>Make it a night.</h1>
   <div className="hw-checkout-grid"><div className="hw-form">

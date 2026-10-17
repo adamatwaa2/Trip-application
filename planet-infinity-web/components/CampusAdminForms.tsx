@@ -8,26 +8,25 @@ export function CampusApplicationReview({id,status}:{id:string;status:string}){
  const [prefix,setPrefix]=useState(''),[message,setMessage]=useState(''),[pending,startTransition]=useTransition();
  if(status==='approved')return <span>Approved · ambassador created below</span>;
  function review(approve:boolean){startTransition(async()=>{try{const result=await reviewCampusApplication(id,approve,prefix);setMessage(result.ok?(approve?'Approved. The personal code is in the ambassador list.':'Application rejected.'):result.error??'Could not save.');}catch{setMessage('Could not save. Try again.');}});}
- return <div className="pi-admin-status-form"><label>Group short name<input placeholder="FOFA or AUC" maxLength={10} value={prefix} onChange={e=>setPrefix(e.target.value.toUpperCase())}/></label><button className="pi-admin-button" disabled={pending||!/^[A-Z]{2,10}$/.test(prefix)} onClick={()=>review(true)}>Approve & generate code</button>{status!=='rejected'?<button disabled={pending} onClick={()=>review(false)}>Reject application</button>:null}<p role="status">{message}</p></div>;
+ return <div className="pi-admin-status-form"><label>Code you choose<input placeholder="FOFA-D1" maxLength={24} value={prefix} onChange={e=>setPrefix(e.target.value.toUpperCase())}/></label><button className="pi-admin-button" disabled={pending||!/^[A-Z0-9-]{3,24}$/.test(prefix)} onClick={()=>review(true)}>Approve & activate code</button>{status!=='rejected'?<button disabled={pending} onClick={()=>review(false)}>Reject application</button>:null}<p role="status">{message}</p></div>;
 }
 export function AmbassadorForm({eventId,ambassador,preview=false,usedCodes=[],onDemoSave}:{eventId:string;ambassador?:Ambassador;preview?:boolean;usedCodes?:string[];onDemoSave?:(ambassador:Ambassador)=>void}){
  const [message,setMessage]=useState("");const [pending,startTransition]=useTransition();
  const currentCode=ambassador?.codes.find(c=>c.active)?.code??ambassador?.codes.at(-1)?.code??"";
- const [prefix,setPrefix]=useState(currentCode.includes('-')?currentCode.split('-')[0]:"");
+ const [chosenCode,setChosenCode]=useState(currentCode);
  return <form className="pi-admin-form" action={form=>{startTransition(async()=>{try{
   if(preview){
-   let generated=currentCode;
-   if(!generated||form.get('regenerate')==='on')for(let i=1;i<=702;i++){const suffix=i<=26?String.fromCharCode(64+i):String.fromCharCode(65+Math.floor((i-27)/26))+String.fromCharCode(65+(i-27)%26);const candidate=prefix.trim().toUpperCase()+'-'+suffix;if(!usedCodes.includes(candidate)){generated=candidate;break;}}
+   const generated=chosenCode.trim().toUpperCase();
+   if(usedCodes.includes(generated)&&!ambassador?.codes.some(c=>c.code===generated)){setMessage('This code is already assigned. Choose another code.');return;}
    onDemoSave?.({id:ambassador?.id??crypto.randomUUID(),name:String(form.get('name')),university:String(form.get('university')),email:String(form.get('email')),phone:String(form.get('phone')),is_active:form.get('active')==='on',codes:[...(ambassador?.codes??[]).map(c=>({...c,active:false})),{code:generated,active:form.get('active')==='on'}],confirmed_tickets:0,commission:0,entry_token:null});setMessage(`Demo saved · ${generated}. No real ambassador or code was created.`);return;
   }
   const result=await saveAmbassador(form);setMessage(result.ok?"Ambassador saved. The assigned code appears in the ambassador list below.":result.error??"Could not save.");
  }catch{setMessage("Could not save. Try again.");}});}}>
   <input type="hidden" name="eventId" value={eventId}/><input type="hidden" name="id" value={ambassador?.id??""}/>
-  <div className="pi-admin-form__grid pi-admin-form__grid--two">{[['name','Full name',ambassador?.name],['university','University / group',ambassador?.university],['email','Email',ambassador?.email],['phone','Phone',ambassador?.phone]].map(([name,label,value])=><label key={name}><span>{label}</span><input name={name} defaultValue={value??""} type={name==='email'?'email':'text'} maxLength={120} required={name==='name'}/></label>)}<label>Group short name<input name="prefix" placeholder="FOFA or AUC" value={prefix} onChange={e=>setPrefix(e.target.value.toUpperCase())} maxLength={10} pattern="[A-Za-z]{2,10}" required/></label><label>Assigned code<input name="code" value={currentCode} placeholder="Generated when you save" readOnly/></label></div>
-  {ambassador?<label className="pi-admin-check"><input type="checkbox" name="regenerate"/> Generate a new code and retire the current code</label>:null}
+  <div className="pi-admin-form__grid pi-admin-form__grid--two">{[['name','Full name',ambassador?.name],['university','University / group',ambassador?.university],['email','Email',ambassador?.email],['phone','Phone',ambassador?.phone]].map(([name,label,value])=><label key={name}><span>{label}</span><input name={name} defaultValue={value??""} type={name==='email'?'email':'text'} maxLength={120} required={name==='name'}/></label>)}<label>Code you choose<input name="code" value={chosenCode} onChange={e=>setChosenCode(e.target.value.toUpperCase())} placeholder="FOFA-D1" maxLength={24} minLength={3} pattern="[A-Za-z0-9-]{3,24}" required/></label></div>
   <label className="pi-admin-check"><input type="checkbox" name="active" defaultChecked={ambassador?.is_active??true}/> Active ambassador and code</label>
   <p className="pi-admin-help">Changing a code retires the old code. Existing bookings keep their original attribution. Retired codes cannot be assigned to another ambassador.</p>
-  <p className="pi-admin-help">Codes are short and allocated automatically: FOFA-A, FOFA-B, AUC-A. A code only works after it has been saved for an active ambassador.</p>
+  <p className="pi-admin-help">Choose the exact code yourself, for example FOFA-D1. Save checks that it is unique and activates it for this ambassador.</p>
   <button type="submit" className="pi-admin-button" disabled={pending}>{pending?"Saving…":ambassador?"Save ambassador":"Save & generate code"}</button><p role="status">{message}</p>
  </form>;
 }
