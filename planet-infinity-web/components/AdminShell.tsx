@@ -14,7 +14,7 @@ const nav = [
   { href: "/admin/payments", label: "Payments" },
   { href: "/admin/customers", label: "Customers" },
   { href: "/admin/events", label: "Events" },
-  { href: "/admin/ambassadors", label: "Campus Ambassadors" },
+  { href: "/admin/ambassadors", label: "Event Sales" },
   { href: "/admin/trips", label: "Trips" },
   { href: "/admin/pages", label: "Pages" },
   { href: "/admin/settings", label: "Settings" },

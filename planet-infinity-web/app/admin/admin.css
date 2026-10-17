@@ -1,4 +1,9 @@
 /* First admin release: operational, deliberately quieter than the public site. */
+.pi-admin-sales-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.pi-admin-sales-nav a { padding: 11px 16px; border: 1px solid var(--pi-line); border-radius: 12px; color: var(--pi-ink); background: #fff; text-decoration: none; font-weight: 700; font-size: 14px; }
+.pi-admin-sales-nav a[aria-current="page"] { background: var(--pi-ink); color: var(--pi-ivory); border-color: var(--pi-ink); }
+.pi-admin-sales-nav a:focus-visible { outline: 2px solid var(--pi-ember); outline-offset: 3px; }
+.pi-admin-sales-pricing > summary { cursor: pointer; font-weight: 700; font-size: 18px; }
 body:has(.pi-admin) > header,
 body:has(.pi-admin) > footer { display: none; }
 body:has(.pi-admin) > main { min-height: 100vh; overflow-x: hidden; overflow-x: clip; }
