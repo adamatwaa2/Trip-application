@@ -57,11 +57,17 @@ the panel uses owner-chosen codes.
 No ambassadors are seeded before actual leaders have been confirmed.
 
 Leaders can register at `/ambassadors/apply`. The form collects name, university
-or group, email, phone and privacy consent. Submitting it creates a private pending
+or group, email, phone, university abbreviation, preferred code and privacy consent. Codes
+start with a 2–10-letter university/faculty abbreviation, followed by letters, numbers or
+a dash, with 3–24 characters total. Abbreviations are self-reported and must be verified
+by the admin against the university name; the form does not certify university affiliation.
+Submitting it creates a private pending
 application, never an ambassador or a code. Admin reviews the application under
-Campus Ambassadors, types the exact chosen code, then chooses **Approve & activate
+Campus Ambassadors, checks or edits the requested code (keeping its university prefix), then chooses **Approve & activate
 code**. Approval is idempotent. The leader receives their code only after agreement
-and approval. Rejections create no active codes. Duplicate public submissions do
+and approval. There is no automatic email or WhatsApp dispatch; share the code manually
+after approval. A requested code is not reserved and can only activate if still available.
+Rejections create no active codes. Duplicate public submissions do
 not overwrite contact details or create extra applications.
 
 Issue complimentary entry once per ambassador using their real name, email and
