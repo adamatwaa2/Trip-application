@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {EVENT_SALES_VIEWS,resolveSalesView,eventSalesHref,salesOffset} from '../lib/event-sales-navigation.ts';
+assert.equal(resolveSalesView({}),'overview');
+for(const [view] of EVENT_SALES_VIEWS)assert.equal(resolveSalesView({view}),view);
+assert.equal(resolveSalesView({code:'AUC-D1'}),'bookings');
+assert.equal(resolveSalesView({offset:'100'}),'bookings');
+assert.equal(resolveSalesView({applicationsOffset:'50'}),'partners');
+assert.equal(resolveSalesView({view:'unknown'}),'overview');
+assert.equal(salesOffset('NaN'),0);assert.equal(salesOffset('-50'),0);assert.equal(salesOffset('4.5'),4);
+assert.equal(eventSalesHref('bookings',{code:' auc-d1 ',offset:'100',applicationsOffset:'50'}),'/admin/ambassadors?view=bookings&code=AUC-D1&offset=100');
+assert.equal(eventSalesHref('partners',{code:'AUC-D1',offset:'100',applicationsOffset:'50'}),'/admin/ambassadors?view=partners&applicationsOffset=50');
+assert.equal(eventSalesHref('overview',{code:'AUC-D1',offset:'100'}),'/admin/ambassadors?view=overview');
+console.log('PASS: four sections, overview default, legacy links, isolated filters and pagination');
