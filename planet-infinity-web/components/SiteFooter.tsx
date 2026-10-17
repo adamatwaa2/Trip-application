@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Container } from "./Container";
 import { Placeholder } from "./Placeholder";
 import { SiteFooterFrame } from "./SiteFooterFrame";
@@ -92,12 +93,13 @@ export async function SiteFooter() {
 
         <section className="pi-footer__app-strip" id="get-the-app" aria-labelledby="pi-footer-app-title">
           <div>
-            <h2 id="pi-footer-app-title">Take Planet Infinity with you.</h2>
-            <p>Available for iPhone and Android.</p>
+            <span className="pi-footer__app-status">Coming soon</span>
+            <h2 id="pi-footer-app-title">The Planet Infinity app.</h2>
+            <p>Explore Dahab stays, experiences and rides in one place.</p>
+            <p className="pi-footer__app-note">In development for iPhone and Android.</p>
           </div>
-          <div className="pi-footer__app-links">
-            <a href="https://play.google.com/store/apps/details?id=dev.m1hisham.planetinfinity" target="_blank" rel="noopener noreferrer" aria-label="Download Planet Infinity on Google Play (opens in a new tab)">Google Play <span aria-hidden="true">↗</span></a>
-            <a href="https://apps.apple.com/eg/app/planet-infinity/id6788810860" target="_blank" rel="noopener noreferrer" aria-label="Download Planet Infinity on the App Store (opens in a new tab)">App Store <span aria-hidden="true">↗</span></a>
+          <div className="pi-footer__app-phone">
+            <Image src="/app-preview/home.jpg" alt="Preview of the Planet Infinity app home screen, showing stays, experiences, rides and trips" width={222} height={480} sizes="104px" />
           </div>
         </section>
 
