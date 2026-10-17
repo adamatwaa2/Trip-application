@@ -95,11 +95,11 @@ export async function SiteFooter() {
           <div>
             <span className="pi-footer__app-status">Coming soon</span>
             <h2 id="pi-footer-app-title">The Planet Infinity app.</h2>
-            <p>Explore Dahab stays, experiences and rides in one place.</p>
+            <p>Bringing community, experiences and everyday services together.</p>
             <p className="pi-footer__app-note">In development for iPhone and Android.</p>
           </div>
           <div className="pi-footer__app-phone">
-            <Image src="/app-preview/home.jpg" alt="Preview of the Planet Infinity app home screen, showing stays, experiences, rides and trips" width={222} height={480} sizes="104px" />
+            <Image src="/app-preview/google-play-current.webp" alt="Current Planet Infinity app interface from Google Play, showing experiences, stays, trips, events and community" width={273} height={592} sizes="156px" />
           </div>
         </section>
 
