@@ -20,6 +20,7 @@ export function HalloweenBookingFlow({ event, preview, appearance = "paper", wha
   const [step, setStep] = useState(0);
   const [guests, setGuests] = useState<Record<number, Guest>>({0:{name:"",phone:""}});
   const [quantityInput, setQuantityInput] = useState("1");
+  const [promoInput, setPromoInput] = useState("");
   const [guestPage, setGuestPage] = useState(0);
   const [email, setEmail] = useState("");
   const [agreed, setAgreed] = useState(false);
@@ -31,11 +32,16 @@ export function HalloweenBookingFlow({ event, preview, appearance = "paper", wha
   const submissionId = useRef<string | null>(null);
   const quantity = Number(quantityInput);
   const quantityValid = Number.isSafeInteger(quantity) && quantity >= 1 && (event.capacity === undefined || quantity <= event.capacity);
+  const promoCode = promoInput.trim().toUpperCase();
+  const promoInvalid = promoCode.length > 0 && (promoCode !== "FOFA" || !quantityValid || quantity < 5);
+  const discountPercent = promoCode === "FOFA" && quantityValid && quantity >= 5 ? (quantity >= 15 ? 40 : quantity >= 10 ? 25 : 10) : 0;
   const subtotal = quantityValid && event.priceEgp ? event.priceEgp * quantity : undefined;
+  const discountEgp = subtotal === undefined ? 0 : Math.round(subtotal * discountPercent / 100 * 100) / 100;
+  const discountedSubtotal = subtotal === undefined ? undefined : subtotal - discountEgp;
   const bookingFees = quantityValid ? (event.bookingFeeEgp ?? 0) * quantity : 0;
-  const total = subtotal === undefined ? undefined : subtotal + bookingFees;
+  const total = discountedSubtotal === undefined ? undefined : discountedSubtotal + bookingFees;
   const activeGuests = Object.entries(guests).filter(([index]) => Number(index) < quantity).sort(([a],[b]) => Number(a)-Number(b)).map(([,guest])=>guest);
-  const valid = quantityValid && total !== undefined && Number.isFinite(total) && total <= 9999999999.99 && activeGuests.length === quantity && activeGuests.every(g => g.name.trim().length >= 2 && g.phone.trim().length >= 6) && agreed && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
+  const valid = !promoInvalid && quantityValid && total !== undefined && Number.isFinite(total) && total <= 9999999999.99 && activeGuests.length === quantity && activeGuests.every(g => g.name.trim().length >= 2 && g.phone.trim().length >= 6) && agreed && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
   const pageSize = 5;
   const pageCount = quantityValid ? Math.ceil(quantity / pageSize) : 0;
   const visibleGuestIndexes = Array.from({length:quantityValid ? Math.min(pageSize, quantity - guestPage * pageSize) : 0},(_,index)=>guestPage * pageSize + index);
@@ -63,13 +69,13 @@ export function HalloweenBookingFlow({ event, preview, appearance = "paper", wha
     if (method === "manual" && !proof) { setError("Upload your payment receipt first."); return; }
     submissionId.current ??= crypto.randomUUID();
     startTransition(async()=>{
-      const result = await submitPublicEventBooking({eventId:event.id,submissionId:submissionId.current!,email,guests:activeGuests,termsAccepted:agreed,paymentMethod:method,paymentProof:method === "manual" ? proof : null});
+      const result = await submitPublicEventBooking({eventId:event.id,submissionId:submissionId.current!,email,guests:activeGuests,termsAccepted:agreed,paymentMethod:method,paymentProof:method === "manual" ? proof : null,promoCode:promoCode || null});
       if (!result.ok) { setError(result.error); return; }
       setBooking({number:result.bookingNumber,token:result.paymentToken});
       if (method === "manual" && result.paymentToken) router.push(`/pay/${result.paymentToken}`);
     });
   }
-  if(preview && booking) return <EventTicketStatus token="demo" preview previewMethod={method} initial={{reference:booking.number,title:event.title,name:guests[0].name,guests:activeGuests.map(g=>g.name),quantity,date:"2026-10-30T19:00:00+02:00",endDate:"2026-10-31T02:00:00+02:00",venue:event.venue??"Cairo",ticketLabel:event.ticketLabel??"Early Bird",subtotal:subtotal??0,fees:bookingFees,total:total??0,paid:0,status:method==="manual"?"pending":"unpaid",issuedAt:null}}/>;
+  if(preview && booking) return <EventTicketStatus token="demo" preview previewMethod={method} initial={{reference:booking.number,title:event.title,name:guests[0].name,guests:activeGuests.map(g=>g.name),quantity,date:"2026-10-30T19:00:00+02:00",endDate:"2026-10-31T02:00:00+02:00",venue:event.venue??"Cairo",ticketLabel:event.ticketLabel??"Early Bird",subtotal:discountedSubtotal??0,fees:bookingFees,total:total??0,paid:0,status:method==="manual"?"pending":"unpaid",issuedAt:null}}/>;
   return <div className={halloweenClassName(appearance)}>
     {preview ? <HalloweenPreviewBar appearance={appearance} booking/> : null}
     <div className="hw-wrap">
@@ -91,6 +97,10 @@ export function HalloweenBookingFlow({ event, preview, appearance = "paper", wha
                 <p>Choose how many are coming. Your total updates as you go.</p>
                 <label className="hw-field" htmlFor="hw-quantity">Number of tickets</label>
                 <div className="hw-quantity-picker"><div className="hw-quantity-control"><button type="button" aria-label="Remove one ticket" disabled={!quantityValid || quantity <= 1} onClick={()=>resize(String(quantity-1))}>−</button><input id="hw-quantity" type="number" min={1} max={event.capacity} step={1} inputMode="numeric" required value={quantityInput} onChange={e=>resize(e.target.value)} aria-describedby="hw-live-total"/><button type="button" aria-label="Add one ticket" disabled={quantityValid && event.capacity !== undefined && quantity >= event.capacity} onClick={()=>resize(String(quantityValid ? quantity+1 : 1))}>+</button></div><div className="hw-quantity-total" id="hw-live-total" aria-live="polite" aria-atomic="true"><span>Total · {event.priceEgp?.toLocaleString("en-US")} EGP / person</span><strong>{total ? total.toLocaleString("en-US") + " EGP" : "Enter a valid quantity"}</strong></div></div>
+                <label className="hw-field" htmlFor="hw-promo">Group promo code (optional)</label>
+                <input className="hw-input" id="hw-promo" autoCapitalize="characters" maxLength={32} placeholder="Enter your group code" value={promoInput} onChange={e=>setPromoInput(e.target.value)}/>
+                {promoCode === "FOFA" && !promoInvalid ? <p className="hw-smallprint" role="status">FOFA applied · {discountPercent}% off tickets · {discountEgp.toLocaleString("en-US")} EGP saved</p> : null}
+                {promoInvalid ? <p className="hw-error" role="alert">{promoCode !== "FOFA" ? "Invalid promo code." : "FOFA requires at least 5 tickets in one booking."}</p> : null}
                 <label className="hw-field" htmlFor="hw-email">Booking email</label>
                 <input className="hw-input" id="hw-email" type="email" autoComplete="email" required value={email} onChange={e=>setEmail(e.target.value)}/>
                 {visibleGuestIndexes.map(index=>{const guest=guests[index] ?? {name:"",phone:""};return <fieldset key={index}><legend>Guest {index+1}{index===0 ? " / booking contact" : ""}</legend><div className="hw-field-row">
@@ -103,7 +113,7 @@ export function HalloweenBookingFlow({ event, preview, appearance = "paper", wha
               </> : null}
               {step === 1 ? <>
                 <h2>One final step.</h2><p>Pay in full. Choose the method that works for you.</p>
-                <dl className="hw-review"><div><dt>{event.ticketLabel ?? "Tickets"}</dt><dd>{quantity} × {event.priceEgp?.toLocaleString("en-US")} EGP</dd></div><div><dt>Ticket subtotal</dt><dd>{subtotal?.toLocaleString("en-US")} EGP</dd></div><div><dt>Booking fees · {event.bookingFeeEgp ?? 0} EGP × {quantity}</dt><dd>{bookingFees.toLocaleString("en-US")} EGP</dd></div><div><dt>Total due now · 100%</dt><dd>{total ? total.toLocaleString("en-US")+" EGP" : "Price not set"}</dd></div></dl>
+                <dl className="hw-review"><div><dt>{event.ticketLabel ?? "Tickets"}</dt><dd>{quantity} × {event.priceEgp?.toLocaleString("en-US")} EGP</dd></div><div><dt>Ticket subtotal</dt><dd>{subtotal?.toLocaleString("en-US")} EGP</dd></div>{discountPercent > 0 ? <div><dt>FOFA · {discountPercent}% group discount</dt><dd>−{discountEgp.toLocaleString("en-US")} EGP</dd></div> : null}<div><dt>Booking fees · {event.bookingFeeEgp ?? 0} EGP × {quantity}</dt><dd>{bookingFees.toLocaleString("en-US")} EGP</dd></div><div><dt>Total due now · 100%</dt><dd>{total ? total.toLocaleString("en-US")+" EGP" : "Price not set"}</dd></div></dl>
                 {preview ? <p className="hw-notice">Local preview. No money will be transferred or charged. You can save a demonstration booking to see how it appears in admin.</p> : null}
                 <label className="hw-choice"><input type="radio" name="event-payment" checked={method === "manual"} onChange={()=>setMethod("manual")}/><span><strong>InstaPay / Vodafone Cash</strong><small>Transfer in full, then upload your receipt for verification.</small></span></label>
                 <label className="hw-choice"><input type="radio" name="event-payment" checked={method === "paymob"} onChange={()=>setMethod("paymob")}/><span><strong>Pay online with Visa</strong><small>Visa · Mastercard · Secure card checkout</small></span></label>
