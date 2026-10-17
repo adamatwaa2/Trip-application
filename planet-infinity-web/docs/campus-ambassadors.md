@@ -28,6 +28,7 @@ capacity means no numeric limit, as in the existing event catalogue.
 ## Progressive commission decision
 
 Commission accrues only when payment is verified and the booking is confirmed.
+Commission is payable after the event has ended; accrual before then is not immediate payout.
 Every paid ticket counts, including individual bookings. Commission uses that
 ticket's saved original price before customer discounts and booking fees.
 
