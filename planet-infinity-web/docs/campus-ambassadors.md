@@ -1,6 +1,7 @@
 # Campus Ambassadors
 
-The live checkout uses server quotes, never browser-calculated charges. Apply one
+The live checkout uses server quotes, never browser-calculated charges. Codes are optional:
+without a code, the ordinary booking/payment journey works at the current price with no discount. Apply one
 individual ambassador code to any booking size. Discounts are 5% for 1–4 tickets,
 10% for 5–9, 20% for 10–14 and 30% for 15+. Booking fees are added afterward.
 
@@ -54,21 +55,25 @@ checks uniqueness under the event lock and activates the chosen code. Editing a
 code retires the old code and preserves existing attribution. Retired codes cannot
 be assigned to another leader. The internal allocator remains backward compatible;
 the panel uses owner-chosen codes.
-No ambassadors are seeded before actual leaders have been confirmed.
+No demonstration ambassadors are seeded in the live database.
 
 Leaders can register at `/ambassadors/apply`. The form collects name, university
 or group, email, phone, university abbreviation, preferred code and privacy consent. Codes
 start with a 2–10-letter university/faculty abbreviation, followed by letters, numbers or
-a dash, with 3–24 characters total. Abbreviations are self-reported and must be verified
-by the admin against the university name; the form does not certify university affiliation.
-Submitting it creates a private pending
-application, never an ambassador or a code. Admin reviews the application under
-Campus Ambassadors, checks or edits the requested code (keeping its university prefix), then chooses **Approve & activate
-code**. Approval is idempotent. The leader receives their code only after agreement
-and approval. There is no automatic email or WhatsApp dispatch; share the code manually
-after approval. A requested code is not reserved and can only activate if still available.
-Rejections create no active codes. Duplicate public submissions do
-not overwrite contact details or create extra applications.
+a dash, with 3–24 characters total. Abbreviations are self-reported: the form does not
+certify university affiliation. At the owner's explicit request, valid registrations
+activate immediately with NO admin approval. The service-only registration transaction
+locks the event, checks code availability, creates the ambassador, active code and
+registration record atomically, and returns a private random tracking link.
+The private `/ambassadors/status/[token]` page displays the active code and ready-to-copy
+English/Arabic customer messages using current discount rules. It is dynamic and noindex.
+Keep this link private; share only the code and messages. Admin can access it for support.
+Retries with the same token are idempotent. Another person cannot retrieve the private
+link by submitting an existing email. Duplicate code/email attempts never overwrite
+contacts, create partial registrations or reactivate a paused ambassador.
+Legacy pending applications retain an admin review option, but new registrations bypass it.
+There is no automatic email or WhatsApp dispatch: the leader copies and sends the prepared
+message. Admin can pause or change any code. Pausing is reflected on the private code page.
 
 Issue complimentary entry once per ambassador using their real name, email and
 phone. It includes no fee and earns no commission. Entry still requires the
@@ -82,7 +87,7 @@ the existing guest-roster booking snapshot, under the existing admin access rule
 
 `/preview/campus` is explicitly a demonstration. It accepts FOFA-D1 and AUC-D1 as
 sample codes only, uses no real customer records and cannot charge or issue entry.
-Real codes require real ambassador assignment in the admin panel.
+Real codes are created by real leader registration or manual admin entry.
 `/preview/campus/admin` demonstrates adding leaders and saving chosen codes
 without writing to the live database.
 
@@ -95,8 +100,9 @@ The release migration makes stale checkout clients refresh their page.
 
 The preparation migration was verified locally and applied to the specified
 Supabase project. Its integration assertions also passed there with all fixtures
-rolled back. The four existing event bookings retained the same saved totals and
-snapshot checksum. The final release migration follows checkout deployment.
+rolled back. The four existing event bookings retained their saved totals. The final release
+migration was applied after checkout deployment; it retires an obsolete fixed-price
+RPC only, not the ordinary no-code booking journey. No booking or payment data is deleted.
 
 Run `npm run typecheck`, `npm run lint`, `npm run build` and the transaction-wrapped
 `supabase/tests/campus_ambassadors.test.sql`. Database fixtures roll back. Also
