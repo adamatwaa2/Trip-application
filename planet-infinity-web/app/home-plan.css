@@ -1,4 +1,4 @@
-.pi-home-plan { padding: 52px 0 64px; color: var(--pi-ink); background: var(--pi-ivory); }
+.pi-home-plan { padding: 52px 0 64px; scroll-margin-top: 84px; color: var(--pi-ink); background: var(--pi-ivory); }
 .pi-home-plan__head { display: flex; align-items: end; justify-content: space-between; gap: 24px; padding-bottom: 26px; border-bottom: 1px solid var(--pi-line); }
 .pi-home-plan__head h2 { font: 700 clamp(28px, 3vw, 38px)/1.15 var(--pi-display); margin: 0 0 10px; }
 .pi-home-plan__head p { font-size: 14px; line-height: 1.7; max-width: 50ch; margin: 0; }
