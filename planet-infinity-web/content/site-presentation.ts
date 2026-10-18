@@ -24,9 +24,6 @@ export const PRESENTATION_DEFAULTS: SitePresentation = {
   columns: [
     { title: "Worlds", items: WORLD_NAV.map(item => ({ ...item, soon: false, visible: true })) },
     { title: "Plan", items: [
-      { label: "Individual trip request", href: "/requests/individual", soon: false, visible: true },
-      { label: "Company & group trips", href: "/requests/organisation", soon: false, visible: true },
-      { label: "Plan an event", href: "/requests/event", soon: false, visible: true },
       ...PLAN_LINKS.filter(item => item.href !== "/apply").map(item => ({ ...item, soon: false, visible: true })),
     ] },
     { title: "Company", items: COMPANY_LINKS.map(item => ({ ...item, soon: false, visible: true })) },

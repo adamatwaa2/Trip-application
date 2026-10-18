@@ -1,5 +1,7 @@
 .pi-management-wrap { max-width: 1160px; margin: auto; padding: 64px 24px; color: var(--pi-ink, #0F1E28); }
 .pi-management-wrap h1 { font-size: clamp(30px, 4vw, 52px); line-height: 1.1; margin: 16px 0; }
+.pi-request-category { display: grid; gap: 10px; margin: 24px 0; max-width: 560px; font-weight: 600; }
+.pi-request-category select { padding: 14px; border: 1px solid #DCE6EC; border-radius: 12px; background: #FDF8F1; font: inherit; color: #0F1E28; width: 100%; }
 .pi-management-wrap > p { max-width: 700px; margin-bottom: 28px; }
 .pi-planning-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 32px 0; }
 .pi-planning-card { display: block; border: 1px solid #DCE6EC; border-radius: 16px; padding: 32px; background: #FDF8F1; color: #0F1E28; text-decoration: none; }

@@ -37,6 +37,7 @@ assert.equal(validatePresentation({ ...defaults, columns: [{ title: 'bad', items
 assert.equal(validatePresentation({ ...defaults, pageSeo: [...defaults.pageSeo, defaults.pageSeo[0]] }), false);
 assert.equal(validatePresentation({ ...defaults, headerLogo: 'https://example.com/logo.svg' }), false);
 const { validatePlanning } = load('content/planning-requests.ts');
+const { REQUEST_CATEGORIES } = load('content/planning-requests.ts');
 const valid = { kind: 'individual', fullName: 'Test Only', email: 'test@example.invalid', phone: '01000000000', organisationType: '', organisationName: '', destination: 'Trip idea', preferredDate: '', flexible: true, guestCount: 1, budget: '', services: [], notes: '', consent: true, website: '' };
 assert.equal(validatePlanning(valid), null);
 for (const change of [{ kind: 'invalid' }, { consent: false }, { guestCount: 0 }, { guestCount: 1.5 }, { guestCount: 10001 }, { email: 'bad' }, { phone: '' }, { destination: '' }, { website: 'spam' }, { services: ['unrecognized'] }, { preferredDate: '2026-99-99' }, { preferredDate: '2026-02-30' }, { kind: 'organisation' }]) assert.notEqual(validatePlanning({ ...valid, ...change }), null);
@@ -53,6 +54,28 @@ for (const kind of ['individual', 'organisation', 'event']) {
 }
 assert.equal((await submitPlanningRequest({ ...valid, consent: false })).ok, false);
 assert.equal(calls.length, 3);
+for (const category of REQUEST_CATEGORIES) {
+  const organisationType = ['prom','senior'].includes(category.id) ? 'School' : category.organisationType;
+  const input = { ...valid, kind: category.kind, category: category.id, organisationType, organisationName: organisationType ? 'Test Institution' : '' };
+  assert.equal(validatePlanning(input), null, category.id);
+  assert.equal((await submitPlanningRequest(input)).ok, true);
+  assert.equal(calls.at(-1).subjectTitle, category.label);
+  assert.equal(calls.at(-1).selections.requestCategory, category.id);
+  assert.equal(calls.at(-1).selections.organisationType, organisationType);
+}
+assert.notEqual(validatePlanning({ ...valid, category: 'school' }), null);
+assert.notEqual(validatePlanning({ ...valid, kind: 'event', category: 'company-event', organisationType: 'Company', organisationName: '' }), null);
+assert.notEqual(validatePlanning({ ...valid, kind: 'event', category: 'prom' }), null);
+const prom = { ...valid, kind: 'event', category: 'prom', organisationType: 'School', organisationName: 'Test School', services: ['Decoration & theme', 'DJs', 'Sound & lighting'] };
+assert.equal(validatePlanning(prom), null);
+await submitPlanningRequest(prom);
+assert.deepEqual(calls.at(-1).selections.services, prom.services);
+assert.notEqual(validatePlanning({ ...valid, services: ['DJs'] }), null);
+assert.equal(REQUEST_CATEGORIES.filter(item => item.world === 'trips')[0].id, 'senior');
+assert.equal(REQUEST_CATEGORIES.filter(item => item.world === 'events')[0].id, 'prom');
+const plan = defaults.columns.find(column => column.title === 'Plan');
+assert.equal(plan.items.filter(item => item.href.startsWith('/requests')).length, 1);
+assert.equal(plan.items.find(item => item.href === '/requests').label, 'Trip and Event Requests');
 const { saveSitePresentation } = load('app/actions/site-presentation.ts');
 authorized = false;
 await assert.rejects(saveSitePresentation(defaults), /unauthorized/);
