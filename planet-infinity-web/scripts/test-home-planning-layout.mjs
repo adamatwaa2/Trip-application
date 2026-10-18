@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+const source = readFileSync(new URL('../app/page.tsx', import.meta.url), 'utf8');
+assert.equal(source.includes('HomePlanningLinks'), false);
+assert.equal(source.includes('Your next story'), false);
+assert.equal(source.includes('pi-planning-highlights'), false);
+assert.equal((source.match(/className="pi-home-catalog-actions"/g) ?? []).length, 2);
+assert.equal((source.match(/className="pi-home-special-link"/g) ?? []).length, 2);
+assert.ok(source.includes('href="/requests?category=senior">Senior Trip →'));
+assert.ok(source.includes('href="/requests?category=prom">Prom →'));
+assert.ok(source.indexOf('id="trips"') < source.indexOf('id="events"'));
+assert.ok(source.includes('<HomeExperienceDecks trips={trips} events={events} />'));
+assert.ok(source.includes('<TripCard key={trip.id} trip={trip} />'));
+assert.ok(source.includes('<EventCard key={event.id} event={event} />'));
+console.log('PASS: no planning banner, original hero/catalog components and order, two compact contextual links only.');
