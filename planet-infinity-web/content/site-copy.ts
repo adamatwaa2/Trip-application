@@ -1,4 +1,13 @@
 export const SITE_COPY_FIELDS = [
+  { key: "home_plan_title", label: "Home bottom planning section title", fallback: "Plan", multiline: false },
+  { key: "home_plan_lede", label: "Home bottom planning introduction", fallback: "Trips and events, shaped around your people.", multiline: true },
+  { key: "home_senior_cta", label: "Senior trip link in Travel section", fallback: "Plan Your Senior Trip", multiline: false },
+  { key: "home_prom_cta", label: "Prom planning link", fallback: "Plan Your Prom", multiline: false },
+  { key: "plan_prom_detail", label: "Prom planning description", fallback: "From venue ideas to the final details.", multiline: true },
+  { key: "plan_senior_detail", label: "Senior trip planning description", fallback: "Customise the trip around your class, dates and ideas.", multiline: true },
+  { key: "plan_groups_detail", label: "University and group planning description", fallback: "Bring your people together for something of your own.", multiline: true },
+  { key: "plan_companies_detail", label: "Company planning description", fallback: "Company trips, team building and events.", multiline: true },
+  { key: "plan_schools_detail", label: "School planning description", fallback: "Plan a trip beyond the classroom.", multiline: true },
   { key: "home_eyebrow", label: "Home eyebrow", fallback: "Planet Infinity", multiline: false },
   { key: "home_title", label: "Home headline", fallback: "Your next world starts here.", multiline: false },
   { key: "home_lede", label: "Home introduction", fallback: "Discover trips, experiences and events made to feel like their own world.", multiline: true },

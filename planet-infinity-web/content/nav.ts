@@ -50,8 +50,9 @@ export const WORLD_NAV: NavItem[] = [
 
 /** Guest-facing flows that already exist. */
 export const PLAN_LINKS: NavItem[] = [
-  { label: "Trip request", href: "/apply", status: "ready" },
-  { label: "Book a trip", href: "/trips", status: "ready" },
+  { label: "Prom", href: "/requests?category=prom", status: "ready" },
+  { label: "Senior Trip", href: "/requests?category=senior", status: "ready" },
+  { label: "Trip and Event Requests", href: "/requests", status: "ready" },
 ];
 
 /**
@@ -69,6 +70,9 @@ export const COMPANY_LINKS: NavItem[] = [
 
 /** Parts of the universe that are not open yet. */
 export const COMING_SOON_LINKS: NavItem[] = [
+  { label: "App", href: "#get-the-app", status: "soon", note: "Soon" },
+  { label: "V-hubs", href: "/v-hubs", status: "soon", note: "Soon" },
+  { label: "V-houses", href: "/v-houses", status: "soon", note: "Soon" },
   { label: "Merch", href: "/merch", status: "soon", note: "Soon" },
 ];
 

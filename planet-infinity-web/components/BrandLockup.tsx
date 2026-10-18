@@ -1,8 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { BrandWorld } from "@/content/brand";
 import { BrandLogo } from "./BrandLogo";
 
 type BrandLockupProps = {
+  logoOverride?: string;
   /** Ivory on Deep Ink, ink on light surfaces. */
   tone?: "ink" | "ivory";
   /** `events` swaps the orange mark for the violet one. */
@@ -23,11 +25,12 @@ export function BrandLockup({
   world = "general",
   height = 34,
   asLink = true,
+  logoOverride,
 }: BrandLockupProps) {
   const content = (
     <>
       <span className="pi-brand__logo-slot" data-brand-logo-slot>
-        <BrandLogo world={world} height={height} priority />
+        {logoOverride ? <Image src={logoOverride} alt="Planet Infinity" width={160} height={height} unoptimized style={{ width: "auto", height, objectFit: "contain", maxWidth: 160 }} /> : <BrandLogo world={world} height={height} priority />}
       </span>
       <span className="pi-brand__word">Planet Infinity</span>
     </>

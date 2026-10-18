@@ -31,6 +31,7 @@ export default async function RequestsPage({
         <select name="status" defaultValue={filters.status || ""} aria-label="Status">
           <option value="">All statuses</option>{requestStatuses.map((status) => <option key={status} value={status}>{status}</option>)}
         </select>
+        <select name="planning" defaultValue={filters.planning || ""} aria-label="Planning request category"><option value="">All planning categories</option><option value="individual">Individual trip</option><option value="organisation">Company / school / university</option><option value="event">Event planning</option></select>
         <button className="pi-admin-button" type="submit">Apply filters</button>
         <Link href="/admin/requests">Clear</Link>
       </form>

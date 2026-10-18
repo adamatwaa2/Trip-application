@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { getPageSeoMetadata } from "@/lib/site-presentation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ButtonLink } from "@/components/Button";
 import { Container } from "@/components/Container";
@@ -11,12 +11,7 @@ import { CTA } from "@/content/cta";
 import { getListedTrips } from "@/content/source";
 import { getSiteCopy } from "@/lib/site-copy";
 
-export const metadata: Metadata = {
-  title: "Travel",
-  description:
-    "Planet Infinity trips and experiences — desert and sea, camping and stargazing, long roads and short escapes.",
-  alternates: { canonical: "/trips" },
-};
+export function generateMetadata() { return getPageSeoMetadata("/trips", "Travel", "Planet Infinity trips and experiences — desert and sea, camping and stargazing, long roads and short escapes."); }
 
 export default async function TripsPage() {
   const [{ trips, usingDemoData }, copy] = await Promise.all([getListedTrips(), getSiteCopy()]);

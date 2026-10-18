@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { getPageSeoMetadata } from "@/lib/site-presentation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ButtonLink } from "@/components/Button";
 import { Container } from "@/components/Container";
@@ -12,12 +12,7 @@ import { CTA } from "@/content/cta";
 import { getCrossListedTrips, getListedEvents } from "@/content/source";
 import { getSiteCopy } from "@/lib/site-copy";
 
-export const metadata: Metadata = {
-  title: "Events",
-  description:
-    "Beach sessions, movie nights and full-moon parties from Planet Infinity Entertainment.",
-  alternates: { canonical: "/events" },
-};
+export function generateMetadata() { return getPageSeoMetadata("/events", "Events", "Beach sessions, movie nights and full-moon parties from Planet Infinity Entertainment."); }
 
 export default async function EventsPage() {
   const [{ events, usingDemoData }, sharedTrips, copy] = await Promise.all([getListedEvents(), getCrossListedTrips("events"), getSiteCopy()]);

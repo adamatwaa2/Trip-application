@@ -1,18 +1,15 @@
-import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Container } from "@/components/Container";
 import { ExploreUniverse } from "@/components/ExploreUniverse";
 import { getCrossListedTrips, getListedEvents, getListedTrips } from "@/content/source";
 import { planetInfinityBuilds } from "@/content/explore-builds";
 import { getSiteCopy } from "@/lib/site-copy";
+import { getSitePresentation, getPageSeoMetadata } from "@/lib/site-presentation";
 
-export const metadata: Metadata = {
-  title: "Explore",
-  description: "Meet Planet Infinity Entertainment: travel, events and community experiences.",
-  alternates: { canonical: "/explore" },
-};
+export function generateMetadata() { return getPageSeoMetadata("/explore", "Explore", "Meet Planet Infinity Entertainment: travel, events and community experiences."); }
 
 export default async function ExplorePage() {
+  const presentation = await getSitePresentation();
   const [{ trips, usingDemoData: tripsAreDemo }, { events, usingDemoData: eventsAreDemo }, eventTrips, copy] = await Promise.all([
     getListedTrips(),
     getListedEvents(),
@@ -76,6 +73,7 @@ export default async function ExplorePage() {
           tripCount={tripCount}
           eventCount={eventCount}
         />
+        <section className="pi-explore-builds" aria-label="Coming soon"><header><h2>Coming soon</h2><span>The next parts of Planet Infinity. Details will be announced here.</span></header><div className="pi-explore-builds__grid">{presentation.columns.flatMap(column => column.items).filter(item => item.visible && item.soon).map((item, index) => <article key={index}><span>Coming soon</span><h3>{item.label}</h3></article>)}</div></section>
       </Container>
     </div>
   );

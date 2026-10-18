@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { HomePlanSection } from "@/components/HomePlanSection";
+import "@/app/home-context-links.css";
 import { ButtonLink } from "@/components/Button";
 import { Container } from "@/components/Container";
 import { EmptyState } from "@/components/EmptyState";
@@ -10,24 +13,28 @@ import { SectionHeading } from "@/components/SectionHeading";
 import { TripCard } from "@/components/TripCard";
 import { getEvents, getTrips } from "@/content/source";
 import { getSiteCopy } from "@/lib/site-copy";
-import { SITE_DESCRIPTION } from "@/content/brand";
+import { getSitePresentation } from "@/lib/site-presentation";
 
-export const metadata: Metadata = {
-  title: { absolute: "Planet Infinity Entertainment | Trips & Events" },
-  description: SITE_DESCRIPTION,
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSitePresentation();
+  return {
+  title: { absolute: settings.seoTitle },
+  description: settings.seoDescription,
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Planet Infinity Entertainment | Trips & Events",
-    description: SITE_DESCRIPTION,
+    title: settings.seoTitle,
+    description: settings.seoDescription,
+    images: [settings.shareImage],
     url: "https://planetinfinity.online/",
     siteName: "Planet Infinity",
     locale: "en_EG",
     type: "website",
   },
 };
+}
 
 export default async function HomePage() {
-  const [trips, events, copy] = await Promise.all([getTrips(), getEvents(), getSiteCopy()]);
+  const [trips, events, copy, presentation] = await Promise.all([getTrips(), getEvents(), getSiteCopy(), getSitePresentation()]);
   return (
     <>
       <section className="pi-home-hero">
@@ -48,17 +55,28 @@ export default async function HomePage() {
 
       <Section tone="white" id="trips" className="pi-home-catalog pi-home-catalog--travel">
         <Container>
-          <SectionHeading eyebrow="Travel" title={copy.home_trips_title} lede={copy.home_trips_lede} action={<ButtonLink href="/trips" variant="secondary">{copy.home_trips_all}</ButtonLink>} />
+          <SectionHeading
+            eyebrow="Travel"
+            title={copy.home_trips_title}
+            lede={copy.home_trips_lede}
+            action={<div className="pi-home-catalog-actions"><ButtonLink href="/trips" variant="secondary">{copy.home_trips_all}</ButtonLink><Link className="pi-home-special-link" href="/requests?category=senior">{copy.home_senior_cta} →</Link></div>}
+          />
           {trips.length > 0 ? <Grid columns={3}>{trips.map((trip) => <TripCard key={trip.id} trip={trip} />)}</Grid> : <EmptyState title={copy.home_trips_empty_title} body={copy.home_trips_empty_body} />}
         </Container>
       </Section>
 
       <Section tone="ivory" id="events" className="pi-home-catalog pi-home-catalog--events pi-world-events">
         <Container>
-          <SectionHeading eyebrow="Events" title={copy.home_events_title} lede={copy.home_events_lede} action={<ButtonLink href="/events" variant="secondary">{copy.home_events_all}</ButtonLink>} />
+          <SectionHeading
+            eyebrow="Events"
+            title={copy.home_events_title}
+            lede={copy.home_events_lede}
+            action={<div className="pi-home-catalog-actions"><ButtonLink href="/events" variant="secondary">{copy.home_events_all}</ButtonLink><Link className="pi-home-special-link" href="/requests?category=prom">{copy.home_prom_cta} →</Link></div>}
+          />
           {events.length > 0 ? <Grid columns={3}>{events.map((event) => <EventCard key={event.id} event={event} />)}</Grid> : <EmptyState title={copy.home_events_empty_title} body={copy.home_events_empty_body} />}
         </Container>
       </Section>
+      {presentation.showHomePlan ? <HomePlanSection copy={copy} /> : null}
     </>
   );
 }
