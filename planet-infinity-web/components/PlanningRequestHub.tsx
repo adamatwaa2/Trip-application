@@ -3,9 +3,9 @@ import { useState } from "react";
 import { REQUEST_CATEGORIES, getRequestCategory, type PlanningInput, type RequestCategory } from "@/content/planning-requests";
 import { PlanningRequestForm } from "./PlanningRequestForm";
 
-export function PlanningRequestHub({ preview = false, onPreviewSubmit }: { preview?: boolean; onPreviewSubmit?: (input: PlanningInput) => string }) {
-  const [world, setWorld] = useState<"trips" | "events">("trips");
-  const [category, setCategory] = useState<RequestCategory | "">("");
+export function PlanningRequestHub({ preview = false, initialCategory, onPreviewSubmit }: { preview?: boolean; initialCategory?: RequestCategory; onPreviewSubmit?: (input: PlanningInput) => string }) {
+  const [world, setWorld] = useState<"trips" | "events">(getRequestCategory(initialCategory)?.world ?? "trips");
+  const [category, setCategory] = useState<RequestCategory | "">(initialCategory ?? "");
   const chosen = getRequestCategory(category);
   return <section aria-labelledby="planning-hub-heading">
     <h1 id="planning-hub-heading">Trip and Event Requests</h1>

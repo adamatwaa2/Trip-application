@@ -95,8 +95,8 @@ export async function SiteFooter() {
         <div className="pi-footer__bottom">
           <span>{presentation.footerBrand}</span>
           <span>
-            <a href={presentation.instagram} rel="me">
-              Instagram
+            <a href={presentation.instagram} rel="me" style={{ textTransform: "none" }}>
+              planetinfinity.ent
             </a>
           </span>
           <Link href="/admin" className="pi-footer__team-access">

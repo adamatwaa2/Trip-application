@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { submitPlanningRequest } from "@/app/actions/planning-requests";
-import { PLANNING_TYPES, planningServices, getRequestCategory, validatePlanning, type PlanningInput, type PlanningKind, type RequestCategory } from "@/content/planning-requests";
+import { PLANNING_TYPES, PROM_VENUE_OPTIONS, planningServices, getRequestCategory, validatePlanning, type PlanningInput, type PlanningKind, type RequestCategory } from "@/content/planning-requests";
 import { PolicyAcceptance } from "./PolicyAcceptance";
 
 export function PlanningRequestForm({ kind, category, preview = false, onPreviewSubmit }: { kind: PlanningKind; category?: RequestCategory; preview?: boolean; onPreviewSubmit?: (input: PlanningInput) => string }) {
@@ -35,13 +35,15 @@ export function PlanningRequestForm({ kind, category, preview = false, onPreview
         <label>Email<input required type="email" autoComplete="email" maxLength={254} value={values.email} onChange={e => change("email", e.target.value)} /></label>
         <label>Number of guests<input required type="number" min={1} max={10000} value={values.guestCount} onChange={e => change("guestCount", Number(e.target.value))} /></label>
         {needsOrganisation ? <>{!chosen?.organisationType ? <label>Organisation type<select required value={values.organisationType} onChange={e => change("organisationType", e.target.value)}><option value="">Choose one</option>{organisationChoices.map(item => <option key={item}>{item}</option>)}</select></label> : null}<label>{values.organisationType === "Company" ? "Company name" : values.organisationType === "School" ? "School name" : values.organisationType === "University" ? "University name" : "Organisation name"}<input required maxLength={200} value={values.organisationName} onChange={e => change("organisationName", e.target.value)} /></label></> : null}
-        <label>{chosen?.id === "prom" ? "Preferred venue / location (or not decided yet)" : kind === "event" ? "Event type / preferred location" : "Destination / trip idea"}<input required maxLength={254} value={values.destination} onChange={e => change("destination", e.target.value)} /></label>
+        {chosen?.id === "prom" ? <label>What kind of venue do you have in mind?<select value={values.venuePreference ?? ""} onChange={e => change("venuePreference", e.target.value)}><option value="">Not decided yet</option>{PROM_VENUE_OPTIONS.map(option => <option key={option}>{option}</option>)}</select></label> : null}
+        <label>{chosen?.id === "prom" ? "Venue name, area or idea (optional)" : kind === "event" ? "Event type / preferred location" : "Destination / trip idea"}<input required={chosen?.id !== "prom"} maxLength={254} value={values.destination} onChange={e => change("destination", e.target.value)} /></label>
         <label>Preferred date (optional)<input type="date" value={values.preferredDate} onChange={e => change("preferredDate", e.target.value)} /></label>
         <label>Budget in EGP (optional)<input placeholder="e.g. per person or total — please specify" maxLength={200} value={values.budget} onChange={e => change("budget", e.target.value)} /></label>
       </div>
       <label className="pi-planning-check"><input type="checkbox" checked={values.flexible} onChange={e => change("flexible", e.target.checked)} />My dates are flexible / not decided yet</label>
       {kind === "event" ? <fieldset><legend>{chosen?.id === "prom" ? "What would you like for your prom? (optional)" : "What would you like help with? (optional)"}</legend><div className="pi-planning-services">{planningServices(category).map(service => <label key={service}><input type="checkbox" checked={values.services.includes(service)} onChange={e => change("services", e.target.checked ? [...values.services, service] : values.services.filter(item => item !== service))} />{service}</label>)}</div></fieldset> : null}
       <label>Anything else? (optional)<textarea maxLength={2000} rows={4} value={values.notes} onChange={e => change("notes", e.target.value)} /></label>
+      {chosen?.id === "prom" ? <><label className="pi-planning-check"><input type="checkbox" checked={values.meetingRequested ?? false} onChange={e => change("meetingRequested", e.target.checked)} />I’d like a planning meeting to explore ideas.</label><p className="pi-admin-help">We’ll contact you to discuss concepts, venue options and a suitable meeting time. This does not book a meeting or venue automatically.</p></> : null}
       <div hidden aria-hidden="true"><label>Website<input tabIndex={-1} autoComplete="off" value={values.website} onChange={e => change("website", e.target.value)} /></label></div>
       <PolicyAcceptance id={`planning-policy-${kind}`} checked={values.consent} onChange={value => change("consent", value)} />
       <p className="pi-admin-help">We use your details to respond to this request. No marketing subscription is added.</p>

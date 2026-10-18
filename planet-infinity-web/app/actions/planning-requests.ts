@@ -9,6 +9,6 @@ export async function submitPlanningRequest(input: PlanningInput) {
     subjectTitle: getRequestCategory(input.category)?.label ?? PLANNING_TYPES[input.kind].label,
     subjectSlug: `planning-${input.kind}`, fullName: input.fullName, email: input.email, phone: input.phone,
     guestCount: input.guestCount, termsAccepted: input.consent, whatsappOptIn: false, notes: input.notes,
-    selections: { planningKind: input.kind, requestCategory: input.category ?? input.kind, organisationType: input.organisationType, organisationName: input.organisationName, destinationOrEvent: input.destination, preferredDate: input.preferredDate, flexibleDates: input.flexible, budget: input.budget, services: input.services },
+    selections: { planningKind: input.kind, requestCategory: input.category ?? input.kind, organisationType: input.organisationType, organisationName: input.organisationName, destinationOrEvent: input.destination, preferredDate: input.preferredDate, flexibleDates: input.flexible, budget: input.budget, services: input.services, ...(input.category === "prom" ? { venuePreference: input.venuePreference || "Not decided yet", meetingRequested: input.meetingRequested ?? false } : {}) },
   });
 }
