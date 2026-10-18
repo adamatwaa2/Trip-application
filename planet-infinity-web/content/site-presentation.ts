@@ -8,7 +8,7 @@ export type SitePresentation = {
   seoTitle: string; seoDescription: string; shareImage: string;
   headerLogo: string; eventLogo: string; footerLogo: string;
   instagram: string; footerBrand: string; footerContactTitle: string;
-  appTitle: string; appDescription: string; showApp: boolean;
+  appTitle: string; appDescription: string; showApp: boolean; showHomePlan: boolean;
   columns: FooterColumn[];
   pageSeo: Array<{ path: string; title: string; description: string }>;
 };
@@ -19,7 +19,7 @@ export const PRESENTATION_DEFAULTS: SitePresentation = {
   shareImage: "/opengraph-image?brand=20260829", headerLogo: "", eventLogo: "", footerLogo: "",
   instagram: "https://www.instagram.com/planetinfinity.ent/", footerBrand: "Planet Infinity Entertainment",
   footerContactTitle: "Talk to us", appTitle: "The Planet Infinity app.",
-  appDescription: "Coming soon. Updates will be announced here.", showApp: true,
+  appDescription: "Coming soon. Updates will be announced here.", showApp: true, showHomePlan: true,
   pageSeo: ["/trips", "/events", "/themes", "/explore", "/contact", "/requests"].map(path => ({ path, title: "", description: "" })),
   columns: [
     { title: "Worlds", items: WORLD_NAV.map(item => ({ ...item, soon: false, visible: true })) },
@@ -42,7 +42,7 @@ export function safePublicLink(value: string, image = false): boolean {
 export function validatePresentation(value: unknown): value is SitePresentation {
   if (!value || typeof value !== "object") return false;
   const v = value as SitePresentation;
-  if (v.version !== 1 || typeof v.showApp !== "boolean") return false;
+  if (v.version !== 1 || typeof v.showApp !== "boolean" || typeof v.showHomePlan !== "boolean") return false;
   for (const key of ["seoTitle", "seoDescription", "shareImage", "headerLogo", "eventLogo", "footerLogo", "instagram", "footerBrand", "footerContactTitle", "appTitle", "appDescription"] as const) {
     if (typeof v[key] !== "string" || v[key].length > (key === "seoDescription" || key === "appDescription" ? 600 : 500)) return false;
   }

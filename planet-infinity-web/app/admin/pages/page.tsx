@@ -12,6 +12,8 @@ import "@/app/site-management.css";
 export const metadata = { title: "Page editor" };
 
 const pageKeys: Array<keyof SiteCopy> = [
+  "home_plan_title", "home_plan_lede", "home_senior_cta", "home_prom_cta",
+  "plan_prom_detail", "plan_senior_detail", "plan_groups_detail", "plan_companies_detail", "plan_schools_detail",
   "home_eyebrow", "home_title", "home_lede", "home_trips_cta", "home_events_cta",
   "trips_title", "trips_lede", "events_title", "events_lede",
   "themes_eyebrow", "themes_title", "themes_lede",
