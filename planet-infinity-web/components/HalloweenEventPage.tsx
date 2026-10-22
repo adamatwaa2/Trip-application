@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { preload } from "react-dom";
 import { SITE_COPY_DEFAULTS } from "@/content/site-copy";
 import type { PlanetEvent } from "@/content/events";
@@ -17,19 +18,19 @@ export function HalloweenTicket({ event, children, appearance = "paper" }: { eve
     <p className="hw-price">{event.priceEgp ? `${event.priceEgp.toLocaleString("en-US")} EGP` : "Price to be announced"}</p>
     {Boolean(event.bookingFeeEgp) ? <p className="hw-fee-note">+{event.bookingFeeEgp} EGP booking fee per ticket</p> : null}
     <p className="hw-smallprint">Per person · 100% paid at booking<br/>Early Bird tickets are limited. Prices rise as tickets sell. Your exact total is shown at checkout.</p>
-    <ul><li>{event.eventDate} · {event.startTime} — {event.endTime}</li><li>{event.venue} · location revealed one day before</li><li>Mixed groups, couples or girls only</li></ul>
+    <ul><li>{event.eventDate} · {event.startTime} — {event.endTime}</li><li>{event.venue} · location revealed two days before</li><li>Mixed groups, couples or girls only</li></ul>
     {children ?? <Link className="hw-button" href={halloweenHref(appearance,true)}>Book your night <span aria-hidden="true">↗</span></Link>}
-    <div className="hw-ticket-bottom"><span>YOUR NIGHT STARTS HERE</span><strong>PI / 30.10</strong></div>
+    <div className="hw-ticket-bottom"><span>YOUR NIGHT STARTS HERE</span><strong>PI / 29.10</strong></div>
   </aside>;
 }
 
 export function HalloweenEventPage({ event, appearance = "paper", whatsapp = SITE_COPY_DEFAULTS.contact_whatsapp }: { event: PlanetEvent; appearance?: HalloweenAppearance; whatsapp?: string }) {
-  preload(appearance === "paper" ? "/halloween/poster.webp" : "/halloween/poster-night.webp", {as:"image",type:"image/webp"});
+  preload("/halloween/poster-oct29.jpg", {as:"image",type:"image/jpeg"});
   const titleWords = event.title.split(" ");
   return <div className={halloweenClassName(appearance)}>
     {process.env.NODE_ENV === "development" ? <HalloweenPreviewBar appearance={appearance} /> : null}
     <div className="hw-wrap">
-      <div className="hw-topline"><Link href="/events">← Back to events</Link><span>Planet Infinity presents</span><a href="#hw-tickets">30 / 10 / 26 ↗</a></div>
+      <div className="hw-topline"><Link href="/events">← Back to events</Link><span>Planet Infinity presents</span><a href="#hw-tickets">29 / 10 / 26 ↗</a></div>
       <section className="hw-hero" aria-labelledby="hw-title">
         <div className="hw-ghost" aria-hidden="true"/><div className="hw-pumpkin" aria-hidden="true"/>
         <span className="hw-hero-tag">Your next world · after dark</span>
@@ -44,6 +45,7 @@ export function HalloweenEventPage({ event, appearance = "paper", whatsapp = SIT
         </div>
       </section>
       <dl className="hw-facts"><div><dt>The date</dt><dd>{event.eventDate}</dd></div><div><dt>The hours</dt><dd>{event.startTime} — {event.endTime}</dd></div><div><dt>The place</dt><dd>{event.venue}</dd></div><div><dt>Before you enter</dt><dd><a href="#hw-terms">Read admission requirements ↗</a></dd></div></dl>
+      <figure style={{maxWidth:560,margin:"40px auto"}}><Image src={event.media.hero ?? "/halloween/poster-oct29.jpg"} alt={event.media.heroAlt ?? "Halloween Party — Thursday 29 October, New Cairo"} width={1122} height={1402} sizes="(max-width: 600px) 100vw, 560px" style={{width:"100%",height:"auto"}} /></figure>
       <section className="hw-section" id="hw-experience">
         <div className="hw-section-head"><div><p className="hw-eyebrow">Not your ordinary night</p><h2>Expect the<br/>unexpected.</h2></div><p>{event.description[0] ?? event.shortDescription}</p></div>
         <div className="hw-experiences">
@@ -57,7 +59,7 @@ export function HalloweenEventPage({ event, appearance = "paper", whatsapp = SIT
     {appearance === "blend" ? <div className="hw-dawn-transition" aria-hidden="true"><span>One night. More than one world.</span></div> : null}
     <section className="hw-section hw-ticket-section" id="hw-tickets"><div className="hw-wrap hw-ticket-layout"><div><p className="hw-eyebrow">Your invitation to the unknown</p><h2>Bring your people.<br/>Find your world.</h2><p>Choose your tickets, add your guest details, and pay in full using InstaPay / Vodafone Cash or Visa.</p><p className="hw-smallprint">Door selection applies. Payment does not guarantee admission. Read the event terms before paying.</p></div><HalloweenTicket event={event} appearance={appearance}/></div></section>
     <div className="hw-light-ending"><div className="hw-wrap">
-      <section className="hw-section" id="hw-terms"><div className="hw-terms-layout"><div><p className="hw-eyebrow">Before you enter</p><h2>The night.<br/>The rules.</h2><div className="hw-location"><h3>A location worth the wait.</h3><p>Cairo for now. The exact location and arrival instructions will reach confirmed guests one day before the event.</p></div><p className="hw-smallprint"><Link href="/policies/events-payment">Events — Payment & Booking Confirmation ↗</Link></p></div><ol className="hw-term-list">{(event.importantInformation ?? []).map((term,index)=><li key={term}><span>{String(index+1).padStart(2,"0")}</span>{term}</li>)}</ol></div></section>
+      <section className="hw-section" id="hw-terms"><div className="hw-terms-layout"><div><p className="hw-eyebrow">Before you enter</p><h2>The night.<br/>The rules.</h2><div className="hw-location"><h3>A location worth the wait.</h3><p>New Cairo. The exact location and arrival instructions will reach confirmed guests two days before the event.</p></div><p className="hw-smallprint"><Link href="/policies/events-payment">Events — Payment & Booking Confirmation ↗</Link></p></div><ol className="hw-term-list">{(event.importantInformation ?? []).map((term,index)=><li key={term}><span>{String(index+1).padStart(2,"0")}</span>{term}</li>)}</ol></div></section>
       <section className="hw-section" style={{paddingTop:0}}><div className="hw-section-head"><div><p className="hw-eyebrow">A few things to know</p><h2>Before the night.</h2></div></div><div className="hw-faq">
         <details><summary>How does booking work?</summary><p>Choose your tickets, enter every guest&apos;s details, accept the event policies and pay 100% of the total. Transfers are reviewed before payment is verified. Final confirmation is issued separately.</p></details>
         <details><summary>What are the admission requirements?</summary><ul>{event.importantInformation?.map(term => <li key={term}>{term}</li>)}</ul></details>
@@ -67,3 +69,4 @@ export function HalloweenEventPage({ event, appearance = "paper", whatsapp = SIT
     </div></div>
   </div>;
 }
+

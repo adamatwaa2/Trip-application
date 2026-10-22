@@ -40,7 +40,7 @@ export function HalloweenBookingFlow({event,preview,appearance="paper",whatsapp=
    try{
     if(preview){
      if(appliedCode&&!['FOFA-D1','AUC-D1'].includes(appliedCode)){if(active){setQuote(null);setPricingError("Demo codes: FOFA-D1 or AUC-D1.");}return;}
-     if(active){setQuote(previewQuote(quantity,appliedCode,event.priceEgp??1000,event.bookingFeeEgp??0));setPricingError("");}return;
+     if(active){setQuote(previewQuote(quantity,appliedCode,event.priceEgp??1500,event.bookingFeeEgp??0));setPricingError("");}return;
     }
     const result=await reserveEventQuote(event.id,sessionId.current,quantity,appliedCode);
     if(active){if(result.ok){setQuote(result.quote);setPricingError("");}else{setQuote(null);setPricingError(result.error);}}
@@ -74,12 +74,12 @@ export function HalloweenBookingFlow({event,preview,appearance="paper",whatsapp=
    if(!result.ok){setError(result.error);return;}router.push(`/pay/${reservation.token}`);
   }catch{setError("Receipt submission was interrupted. Please retry.");}});
  }
- if(preview&&completed&&reservation&&currentQuote)return <EventTicketStatus token="demo" preview previewMethod={method} initial={{reference:reservation.number,title:event.title,name:guests[0].name,guests:activeGuests.map(g=>g.name),quantity,date:"2026-10-30T19:00:00+02:00",endDate:"2026-10-31T02:00:00+02:00",venue:event.venue??"Cairo",ticketLabel:event.ticketLabel??"Early Bird",subtotal:currentQuote.originalSubtotal-currentQuote.discountEgp,fees:currentQuote.fees,total:currentQuote.total,paid:0,status:method==="manual"?"pending":"unpaid",issuedAt:null}}/>;
+ if(preview&&completed&&reservation&&currentQuote)return <EventTicketStatus token="demo" preview previewMethod={method} initial={{reference:reservation.number,title:event.title,name:guests[0].name,guests:activeGuests.map(g=>g.name),quantity,date:"2026-10-29T19:00:00+03:00",endDate:"2026-10-30T02:00:00+02:00",venue:event.venue??"New Cairo",ticketLabel:event.ticketLabel??"Early Bird",subtotal:currentQuote.originalSubtotal-currentQuote.discountEgp,fees:currentQuote.fees,total:currentQuote.total,paid:0,status:method==="manual"?"pending":"unpaid",issuedAt:null}}/>;
  const pages=quantityValid?Math.ceil(quantity/5):0;
  const indexes=Array.from({length:quantityValid?Math.min(5,quantity-guestPage*5):0},(_,i)=>guestPage*5+i);
  return <div className={halloweenClassName(appearance)}>
   {preview?<nav className="hw-preview-bar" aria-label="Demonstration"><strong>Campus checkout preview</strong><span>Try FOFA-D1 or AUC-D1 · no real payment or ticket</span><Link href="/preview/campus/admin">Admin preview ↗</Link></nav>:null}
-  <div className="hw-wrap"><div className="hw-topline"><Link href={halloweenHref(appearance)}>← Back to the night</Link><span>Halloween / 30.10.26</span></div>
+  <div className="hw-wrap"><div className="hw-topline"><Link href={halloweenHref(appearance)}>← Back to the night</Link><span>Halloween / 29.10.26</span></div>
   <section className="hw-checkout"><p className="hw-eyebrow">Your world starts here</p><h1>Make it a night.</h1>
   <div className="hw-checkout-grid"><div className="hw-form">
   {completed&&reservation?<><h2>Complete your payment.</h2><p className="hw-notice">Reference: <strong>{reservation.number}</strong></p>{reservation.token?<><PaymobPixelCheckout paymentToken={reservation.token} returnPath={`/pay/${reservation.token}`}/><Link href={`/pay/${reservation.token}`}>View booking and ticket status ↗</Link></>:null}</>:<>
@@ -104,7 +104,7 @@ export function HalloweenBookingFlow({event,preview,appearance="paper",whatsapp=
     {preview?<p className="hw-notice">Demonstration only. No payment will be charged or valid ticket issued.</p>:null}
     <label className="hw-choice"><input type="radio" name="event-payment" checked={method==="manual"} onChange={()=>setMethod("manual")}/><span><strong>InstaPay / Vodafone Cash</strong><small>Transfer in full and upload your receipt.</small></span></label><label className="hw-choice"><input type="radio" name="event-payment" checked={method==="paymob"} onChange={()=>setMethod("paymob")}/><span><strong>Pay online with Visa</strong><small>Visa · Mastercard · Secure card checkout</small></span></label>
     {method==="manual"&&currentQuote?(preview?<p className="hw-notice">Demo receipt only. No transfer or upload is required. Continue below to preview ticket status.</p>:<PaymentProofStep tripId={event.id} productType="event" totalEgp={currentQuote.total} value={proof} onChange={setProof}/>):null}
-    <p className="hw-smallprint">Door selection applies. Exact location sent one day before the event.</p>
+    <p className="hw-smallprint">Door selection applies. Exact location sent two days before the event.</p>
     <button type="button" className="hw-button" disabled={pending||(method==="manual"&&!proof&&!preview)} onClick={finish}>{pending?"Saving…":preview?"Continue demo booking ↗":method==="paymob"?"Continue to Visa ↗":"Submit receipt for verification ↗"}</button>
     {reservation?.token?<p><Link className="hw-text-link" href={`/pay/${reservation.token}`}>Keep your private booking link ↗</Link></p>:null}
    </>}{error?<p role="alert" className="hw-error">{error}{!reservation?<button type="button" className="hw-text-link" onClick={()=>{setQuote(null);setPricingVersion(v=>v+1);setError("");}}>Refresh ticket total</button>:null}</p>:null}
@@ -113,3 +113,4 @@ export function HalloweenBookingFlow({event,preview,appearance="paper",whatsapp=
   </div><HalloweenTicket event={event} appearance={appearance}><div className="hw-smallprint" aria-live="polite">{currentQuote?<dl className="hw-review">{currentQuote.lines.map(line=><div key={line.price}><dt>{line.quantity} × {money(line.price)} EGP</dt><dd>{money(line.quantity*line.price)} EGP</dd></div>)}{currentQuote.discountPercent?<div><dt>{currentQuote.discountPercent}% ticket discount</dt><dd>−{money(currentQuote.discountEgp)} EGP</dd></div>:null}<div><dt>Booking fees</dt><dd>{money(currentQuote.fees)} EGP</dd></div><div><dt>Total · {quantity} tickets</dt><dd>{money(currentQuote.total)} EGP</dd></div></dl>:"Updating total…"}<p>Early Bird tickets are limited. Prices rise as tickets sell.</p></div></HalloweenTicket></div></section></div>
  </div>;
 }
+
