@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { eventBrandLogo } from "@/lib/event-branding";
 import { BrandLockup } from "./BrandLockup";
 import { HEADER_CTA, PRIMARY_NAV, type NavItem } from "@/content/nav";
 
@@ -30,6 +31,7 @@ function NavLink({ item, current }: { item: NavItem; current: boolean }) {
 export function SiteHeader({ headerLogo = "", eventLogo = "" }: { headerLogo?: string; eventLogo?: string }) {
   const pathname = usePathname() ?? "/";
   const [menuOpen, setMenuOpen] = useState(false);
+  const experienceLogo = eventBrandLogo(pathname);
 
   /** The Events world carries the violet mark; everywhere else is orange. */
   const world = pathname.startsWith("/events") ? "events" : "general";
@@ -58,7 +60,7 @@ export function SiteHeader({ headerLogo = "", eventLogo = "" }: { headerLogo?: s
         data-menu-open={menuOpen ? "true" : undefined}
       >
         <div className="pi-header__inner">
-          <BrandLockup tone={menuOpen ? "ivory" : "ink"} world={world} logoOverride={world === "events" ? eventLogo : headerLogo} />
+          <BrandLockup tone={menuOpen ? "ivory" : "ink"} world={world} height={experienceLogo ? 44 : 34} logoOverride={experienceLogo || (world === "events" ? eventLogo : headerLogo)} />
 
           <nav className="pi-nav" aria-label="Primary">
             {PRIMARY_NAV.map((item) => (
