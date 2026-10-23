@@ -10,5 +10,5 @@ export const metadata: Metadata = { title: "Book tickets · Spooky Haus", robots
 export default async function Page() {
   const event = await getEventBySlug("spooky-haus");
   if (!event) notFound();
-  return <main className="spooky-haus sh-book-page"><div className="sh-wrap"><Link className="sh-back" href="/events/spooky-haus">← Back to Spooky Haus</Link><p className="sh-presenter">Planet Infinity × CUCA Club</p><h1>Your tickets.<br />Your Halloween.</h1><p className="sh-intro">Spooky Haus · Halloween Dinner Party</p><SpookyHausBookingForm price={event.priceEgp ?? 900} schedule={eventPriceSchedule(event.media)} /></div></main>;
+  return <main className="spooky-haus sh-book-page"><div className="sh-wrap"><Link className="sh-back" href="/events/spooky-haus">← Back to Spooky Haus</Link><p className="sh-presenter">Planet Infinity × CUCA Club</p><h1>Your tickets.<br />Your Halloween.</h1><p className="sh-intro">Spooky Haus · Halloween Dinner Party</p><SpookyHausBookingForm price={event.priceEgp ?? 900} schedule={eventPriceSchedule(event.media)} bookingFee={event.bookingFeeEgp??0} /></div></main>;
 }

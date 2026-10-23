@@ -1,23 +1,33 @@
 "use client";
 import Link from "next/link";
 import { useRef, useState, useTransition, type FormEvent } from "react";
-import { bookSpookyHaus } from "@/app/actions/spooky-haus";
+import { bookSpookyHaus, quoteSpookyPromo, type SpookyPromoQuote } from "@/app/actions/spooky-haus";
 import { PaymobPixelCheckout } from "@/components/PaymobPixelCheckout";
 import { SpookyHausPrice, useSpookyPrice } from "@/components/SpookyHausPrice";
 import type { EventPriceSchedule } from "@/lib/scheduled-event-price";
 type Guest = { name: string; phone: string };
-export function SpookyHausBookingForm({ price, schedule }: { price: number; schedule?: EventPriceSchedule }) {
+export function SpookyHausBookingForm({ price, schedule, bookingFee = 0 }: { price: number; schedule?: EventPriceSchedule; bookingFee?: number }) {
  const [quantity, setQuantity] = useState(""), [group,setGroup] = useState(""), [guests,setGuests] = useState<Record<number,Guest>>({}), [terms,setTerms] = useState(false), [rules,setRules] = useState(false), [error,setError] = useState("");
  const [booking,setBooking] = useState<{bookingNumber:string;paymentToken:string;totalEgp:number}|null>(null), [pending,startTransition] = useTransition();
  const submission = useRef<string | null>(null);
+ const [promoCode,setPromoCode] = useState(""), [promoQuote,setPromoQuote] = useState<SpookyPromoQuote|null>(null), [promoError,setPromoError] = useState(""), [promoPending,startPromo] = useTransition();
  const currentPrice = useSpookyPrice(price,schedule), n = Number(quantity), min = group === "girls-only" ? 1 : 2;
  const validQuantity = ["couple","mixed-group","girls-only"].includes(group) && Number.isSafeInteger(n) && n >= min && n <= 100 && (group !== "couple" || n === 2);
+ const appliedPromo = validQuantity && promoQuote?.code === promoCode.trim().toUpperCase() && promoQuote.quantity === n && promoQuote.unitPrice === currentPrice && promoQuote.feePerTicket === bookingFee ? promoQuote : null;
+ function applyPromo() {
+  setPromoError(""); setPromoQuote(null);
+  startPromo(async()=>{try {
+   const result = await quoteSpookyPromo(n,promoCode);
+   if(result.ok) setPromoQuote(result.quote); else setPromoError(result.error);
+  }catch{setPromoError("Connection interrupted. Please try applying the code again.");}});
+ }
  function changeGuest(i:number,key:keyof Guest,value:string) { setGuests(s=>({...s,[i]:{name:s[i]?.name??"",phone:s[i]?.phone??"",[key]:value}})); }
  function submit(e:FormEvent<HTMLFormElement>) {
   e.preventDefault(); if (!validQuantity) {setError("Check the number of tickets for your group.");return;}
+  if(promoCode.trim() && !appliedPromo) {setError("Apply your promo code again for the current ticket quantity, or remove it to continue without a discount.");return;}
   const form = new FormData(e.currentTarget); setError(""); submission.current ??= crypto.randomUUID();
   startTransition(async()=>{try {
-   const result = await bookSpookyHaus({submissionId:submission.current!,email:String(form.get("email")??""),guests:Array.from({length:n},(_,i)=>guests[i]??{name:"",phone:""}),groupType:group,termsAccepted:terms,rulesAccepted:rules});
+   const result = await bookSpookyHaus({submissionId:submission.current!,email:String(form.get("email")??""),guests:Array.from({length:n},(_,i)=>guests[i]??{name:"",phone:""}),groupType:group,termsAccepted:terms,rulesAccepted:rules,promoCode:appliedPromo?.code??""});
    if(result.ok)setBooking(result); else setError(result.error);
   }catch{setError("Connection interrupted. Please retry to recover your booking safely.");}});
  }
@@ -31,10 +41,11 @@ export function SpookyHausBookingForm({ price, schedule }: { price: number; sche
   ].map(option=><label className="sh-group-choice" data-selected={group===option.value?"true":undefined} key={option.value}><input type="radio" name="groupType" required value={option.value} checked={group===option.value} onChange={()=>{setGroup(option.value);setQuantity(option.value==="couple"?"2":option.value==="girls-only"?"1":"");}} /><span><strong>{option.label}</strong><small>{option.hint}</small></span></label>)}</div></fieldset>
   {group ? group==="couple" ? <p className="sh-group-note">One couple · 2 tickets</p> : <label>Number of tickets<input type="number" min={min} max={100} step={1} required value={quantity} placeholder="How many are coming?" onChange={e=>setQuantity(e.target.value)} /></label> : <p className="sh-group-note">Choose your group first. No tickets are selected yet.</p>}
   <label>Booking email<input name="email" type="email" autoComplete="email" required maxLength={254} placeholder="you@example.com" /></label>
+  <fieldset className="sh-promo"><legend>Have a promo code?</legend><div className="sh-promo-row"><label htmlFor="spooky-promo" className="sh-sr-only">Promo code</label><input id="spooky-promo" value={promoCode} maxLength={24} autoCapitalize="characters" autoComplete="off" spellCheck={false} placeholder="Enter your code" disabled={pending||promoPending} onChange={e=>{setPromoCode(e.target.value);setPromoQuote(null);setPromoError("");}} /><button className="sh-button" type="button" disabled={pending||promoPending||!validQuantity||!promoCode.trim()} onClick={applyPromo}>{promoPending?"Checking…":"Apply"}</button></div><div aria-live="polite">{appliedPromo?<p className="sh-promo-success">{appliedPromo.code} applied · {appliedPromo.discountPercent}% off tickets. <button type="button" className="sh-promo-remove" onClick={()=>{setPromoCode("");setPromoQuote(null);setPromoError("");}}>Remove</button></p>:promoCode.trim()&&!promoError?<p className="sh-small">Apply the code after choosing your ticket quantity.</p>:null}{promoError?<p className="sh-error" role="alert">{promoError}</p>:null}</div></fieldset>
   {Array.from({length:validQuantity?n:0},(_,i)=><fieldset key={i}><legend>Guest {i+1}{i===0?" · Booking contact":""}</legend><div className="sh-form-row"><label>Full name<input required minLength={2} maxLength={120} autoComplete={i===0?"name":"off"} value={guests[i]?.name??""} onChange={e=>changeGuest(i,"name",e.target.value)} /></label><label>Mobile number<input required type="tel" minLength={6} maxLength={40} autoComplete={i===0?"tel":"off"} value={guests[i]?.phone??""} onChange={e=>changeGuest(i,"phone",e.target.value)} /></label></div></fieldset>)}
   <label className="sh-check"><input type="checkbox" required checked={rules} onChange={e=>setRules(e.target.checked)} /><span>Every guest is 18+. We are a couple, mixed group or girls-only. Costumes are mandatory. No alcohol or drugs are allowed.</span></label>
   <label className="sh-check"><input type="checkbox" required checked={terms} onChange={e=>setTerms(e.target.checked)} /><span>I accept the <Link href="/policies/events-payment" target="_blank">event payment policy</Link> and <Link href="/policies/privacy" target="_blank">Privacy Policy</Link>.</span></label>
   {error?<p className="sh-error" role="alert">{error}</p>:null}
-  <button className="sh-button" type="submit" disabled={pending||!validQuantity}>{pending?"Preparing secure checkout…":"Continue to payment"}</button><p className="sh-small">Direct ticket booking. Pay securely by card with Paymob.</p>
- </form><aside className="sh-booking-summary"><p className="sh-kicker">Spooky Haus · 29 October</p><h2>Halloween Dinner Party</h2><p>Mokattam, Cairo<br />Doors 7 PM · 8 PM – 12 AM</p><SpookyHausPrice price={price} schedule={schedule} /><div className="sh-total" aria-live="polite"><span>{validQuantity ? `${n} ${n===1?"ticket":"tickets"} · total` : "Choose your group and ticket quantity"}</span><strong>{validQuantity ? `${(currentPrice*n).toLocaleString("en-EG")} EGP` : "—"}</strong></div><p className="sh-small">18+ · Couples, mixed groups or girls-only.<br />Costumes mandatory. No alcohol. No drugs.</p></aside></div>;
+  <button className="sh-button" type="submit" disabled={pending||promoPending||!validQuantity}>{pending?"Preparing secure checkout…":"Continue to payment"}</button><p className="sh-small">Direct ticket booking. Pay securely by card with Paymob.</p>
+ </form><aside className="sh-booking-summary"><p className="sh-kicker">Spooky Haus · 29 October</p><h2>Halloween Dinner Party</h2><p>Mokattam, Cairo<br />Doors 7 PM · 8 PM – 12 AM</p><SpookyHausPrice price={price} schedule={schedule} bookingFee={bookingFee} />{validQuantity?<dl className="sh-price-breakdown" aria-live="polite"><div><dt>{n} {n===1?"ticket":"tickets"}</dt><dd>{(currentPrice*n).toLocaleString("en-EG")} EGP</dd></div>{appliedPromo?<div className="sh-discount"><dt>Promo discount · {appliedPromo.discountPercent}%</dt><dd>−{appliedPromo.discountEgp.toLocaleString("en-EG")} EGP</dd></div>:null}<div><dt>Service fee · {bookingFee} EGP × {n}</dt><dd>{(bookingFee*n).toLocaleString("en-EG")} EGP</dd></div></dl>:null}<div className="sh-total" aria-live="polite"><span>{validQuantity ? `${n} ${n===1?"ticket":"tickets"} · total` : "Choose your group and ticket quantity"}</span><strong>{validQuantity ? `${(appliedPromo?.total??((currentPrice+bookingFee)*n)).toLocaleString("en-EG")} EGP` : "—"}</strong></div><p className="sh-small">18+ · Couples, mixed groups or girls-only.<br />Costumes mandatory. No alcohol. No drugs.</p></aside></div>;
 }
