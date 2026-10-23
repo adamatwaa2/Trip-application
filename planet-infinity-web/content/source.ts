@@ -136,7 +136,19 @@ async function databaseEvents(): Promise<PlanetEvent[] | null> {
 
 export function dataSource(): "local" | "supabase" { return isSupabaseConfigured() ? "supabase" : "local"; }
 function withSocotra(trips: Trip[]): Trip[] {
-  return [...trips.filter(trip => trip.slug !== SOCOTRA_TRIP.slug), SOCOTRA_TRIP];
+  const configured = trips.find(trip => trip.slug === SOCOTRA_TRIP.slug);
+  // Keep the curated trip content, but use the visual identity saved in Admin.
+  const socotra: Trip = {
+    ...SOCOTRA_TRIP,
+    media: {
+      ...SOCOTRA_TRIP.media,
+      visualTheme: {
+        ...SOCOTRA_TRIP.media.visualTheme,
+        ...configured?.media.visualTheme,
+      },
+    },
+  };
+  return [...trips.filter(trip => trip.slug !== SOCOTRA_TRIP.slug), socotra];
 }
 export async function getTrips(): Promise<Trip[]> { return withSocotra((await databaseTrips()) ?? TRIPS); }
 export async function getListedTrips(): Promise<{ trips: Trip[]; usingDemoData: boolean }> {
@@ -148,7 +160,7 @@ export async function getListedTrips(): Promise<{ trips: Trip[]; usingDemoData: 
 }
 export async function getFeaturedTrips(): Promise<Trip[]> { const items = await databaseTrips(); return withSocotra(items === null ? FEATURED_TRIPS : items.filter((item) => item.featured)); }
 export async function getTripBySlug(slug: string): Promise<Trip | undefined> {
-  if (slug === SOCOTRA_TRIP.slug) return SOCOTRA_TRIP;
+  if (slug === SOCOTRA_TRIP.slug) return withSocotra((await databaseTrips()) ?? []).find(trip => trip.slug === slug) ?? SOCOTRA_TRIP;
   const items = await databaseTrips();
   if (items === null) return findTrip(slug);
   const trip = items.find((item) => item.slug === slug);
