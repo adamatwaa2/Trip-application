@@ -4,7 +4,7 @@ import { useEffect, useId, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createPaymobCheckout } from "@/app/actions/payments";
 
-export function PaymobPixelCheckout({ paymentToken, returnPath }: { paymentToken: string; returnPath?: string }) {
+export function PaymobPixelCheckout({ paymentToken, returnPath, primaryColor = "#f2a33a" }: { paymentToken: string; returnPath?: string; primaryColor?: string }) {
   const router = useRouter();
   const reactId = useId();
   const elementId = `paymob-pixel-${reactId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
@@ -42,14 +42,14 @@ export function PaymobPixelCheckout({ paymentToken, returnPath }: { paymentToken
           showPaymobLogo: true,
           afterPaymentComplete: () => { setStatus("submitted"); if (returnPath) router.push(returnPath); },
           customStyle: {
-            Color_Primary: "#f2a33a",
+            Color_Primary: primaryColor,
             Color_Container: "#fffaf2",
             Color_Border_Input_Fields: "#bfd0d8",
-            Color_Border_Payment_Button: "#f2a33a",
+            Color_Border_Payment_Button: primaryColor,
             Radius_Border: "16",
             Text_Color_For_Label: "#071821",
             Text_Color_For_Input_Fields: "#071821",
-            Text_Color_For_Payment_Button: "#071821",
+            Text_Color_For_Payment_Button: primaryColor === "#f2a33a" ? "#071821" : "#fffaf2",
             Color_For_Text_Placeholder: "#687d87",
             Width_of_Container: "100%",
             Container_Padding: "18",
@@ -69,7 +69,7 @@ export function PaymobPixelCheckout({ paymentToken, returnPath }: { paymentToken
       cancelled = true;
       if (container) container.replaceChildren();
     };
-  }, [elementId, paymentToken, returnPath, router]);
+  }, [elementId, paymentToken, returnPath, router, primaryColor]);
 
   return (
     <section className="pi-paymob-pixel" aria-live="polite">
