@@ -29,7 +29,7 @@ export function BrandLockup({
 }: BrandLockupProps) {
   const content = (
     <>
-      <span className="pi-brand__logo-slot" data-brand-logo-slot>
+      <span className="pi-brand__logo-slot" data-brand-logo-slot style={logoOverride && height === 44 ? { width: 44, height: 44, flex: "0 0 44px" } : undefined}>
         {logoOverride ? <Image src={logoOverride} alt="Planet Infinity" width={160} height={height} unoptimized style={{ width: "auto", height, objectFit: "contain", maxWidth: 160 }} /> : <BrandLogo world={world} height={height} priority />}
       </span>
       <span className="pi-brand__word">Planet Infinity</span>
