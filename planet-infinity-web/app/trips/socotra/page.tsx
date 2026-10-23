@@ -7,10 +7,14 @@ import { ButtonLink } from "@/components/Button";
 import { CatalogDocumentCard } from "@/components/CatalogDocumentCard";
 import { GalleryLightbox } from "@/components/GalleryLightbox";
 import { MediaBlock } from "@/components/MediaBlock";
-import { SOCOTRA_DAYS, SOCOTRA_GALLERY } from "@/content/socotra";
+import { CatalogThemeFrame } from "@/components/CatalogThemeFrame";
+import { getTripBySlug } from "@/content/source";
+import { SOCOTRA_DAYS, SOCOTRA_GALLERY, SOCOTRA_TRIP } from "@/content/socotra";
 export const metadata: Metadata = { title:"Socotra", description:"An eight-day Socotra camping journey with Planet Infinity. Request your place from Jeddah, with no payment at the request stage.",alternates:{canonical:"/trips/socotra"},openGraph:{title:"Socotra — Planet Infinity",images:[{url:"/socotra/white-dunes-and-sea.jpeg",alt:"Socotra white dunes and turquoise sea"}]} };
-export default function SocotraPage() {
- return <>
+export const dynamic = "force-dynamic";
+export default async function SocotraPage() {
+ const trip = (await getTripBySlug("socotra")) ?? SOCOTRA_TRIP;
+ return <CatalogThemeFrame theme={trip.media.visualTheme} kind="trip">
   <section className="pi-trip-cinema"><MediaBlock src="/socotra/white-dunes-and-sea.jpeg" alt="White dunes and the sea in Socotra, image supplied for this trip" ratio="21-9" radius="none" className="pi-trip-cinema__media" eager><Container className="pi-trip-cinema__content"><Breadcrumbs trail={[{label:"Home",href:"/"},{label:"Travel",href:"/trips"},{label:"Socotra"}]} /><Eyebrow>Socotra, Yemen</Eyebrow><h1>Socotra</h1><p>Eight days of white dunes, turquoise water and dragon blood forests. Meet the group in Jeddah and fly together to the island.</p><ButtonLink href="/trips/socotra/book">Request Booking</ButtonLink></Container></MediaBlock></section>
   <Section tone="white" className="pi-trip-document-rail"><Container><CatalogDocumentCard url="/documents/Socotra%20Trip%20Program.pdf" label="Socotra Trip Program · 8 days" kind="trip" /></Container></Section>
   <Section tone="white" className="pi-trip-story"><Container><div className="pi-trip-layout"><div className="pi-trip-main">
@@ -22,5 +26,5 @@ export default function SocotraPage() {
   <section className="pi-trip-block"><h2>Important information</h2><ul className="pi-notes"><li>Dates are proposed. Flight schedule, availability and visa eligibility are confirmed individually before a booking is accepted.</li><li>The package starts and ends in Jeddah. Connections from other countries are quoted separately.</li><li>The operator PDF excludes flights; Planet Infinity adds return Jeddah–Socotra flights to this package. Its Tuesday flight note must be reconciled with the proposed Thursday departures.</li><li>Wildlife sightings and water activities depend on conditions.</li><li>The museum visit is included in the operator PDF; its timing requires confirmation.</li><li>Review travel advice from your country and check insurance cover. The UK FCDO advises against all travel to Yemen; <a href="https://www.gov.uk/foreign-travel-advice/yemen" target="_blank" rel="noreferrer">read current advice</a>.</li></ul></section>
   </div><aside className="pi-trip-aside" aria-label="Booking options"><div className="pi-booking"><div className="pi-booking__head"><div className="pi-price pi-price--large">$2,190 <span className="pi-price__unit">USD per traveler · Early Bird</span></div></div><p className="pi-booking__note">Regular price: $2,290 USD. Your applicable offer is confirmed by our team.</p><div className="pi-booking__overview"><span>Your island journey</span><p>8 days / 7 nights. Meet the group in Jeddah; the flight to Socotra and back is included.</p></div><ol className="pi-booking__steps">{["Your choices","Trip questions","Your details","Review"].map((label,i)=><li key={label}><span className="pi-booking__step-num">{i+1}</span>{label}</li>)}</ol><ButtonLink href="/trips/socotra/book" className="pi-booking__cta">Request Booking</ButtonLink><p className="pi-booking__note">A request is reviewed before confirmation. No payment is collected.</p></div></aside>
   </div></Container></Section>
- </>;
+ </CatalogThemeFrame>;
 }
