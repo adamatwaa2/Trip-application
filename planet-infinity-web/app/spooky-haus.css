@@ -11,7 +11,7 @@ body:has(.spooky-haus) .pi-footer p, body:has(.spooky-haus) .pi-footer a { color
 .spooky-haus h1,.spooky-haus h2 { font-family:"Bodoni MT",Didot,"Times New Roman",serif; font-weight:700; letter-spacing:-.055em; color:var(--sh-red); text-wrap:balance; }
 .spooky-haus a { color:inherit; }
 .sh-wrap { width:min(1240px,calc(100% - 96px)); margin-inline:auto; position:relative; }
-.sh-curtain { position:absolute; top:0; width:clamp(50px,11vw,185px); height:480px; z-index:-1; background:repeating-linear-gradient(100deg,#370502 0%,#8e1b0e 17%,#b22c16 27%,#4e0804 46%); box-shadow:inset 0 -8px 25px #1f0205; opacity:.96; }
+.sh-curtain { position:absolute; top:0; width:clamp(22px,3vw,46px); height:360px; z-index:-1; background:repeating-linear-gradient(100deg,#370502 0%,#8e1b0e 17%,#b22c16 27%,#4e0804 46%); box-shadow:inset 0 -8px 25px #1f0205; opacity:.96; }
 .sh-curtain-left { left:0; border-radius:0 0 100% 0; transform:rotate(8deg); transform-origin:top left; }
 .sh-curtain-right { right:0; border-radius:0 0 0 100%; transform:rotate(-8deg); transform-origin:top right; }
 .sh-hero { display:grid; grid-template-columns:1fr .92fr; align-items:center; gap:clamp(40px,7vw,110px); padding-block:46px 74px; }
@@ -113,7 +113,7 @@ body:has(.spooky-haus) .pi-footer p, body:has(.spooky-haus) .pi-footer a { color
  .sh-hero { grid-template-columns:1fr; gap:40px; padding-block:27px 45px; }
  .sh-hero-copy { padding-left:0; }
  .sh-back { margin-bottom:30px; }
- .sh-curtain { height:250px; width:42px; opacity:.8; }
+ .sh-curtain { height:190px; width:13px; opacity:.75; }
  .sh-date-stamp { top:55px; right:10px; width:63px; }
  .sh-hero .sh-kicker { margin-top:30px; max-width:235px; font-size:9px; }
  .spooky-haus h1 { font-size:clamp(84px,23vw,138px); margin-block:20px; }
