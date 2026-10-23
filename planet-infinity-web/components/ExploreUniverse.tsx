@@ -208,7 +208,7 @@ export function ExploreUniverse({ trips, events, tripCount, eventCount }: Explor
                           onClick={() => {
                             if (world.id === "travel") { setActiveWorld("travel"); setSelectedTrip(item.slug); }
                             if (world.id === "events") { setActiveWorld("events"); setSelectedEvent(item.slug); }
-                          }
+                          }}
                         >
                           {item.theme?.logo && /\.png(?:$|[?#])/i.test(item.theme.logo) ? (
                             // Admin-managed public media can come from the configured storage host.
