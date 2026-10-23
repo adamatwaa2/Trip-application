@@ -6,6 +6,7 @@
  * catalogue yet. The legacy Shopify files are not imported or executed.
  */
 import "server-only";
+import { eventPriceAt } from "@/lib/scheduled-event-price";
 
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
@@ -90,7 +91,7 @@ function mapTrip(row: DatabaseTrip): Trip {
 }
 function mapEvent(row: DatabaseEvent): PlanetEvent {
   const starts = dateParts(row.starts_at); const ends = dateParts(row.ends_at);
-  return { id: row.id, slug: row.slug, title: row.title, shortDescription: row.short_description, description: row.description ? row.description.split("\n").filter(Boolean) : [], bookingFeeEgp: Number(row.booking_fee_egp ?? 0), ticketLabel: row.ticket_label ?? undefined, category: row.category ?? "Event", venue: row.venue ?? undefined, eventDate: starts.date, startTime: starts.time, endTime: ends.time, priceEgp: row.price_egp ?? undefined, currency: "EGP", capacity: row.capacity ?? undefined, featured: row.is_featured, bookingMode: row.booking_mode, applicationRequired: row.application_required, ticketSelectionEnabled: Array.isArray(row.ticket_options) && row.ticket_options.length > 0, quantityEnabled: false, ticketOptions: row.ticket_options, document: row.document_url ? { url: row.document_url, label: row.document_label ?? "Event information PDF" } : undefined, media: row.media ?? {}, whatIsIncluded: row.inclusions, whatIsNotIncluded: row.exclusions, importantInformation: row.important_information };
+  return { id: row.id, slug: row.slug, title: row.title, shortDescription: row.short_description, description: row.description ? row.description.split("\n").filter(Boolean) : [], bookingFeeEgp: Number(row.booking_fee_egp ?? 0), ticketLabel: row.ticket_label ?? undefined, category: row.category ?? "Event", venue: row.venue ?? undefined, eventDate: starts.date, startTime: starts.time, endTime: ends.time, priceEgp: eventPriceAt(row.price_egp, row.media), currency: "EGP", capacity: row.capacity ?? undefined, featured: row.is_featured, bookingMode: row.booking_mode, applicationRequired: row.application_required, ticketSelectionEnabled: Array.isArray(row.ticket_options) && row.ticket_options.length > 0, quantityEnabled: false, ticketOptions: row.ticket_options, document: row.document_url ? { url: row.document_url, label: row.document_label ?? "Event information PDF" } : undefined, media: row.media ?? {}, whatIsIncluded: row.inclusions, whatIsNotIncluded: row.exclusions, importantInformation: row.important_information };
 }
 
 async function databaseTrips(): Promise<Trip[] | null> {

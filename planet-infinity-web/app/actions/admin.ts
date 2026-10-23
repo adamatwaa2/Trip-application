@@ -1,5 +1,7 @@
 "use server";
 
+import { eventPriceSchedule } from "@/lib/scheduled-event-price";
+
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin";
 import { parseCairoDateTime } from "@/lib/cairo-datetime";
@@ -286,6 +288,13 @@ export async function createCatalogItem(input: CatalogItemInput): Promise<Action
   const requestFormTheme = normaliseRequestFormTheme(input.requestFormTheme);
 
   const supabase = await createClient();
+  // A routine editor save must not erase an already configured price transition.
+  if (input.kind === "events" && input.id) {
+    const { data: existing, error: readError } = await supabase.from("events").select("media").eq("id", input.id).maybeSingle();
+    if (readError) return { ok: false, error: "We could not read the existing event. Please retry before saving." };
+    const schedule = eventPriceSchedule(existing?.media);
+    if (schedule) Object.assign(media, { priceSchedule: schedule });
+  }
   const parseDate = input.kind === "events" ? parseCairoDateTime : (value: string) => new Date(value);
   const date = input.date ? parseDate(input.date) : null;
   const endDate = input.endDate ? parseDate(input.endDate) : null;

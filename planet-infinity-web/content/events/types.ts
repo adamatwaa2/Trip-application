@@ -83,6 +83,7 @@ export type PlanetEvent = {
     /** Real Planet Infinity photography only. */
     hero?: string;
     heroAlt?: string;
+    priceSchedule?: import("@/lib/scheduled-event-price").EventPriceSchedule;
     gallery?: EventGalleryImage[];
     /** Mobile presentation: swipe carousel or all items in a scrolling grid. */
     galleryLayout?: EventGalleryLayout;

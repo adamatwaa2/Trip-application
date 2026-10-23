@@ -1,5 +1,6 @@
 "use server";
 
+import { eventPriceAt } from "@/lib/scheduled-event-price";
 import { after } from "next/server";
 import { requireAdmin } from "@/lib/admin";
 import { sendAdminPush } from "@/lib/admin-push";
@@ -250,6 +251,20 @@ export async function submitPublicRequest(input: PublicRequestInput): Promise<Re
 
   const scheduledAt = cleanText(input.scheduledAt, 40);
   const supabase = await createClient();
+  let selections = input.selections ?? {};
+  if (input.requestType === "event" && UUID.test(input.productId ?? "")) {
+    const { data: event, error: eventError } = await supabase.from("events").select("id,slug,price_egp,media").eq("id", input.productId!).eq("is_published", true).maybeSingle();
+    if (eventError || !event) return { ok: false, error: "This event is not available. Please refresh and try again." };
+    if (event.slug === "spooky-haus") {
+      if (!input.guestCount || input.guestCount < 2 || input.guestCount > 100 || !Number.isInteger(input.guestCount)) return { ok: false, error: "Enter a valid group size of at least two guests." };
+      if (!["couple", "mixed-group"].includes(String(selections.groupType)) || selections.rulesConfirmed !== true) return { ok: false, error: "Confirm the admission rules and choose a couple or mixed group." };
+      if (selections.groupType === "couple" && input.guestCount !== 2) return { ok: false, error: "A couple is two guests. Choose mixed group for a larger group." };
+      if (cleanText(input.phone, 40).length < 6) return { ok: false, error: "Enter a mobile number so the team can contact you." };
+      const unitPrice = eventPriceAt(event.price_egp, event.media);
+      if (unitPrice === undefined) return { ok: false, error: "Admission pricing is unavailable. Please contact the team." };
+      selections = { ...selections, unitPriceEgp: unitPrice, totalEgp: unitPrice * input.guestCount, currency: "EGP", quotedAt: new Date().toISOString(), admission: "18+; couples or mixed groups; costumes mandatory; no alcohol; no drugs", confirmationRequired: true };
+    }
+  }
   const { data, error } = await supabase.rpc("submit_public_request", {
     p_request_type: input.requestType,
     p_product_id: UUID.test(input.productId ?? "") ? input.productId : null,
@@ -261,7 +276,7 @@ export async function submitPublicRequest(input: PublicRequestInput): Promise<Re
     p_phone: cleanText(input.phone, 40) || null,
     p_guest_count: input.guestCount ?? null,
     p_scheduled_at: scheduledAt || null,
-    p_selections: input.selections ?? {},
+    p_selections: selections,
     p_notes: cleanText(input.notes) || null,
     p_policy_slugs: policySlugs(input.requestType, input.termsAccepted),
     p_whatsapp_opt_in: Boolean(input.whatsappOptIn),
