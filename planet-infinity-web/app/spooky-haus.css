@@ -95,3 +95,56 @@ body:has(.spooky-haus) .pi-footer p,body:has(.spooky-haus) .pi-footer a { color:
 .sh-group-choice strong { display:block; font-size:14px; }
 .sh-group-choice small { display:block; font-size:11px; font-weight:400; color:#765244; margin-top:3px; }
 .sh-group-note { font-size:13px; line-height:1.8; margin-bottom:24px!important; color:#70452e; }
+
+/* Candlelit table edition — scoped to Spooky Haus, never the other events. */
+body:has(.spooky-haus) { background:#100e0b; color:#e7d0af; }
+body:has(.spooky-haus) .pi-header--solid { background:#100e0bf5; border-color:#dfb98530; color:#f0d7af; }
+body:has(.spooky-haus) .pi-header .pi-brand__word,
+body:has(.spooky-haus) .pi-header .pi-nav__link { color:#f0d7af; }
+body:has(.spooky-haus) .pi-nav__link--current { color:#f8e4c7; background:#e9c79514; border-color:#dfb98565; }
+body:has(.spooky-haus) .pi-header__cta { background:#ecd1a6; color:#1a1009; border-color:#ecd1a6; }
+body:has(.spooky-haus) .pi-burger { color:#ecd1a6; border-color:#dfb98580; }
+body:has(.spooky-haus) .pi-burger__bars,
+body:has(.spooky-haus) .pi-burger__bars::before,
+body:has(.spooky-haus) .pi-burger__bars::after { background:#ecd1a6; }
+body:has(.spooky-haus) .pi-mobile { background:#100e0b; }
+body:has(.spooky-haus) .pi-mobile__link { color:#f0d7af; }
+body:has(.spooky-haus) .pi-footer { background:#0b0907; color:#e5ccaa; }
+body:has(.spooky-haus) .pi-footer p,
+body:has(.spooky-haus) .pi-footer a,
+body:has(.spooky-haus) .pi-footer__contact { color:#dcc3a2; }
+body:has(.spooky-haus) .pi-footer .pi-brand__word { color:#f0d7af; }
+body:has(.spooky-haus) .pi-footer__heading,
+body:has(.spooky-haus) .pi-footer__app-status { color:#d4aa79; }
+body:has(.spooky-haus) .pi-footer__app-strip { background:linear-gradient(120deg,#27180f,#100e0b); border-color:#dfb98530; }
+body:has(.spooky-haus) .pi-footer__app-strip h2 { color:#f0d7af; }
+body:has(.spooky-haus) .pi-footer__bottom { color:#c0a480; border-color:#dfb98530; }
+.spooky-haus { --sh-red:#f0d7af; --sh-ink:#e1c9a8; --sh-paper:#100e0b; --sh-scene:url("https://dnjeghmqieyqgafwuemj.supabase.co/storage/v1/object/public/catalog-media/615119c8-d40a-450b-8286-ada8f9f4dc88/image/2026-10/4990dc5a-26ea-4dd1-90e7-1d9b517601bd.png"); color-scheme:dark; background:radial-gradient(ellipse at 55% 85%,#7b351516,transparent 60%),#100e0b; }
+.sh-poster-stage { background:#100e0b; }
+.sh-original-poster { box-shadow:0 0 80px #0005; }
+.sh-details { border-top:1px solid #dfb98525; }
+.sh-details details,.sh-booking-summary .sh-price,.sh-total { border-color:#dfb98538; }
+.spooky-haus .sh-button { color:#1a1009; background:#ecd1a6; border-color:#ecd1a6; box-shadow:0 4px 20px #c8712520; }
+.spooky-haus .sh-button:hover { background:#ffe2b2; border-color:#ffe2b2; }
+.spooky-haus :focus-visible { outline-color:#e3a460; }
+.sh-admission-bar { background:#17120eef; color:#f0d7af; border-color:#dfb98545; box-shadow:0 -12px 32px #0005; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }
+.sh-price-note { color:#d5bda0; }
+.sh-book-page { background-image:linear-gradient(180deg,#100e0bf7 0%,#100e0be8 40%,#100e0bbd 100%),var(--sh-scene); background-size:cover; background-position:center bottom; background-attachment:fixed; }
+.sh-form { background:linear-gradient(145deg,#231a12f5,#15110ef5); border-color:#dfb98550; box-shadow:0 18px 70px #0004; color:#e7d0af; }
+.sh-form input:not([type=checkbox]):not([type=radio]),.sh-form select { background:#110f0c; color:#f2dfc4; border-color:#dfb98570; color-scheme:dark; }
+.sh-form input::placeholder { color:#bba387; opacity:1; }
+.sh-form fieldset { border-color:#dfb98530; }
+.sh-form legend,.sh-form .sh-check a,.sh-total strong { color:#f0d7af; }
+.sh-form input[type=checkbox],.sh-group-choice input[type=radio] { accent-color:#e3bd85; }
+.sh-error { color:#ffe2c0; background:#512417; border-color:#d58d56; }
+.sh-form .sh-group-choice { color:#e9d4b6; background:#15110e; border-color:#dfb98555; }
+.sh-form .sh-group-choice[data-selected=true] { color:#ffe7c5; background:#ab59221f; border-color:#e3bd85; box-shadow:inset 0 0 26px #a3522010; }
+.sh-group-choice small,.sh-group-note { color:#cfb493; }
+.sh-booking-summary { border:1px solid #dfb98538; border-radius:7px; padding:26px; background:linear-gradient(150deg,#382316cc,#15110ef5); box-shadow:0 18px 55px #0003; }
+.sh-booking-summary > .sh-small { color:#dac09f; }
+.sh-payment .pi-paymob-pixel { color-scheme:light; }
+@media(max-width:700px) {
+ .sh-book-page { background-attachment:scroll; background-position:60% bottom; }
+ .sh-booking-summary { padding:22px; border-color:#dfb98545; }
+ .sh-form { padding:24px 20px; }
+}
