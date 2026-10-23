@@ -116,7 +116,26 @@ export function ExploreUniverse({ trips, events, tripCount, eventCount }: Explor
         }
       }
       const next = closest?.dataset.worldStep as WorldId | undefined;
-      if (next) setActiveWorld(next);
+      if (next) {
+        setActiveWorld(next);
+        // The scrolling experience must preview each trip, not stay on
+        // the first trip until someone discovers the selection buttons.
+        const cards = Array.from(closest.querySelectorAll<HTMLElement>("[data-catalog-slug]"));
+        const cardTarget = window.innerHeight * .55;
+        let nearestCard: HTMLElement | undefined;
+        let nearestCardDistance = Number.POSITIVE_INFINITY;
+        for (const card of cards) {
+          const cardBounds = card.getBoundingClientRect();
+          const distance = Math.abs(cardBounds.top + cardBounds.height * .5 - cardTarget);
+          if (distance < nearestCardDistance) {
+            nearestCard = card;
+            nearestCardDistance = distance;
+          }
+        }
+        const slug = nearestCard?.dataset.catalogSlug;
+        if (slug && next === "travel") setSelectedTrip(slug);
+        if (slug && next === "events") setSelectedEvent(slug);
+      }
     };
 
     update();
@@ -184,8 +203,12 @@ export function ExploreUniverse({ trips, events, tripCount, eventCount }: Explor
                           key={item.slug}
                           type="button"
                           className={`pi-universe__catalog-button${isSelected ? " is-selected" : ""}`}
+                          data-catalog-slug={item.slug}
                           aria-pressed={isSelected}
-                          onClick={() => world.id === "travel" ? setSelectedTrip(item.slug) : setSelectedEvent(item.slug)}
+                          onClick={() => {
+                            if (world.id === "travel") { setActiveWorld("travel"); setSelectedTrip(item.slug); }
+                            if (world.id === "events") { setActiveWorld("events"); setSelectedEvent(item.slug); }
+                          }
                         >
                           {item.theme?.logo && /\.png(?:$|[?#])/i.test(item.theme.logo) ? (
                             // Admin-managed public media can come from the configured storage host.
