@@ -148,3 +148,9 @@ body:has(.spooky-haus) .pi-footer__bottom { color:#c0a480; border-color:#dfb9853
  .sh-booking-summary { padding:22px; border-color:#dfb98545; }
  .sh-form { padding:24px 20px; }
 }
+
+/* Form labels and the mobile menu must retain contrast on the dark table. */
+.spooky-haus .sh-form label,
+.spooky-haus .sh-form .sh-check span,
+.spooky-haus .sh-form legend { color:#ead3b2; }
+body:has(.spooky-haus) .pi-burger { background:#1a1510; }
