@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { HomePlanSection } from "@/components/HomePlanSection";
+import { SchoolHuntSpotlight } from "@/components/SchoolHuntPage";
 import "@/app/home-context-links.css";
 import { ButtonLink } from "@/components/Button";
 import { Container } from "@/components/Container";
@@ -53,6 +54,7 @@ export default async function HomePage() {
         </Container>
       </section>
 
+      <SchoolHuntSpotlight />
       <Section tone="white" id="trips" className="pi-home-catalog pi-home-catalog--travel">
         <Container>
           <SectionHeading

@@ -1,4 +1,5 @@
 import { UpcomingExperiencePage } from "@/components/UpcomingWorlds";
+import { SchoolHuntPage } from "@/components/SchoolHuntPage";
 import { findUpcomingWorld, upcomingHref } from "@/content/upcoming-worlds";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -22,6 +23,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
+  if (slug === "school-hunt-dahab") return { title: "School Hunt · Schools & Youth Crew", description: "Bring your school to a proposed Dahab championship, or join the youth crew and create experiences with your classmates.", alternates: { canonical: "/trips/school-hunt-dahab" } };
   const trip = await getTripBySlug(slug);
   if (!trip) {
     const upcoming=findUpcomingWorld(slug,"trip");
@@ -43,6 +45,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 export default async function TripPage({ params }: Params) {
   const { slug } = await params;
   const [trip, copy] = await Promise.all([getTripBySlug(slug), getSiteCopy()]);
+  if (slug === "school-hunt-dahab") return <SchoolHuntPage trip={trip} />;
   if (!trip) {
     const upcoming=findUpcomingWorld(slug,"trip");
     if(upcoming) return <UpcomingExperiencePage world={upcoming}/>;

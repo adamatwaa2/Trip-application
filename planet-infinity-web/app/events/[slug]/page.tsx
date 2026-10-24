@@ -54,6 +54,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  */
 export default async function EventPage({ params, searchParams }: Params) {
   const { slug } = await params;
+  if (slug === "school-hunt-dahab") redirect("/trips/school-hunt-dahab");
   const [event, copy] = await Promise.all([getEventBySlug(slug), getSiteCopy()]);
   if (!event) {
     const upcoming=findUpcomingWorld(slug,"event");
