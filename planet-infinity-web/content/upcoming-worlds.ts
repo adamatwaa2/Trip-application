@@ -118,7 +118,7 @@ export const UPCOMING_WORLDS: UpcomingWorld[] = [
   },
   {
     "slug": "school-hunt-dahab",
-    "title": "SCHOOL HUNT",
+    "title": "SENIORS HUNT",
     "subtitle": "Schools championship · Dahab",
     "kind": "trip",
     "channels": [
