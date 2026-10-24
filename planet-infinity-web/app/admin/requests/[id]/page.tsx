@@ -74,7 +74,8 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
     ...applicationAnswers(request.selections.applicationAnswers),
   ];
   const careerAnswers = careerApplication ? careerApplicationAnswers(request.selections) : [];
-  const submittedDetails = selectionDetails(request.selections);
+  const schoolHunt = request.selections.kind === "school-hunt-school" || request.selections.kind === "school-hunt-crew";
+  const submittedDetails = [...selectionDetails(request.selections), ...(schoolHunt ? careerApplicationAnswers(request.selections) : [])];
   const whatsappNumber = request.customer?.phone?.replace(/\D/g, "") ?? "";
   const whatsappMessage = encodeURIComponent(`Hello ${request.customer?.full_name ?? ""}, this is Planet Infinity regarding ${request.request_number}.`);
 
