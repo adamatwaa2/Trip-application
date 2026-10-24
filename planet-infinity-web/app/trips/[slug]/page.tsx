@@ -24,7 +24,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  if (slug === "school-hunt-dahab") return { title: "School Hunt · Schools & Youth Crew", description: "Bring your school to a proposed Dahab championship, or join the youth crew and create experiences with your classmates.", alternates: { canonical: "/trips/school-hunt-dahab" } };
+  if (slug === "school-hunt-dahab") return { title: "Seniors Hunt · Schools & Youth Crew", description: "Bring your school to a proposed Dahab championship, or join the youth crew and create experiences with your classmates.", alternates: { canonical: "/trips/school-hunt-dahab" } };
   const trip = await getTripBySlug(slug);
   if (!trip) {
     const upcoming=await getUpcomingWorld(slug,"trip");
