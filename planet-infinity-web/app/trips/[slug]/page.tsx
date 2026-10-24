@@ -1,3 +1,5 @@
+import { UpcomingExperiencePage } from "@/components/UpcomingWorlds";
+import { findUpcomingWorld, upcomingHref } from "@/content/upcoming-worlds";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AvailabilityPill } from "@/components/AvailabilityPill";
@@ -21,7 +23,10 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const trip = await getTripBySlug(slug);
-  if (!trip) return { title: "Trip not found", robots: { index: false, follow: false } };
+  if (!trip) {
+    const upcoming=findUpcomingWorld(slug,"trip");
+    return upcoming ? { title:upcoming.title+" · Upcoming", description:upcoming.description, alternates:{canonical:upcomingHref(upcoming)} } : { title:"Trip not found", robots:{index:false,follow:false} };
+  }
   return {
     title: trip.title,
     description: trip.shortDescription,
@@ -38,7 +43,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 export default async function TripPage({ params }: Params) {
   const { slug } = await params;
   const [trip, copy] = await Promise.all([getTripBySlug(slug), getSiteCopy()]);
-  if (!trip) notFound();
+  if (!trip) {
+    const upcoming=findUpcomingWorld(slug,"trip");
+    if(upcoming) return <UpcomingExperiencePage world={upcoming}/>;
+    notFound();
+  }
 
   const gallerySource = trip.media.gallery?.length
     ? trip.media.gallery

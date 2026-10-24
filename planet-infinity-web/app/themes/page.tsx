@@ -1,3 +1,5 @@
+import { UpcomingWorldGrid } from "@/components/UpcomingWorlds";
+import { upcomingFor } from "@/content/upcoming-worlds";
 import { getPageSeoMetadata } from "@/lib/site-presentation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ButtonLink } from "@/components/Button";
@@ -73,6 +75,7 @@ export default async function ThemesPage() {
         </Container>
       </section>
 
+      <UpcomingWorldGrid worlds={upcomingFor("themes",[...trips,...events].map(item=>item.slug))} title="Worlds in the making" />
       <section className="pi-themes-upcoming">
         <Container className="pi-themes-upcoming__grid">
           <div><Eyebrow>Upcoming themes</Eyebrow><h2>The next worlds are being built.</h2></div>

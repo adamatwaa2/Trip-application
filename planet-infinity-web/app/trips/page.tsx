@@ -1,3 +1,5 @@
+import { UpcomingWorldGrid } from "@/components/UpcomingWorlds";
+import { upcomingFor } from "@/content/upcoming-worlds";
 import { getPageSeoMetadata } from "@/lib/site-presentation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ButtonLink } from "@/components/Button";
@@ -58,6 +60,7 @@ export default async function TripsPage() {
           )}
         </Container>
       </Section>
+      <UpcomingWorldGrid worlds={upcomingFor("trips",trips.map(trip=>trip.slug))} />
     </>
   );
 }

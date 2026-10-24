@@ -1,3 +1,5 @@
+import { UpcomingExperiencePage } from "@/components/UpcomingWorlds";
+import { findUpcomingWorld, upcomingHref } from "@/content/upcoming-worlds";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { AvailabilityPill } from "@/components/AvailabilityPill";
@@ -26,7 +28,10 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const event = await getEventBySlug(slug);
-  if (!event) return { title: "Event not found", robots: { index: false, follow: false } };
+  if (!event) {
+    const upcoming=findUpcomingWorld(slug,"event");
+    return upcoming ? { title:upcoming.title+" · Upcoming", description:upcoming.description, alternates:{canonical:upcomingHref(upcoming)} } : { title:"Event not found", robots:{index:false,follow:false} };
+  }
   return {
     title: event.title,
     description: event.shortDescription,
@@ -50,7 +55,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 export default async function EventPage({ params, searchParams }: Params) {
   const { slug } = await params;
   const [event, copy] = await Promise.all([getEventBySlug(slug), getSiteCopy()]);
-  if (!event) notFound();
+  if (!event) {
+    const upcoming=findUpcomingWorld(slug,"event");
+    if(upcoming) return <UpcomingExperiencePage world={upcoming}/>;
+    notFound();
+  }
   if (event.media.linkedTripSlug) redirect(`/trips/${event.media.linkedTripSlug}`);
   if (event.slug === HALLOWEEN_SLUG) {
     const appearance = halloweenAppearance((await searchParams).look);
