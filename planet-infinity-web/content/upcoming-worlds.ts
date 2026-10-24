@@ -4,29 +4,6 @@ export type UpcomingWorld = { slug:string; title:string; subtitle:string; kind:"
  * Published catalogue rows take precedence over these previews. No booking data is invented. */
 export const UPCOMING_WORLDS: UpcomingWorld[] = [
   {
-    "slug": "pirates-red-sea",
-    "title": "PIRATES",
-    "subtitle": "Pirates of the Red Sea",
-    "kind": "trip",
-    "channels": [
-      "trips",
-      "themes"
-    ],
-    "location": "Red Sea, Egypt",
-    "window": "April–May 2027",
-    "motif": "sea",
-    "accent": "#f59b23",
-    "surface": "#0f1e28",
-    "ink": "#fdf8f1",
-    "tagline": "Leave the ordinary on shore.",
-    "description": "A pirate-inspired Red Sea world, built around discovery, a shared story and the spirit of a crew.",
-    "mood": [
-      "Open water",
-      "A crew of your own",
-      "An unfolding story"
-    ]
-  },
-  {
     "slug": "arena",
     "title": "ARENA",
     "subtitle": "Hunger Games-inspired experience",
@@ -271,6 +248,29 @@ export const UPCOMING_WORLDS: UpcomingWorld[] = [
       "Coastal energy",
       "Sunlit days",
       "Good company"
+    ]
+  },
+  {
+    "slug": "pirates-red-sea",
+    "title": "PIRATES",
+    "subtitle": "Pirates of the Red Sea",
+    "kind": "trip",
+    "channels": [
+      "trips",
+      "themes"
+    ],
+    "location": "Red Sea, Egypt",
+    "window": "April–May 2027",
+    "motif": "sea",
+    "accent": "#f59b23",
+    "surface": "#0f1e28",
+    "ink": "#fdf8f1",
+    "tagline": "Leave the ordinary on shore.",
+    "description": "A pirate-inspired Red Sea world, built around discovery, a shared story and the spirit of a crew.",
+    "mood": [
+      "Open water",
+      "A crew of your own",
+      "An unfolding story"
     ]
   }
 ];
