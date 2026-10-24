@@ -1,6 +1,7 @@
 import { UpcomingExperiencePage } from "@/components/UpcomingWorlds";
 import { SchoolHuntPage } from "@/components/SchoolHuntPage";
-import { findUpcomingWorld, upcomingHref } from "@/content/upcoming-worlds";
+import { upcomingHref } from "@/content/upcoming-worlds";
+import { getUpcomingWorld } from "@/lib/upcoming-catalog";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AvailabilityPill } from "@/components/AvailabilityPill";
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (slug === "school-hunt-dahab") return { title: "School Hunt · Schools & Youth Crew", description: "Bring your school to a proposed Dahab championship, or join the youth crew and create experiences with your classmates.", alternates: { canonical: "/trips/school-hunt-dahab" } };
   const trip = await getTripBySlug(slug);
   if (!trip) {
-    const upcoming=findUpcomingWorld(slug,"trip");
+    const upcoming=await getUpcomingWorld(slug,"trip");
     return upcoming ? { title:upcoming.title+" · Upcoming", description:upcoming.description, alternates:{canonical:upcomingHref(upcoming)} } : { title:"Trip not found", robots:{index:false,follow:false} };
   }
   return {
@@ -47,7 +48,7 @@ export default async function TripPage({ params }: Params) {
   const [trip, copy] = await Promise.all([getTripBySlug(slug), getSiteCopy()]);
   if (slug === "school-hunt-dahab") return <SchoolHuntPage trip={trip} />;
   if (!trip) {
-    const upcoming=findUpcomingWorld(slug,"trip");
+    const upcoming=await getUpcomingWorld(slug,"trip");
     if(upcoming) return <UpcomingExperiencePage world={upcoming}/>;
     notFound();
   }
@@ -153,3 +154,4 @@ export default async function TripPage({ params }: Params) {
     </CatalogThemeFrame>
   );
 }
+

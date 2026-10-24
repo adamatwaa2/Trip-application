@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Script from "next/script";
 import { HalloweenMusic } from "@/components/HalloweenMusic";
+import { ExperienceSoundtrack } from "@/components/ExperienceSoundtrack";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { fontVariables } from "./fonts";
@@ -142,6 +143,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           }}
         />
         {!localPreview ? <HalloweenMusic /> : null}
+        {!localPreview ? <ExperienceSoundtrack /> : null}
         <SiteHeader headerLogo={settings.headerLogo} eventLogo={settings.eventLogo} />
         <main id="main">{children}</main>
         <SiteFooter />
@@ -149,3 +151,4 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     </html>
   );
 }
+

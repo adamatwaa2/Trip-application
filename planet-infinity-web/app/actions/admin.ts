@@ -1,6 +1,7 @@
 "use server";
 
 import { eventPriceSchedule } from "@/lib/scheduled-event-price";
+import { normaliseSoundtrack, type CatalogSoundtrack } from "@/lib/catalog-music";
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin";
@@ -76,6 +77,8 @@ export async function inviteAdmin(input: { fullName: string; email: string }): P
 }
 
 type CatalogMediaInput = {
+  soundtrack?: CatalogSoundtrack | null;
+  planningWindow?: string;
   backgroundAudio?: string;
   hero?: string;
   heroAlt?: string;
@@ -140,6 +143,8 @@ function textList(values: string[]) {
 }
 
 function normaliseMedia(media: CatalogMediaInput): CatalogMediaInput | null {
+  const soundtrack = normaliseSoundtrack(media.soundtrack);
+  if (media.soundtrack != null && !soundtrack) return null;
   const backgroundAudio = text(media.backgroundAudio ?? "",2000);
   const hero = text(media.hero ?? "", 2000);
   const video = text(media.video ?? "", 2000);
@@ -188,6 +193,8 @@ function normaliseMedia(media: CatalogMediaInput): CatalogMediaInput | null {
 
   return {
     ...(backgroundAudio ? { backgroundAudio } : {}),
+    ...(soundtrack ? { soundtrack } : {}),
+    ...(media.planningWindow ? { planningWindow: text(media.planningWindow, 120) } : {}),
     ...(hero ? { hero, heroAlt: text(media.heroAlt ?? "", 240) } : {}),
     ...(gallery.length ? { gallery } : {}),
     ...(galleryLayout ? { galleryLayout } : {}),
@@ -251,6 +258,7 @@ export async function createCatalogUploadTarget(input: {
 
 export async function createCatalogItem(input: CatalogItemInput): Promise<ActionResult> {
   await requireAdmin();
+  if (!["trips", "events"].includes(input.kind)) return { ok: false, error: "Choose a trip or event." };
   if (input.kind === "events" && input.bookingFee !== undefined && (!Number.isFinite(input.bookingFee) || input.bookingFee < 0 || input.bookingFee > 9999999999)) return {ok:false,error:"Enter a valid booking fee."};
   if (
     !text(input.title, 160) ||
@@ -289,11 +297,12 @@ export async function createCatalogItem(input: CatalogItemInput): Promise<Action
 
   const supabase = await createClient();
   // A routine editor save must not erase an already configured price transition.
-  if (input.kind === "events" && input.id) {
-    const { data: existing, error: readError } = await supabase.from("events").select("media").eq("id", input.id).maybeSingle();
-    if (readError) return { ok: false, error: "We could not read the existing event. Please retry before saving." };
-    const schedule = eventPriceSchedule(existing?.media);
+  if (input.id) {
+    const { data: existing, error: readError } = await supabase.from(input.kind).select("media").eq("id", input.id).maybeSingle();
+    if (readError || !existing) return { ok: false, error: "We could not read the existing item. Please retry before saving." };
+    const schedule = input.kind === "events" ? eventPriceSchedule(existing.media) : null;
     if (schedule) Object.assign(media, { priceSchedule: schedule });
+    if (existing.media?.conceptPreview === true) Object.assign(media, { conceptPreview: true, launchStatus: "draft", planningWindow: media.planningWindow || existing.media.planningWindow });
   }
   const parseDate = input.kind === "events" ? parseCairoDateTime : (value: string) => new Date(value);
   const date = input.date ? parseDate(input.date) : null;
@@ -482,3 +491,4 @@ export async function updateCustomerNotes(input: { customerId: string; notes: st
   revalidatePath(`/admin/customers/${input.customerId}`);
   return { ok: true };
 }
+

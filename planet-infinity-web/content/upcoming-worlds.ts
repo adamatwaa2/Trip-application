@@ -1,5 +1,5 @@
-import type { CatalogChannel } from "@/lib/catalog-visual-theme";
-export type UpcomingWorld = { slug:string; title:string; subtitle:string; kind:"trip"|"event"; channels:CatalogChannel[]; location:string; window:string; motif:string; accent:string; surface:string; ink:string; tagline:string; description:string; mood:string[] };
+import type { CatalogChannel, CatalogVisualTheme } from "@/lib/catalog-visual-theme";
+export type UpcomingWorld = { slug:string; title:string; subtitle:string; kind:"trip"|"event"; channels:CatalogChannel[]; location:string; window:string; motif:string; accent:string; surface:string; ink:string; tagline:string; description:string; mood:string[]; theme?:CatalogVisualTheme; hero?:string; logo?:string };
 /** Public concept previews only. The operational Admin records stay unpublished until reviewed.
  * Published catalogue rows take precedence over these previews. No booking data is invented. */
 export const UPCOMING_WORLDS: UpcomingWorld[] = [
@@ -251,6 +251,22 @@ export const UPCOMING_WORLDS: UpcomingWorld[] = [
     ]
   },
   {
+    "slug": "masquerade-party",
+    "title": "MASQUERADE",
+    "subtitle": "Masquerade Party",
+    "kind": "event",
+    "channels": ["events", "themes"],
+    "location": "Location to be announced",
+    "window": "Dates to be announced",
+    "motif": "mask",
+    "accent": "#d9b76c",
+    "surface": "#251b30",
+    "ink": "#fff5e4",
+    "tagline": "Behind the mask. Into the night.",
+    "description": "A masked-party concept with a world of velvet tones, gold details and a little mystery. The venue, date, music and full experience are still being prepared.",
+    "mood": ["Masks & mystery", "Velvet & gold", "A night to discover"]
+  },
+  {
     "slug": "pirates-red-sea",
     "title": "PIRATES",
     "subtitle": "Pirates of the Red Sea",
@@ -277,4 +293,5 @@ export const UPCOMING_WORLDS: UpcomingWorld[] = [
 export function upcomingHref(world:UpcomingWorld) { return `/${world.kind==="trip"?"trips":"events"}/${world.slug}`; }
 export function findUpcomingWorld(slug:string, kind:"trip"|"event") { return UPCOMING_WORLDS.find(w=>w.slug===slug && w.kind===kind); }
 export function upcomingFor(channel:CatalogChannel, publishedSlugs:string[]=[]) { const published=new Set(publishedSlugs);return UPCOMING_WORLDS.filter(w=>w.channels.includes(channel)&&!published.has(w.slug)); }
+
 

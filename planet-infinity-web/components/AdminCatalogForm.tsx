@@ -29,6 +29,8 @@ import {
   type CatalogVisualTheme,
 } from "@/lib/catalog-visual-theme";
 import type { GalleryLayout } from "@/content/trips/types";
+import { normaliseSoundtrack, type CatalogSoundtrack } from "@/lib/catalog-music";
+import { AdminSoundtrackPicker } from "@/components/AdminSoundtrackPicker";
 
 const GUIDE_SEAT = 1;
 function withGuideSeatReserved(seats: number[] | undefined) {
@@ -36,6 +38,8 @@ function withGuideSeatReserved(seats: number[] | undefined) {
 }
 
 type CatalogMedia = {
+  soundtrack?: CatalogSoundtrack;
+  planningWindow?: string;
   backgroundAudio?: string;
   hero?: string;
   heroAlt?: string;
@@ -354,6 +358,9 @@ export function AdminCatalogForm({
   const isTrip = kind === "trips";
   const label = isTrip ? "trip" : "event";
   const initialMedia = item?.media ?? {};
+  const [soundtrack, setSoundtrack] = useState<CatalogSoundtrack | null>(() => normaliseSoundtrack(initialMedia.soundtrack));
+  const [planningWindow, setPlanningWindow] = useState(initialMedia.planningWindow ?? "");
+  const [musicReset, setMusicReset] = useState(0);
 
   const [title, setTitle] = useState(item?.title ?? "");
   const [slug, setSlug] = useState(item?.slug ?? "");
@@ -580,6 +587,9 @@ export function AdminCatalogForm({
     setInclusions("");
     setExclusions("");
     setBackgroundAudio("");
+    setSoundtrack(null);
+    setMusicReset(current => current + 1);
+    setPlanningWindow("");
     setHero("");
     setHeroAlt("");
     setVideo("");
@@ -649,6 +659,8 @@ export function AdminCatalogForm({
             exclusions: lines(exclusions),
             media: {
               backgroundAudio: !isTrip ? backgroundAudio || undefined : initialMedia.backgroundAudio,
+              soundtrack,
+              planningWindow,
               hero: hero || undefined,
               heroAlt: heroAlt || undefined,
               gallery,
@@ -1175,8 +1187,10 @@ export function AdminCatalogForm({
         ) : null}
       </fieldset>
 
+      <AdminSoundtrackPicker key={musicReset} resetKey={String(musicReset)} value={soundtrack} onChange={setSoundtrack} />
       <fieldset className="pi-admin-form__section">
         <legend>Visual identity</legend>
+        {initialMedia.planningWindow !== undefined ? <label>Upcoming planning window<input value={planningWindow} maxLength={120} onChange={event => setPlanningWindow(event.target.value)} /><span className="pi-admin-help">A provisional window, not a confirmed departure date. Save, then open the public concept page to see your identity changes.</span></label> : null}
         <p className="pi-admin-help">
           Upload PNG, JPG or WebP. The editor extracts the mark, removes a simple solid background, converts it to a transparent PNG and suggests the palette, atmosphere and typography for the whole public page.
         </p>
@@ -1401,3 +1415,4 @@ export function AdminCatalogForm({
     </form>
   );
 }
+

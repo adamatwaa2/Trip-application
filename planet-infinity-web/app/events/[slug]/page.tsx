@@ -1,5 +1,6 @@
 import { UpcomingExperiencePage } from "@/components/UpcomingWorlds";
-import { findUpcomingWorld, upcomingHref } from "@/content/upcoming-worlds";
+import { upcomingHref } from "@/content/upcoming-worlds";
+import { getUpcomingWorld } from "@/lib/upcoming-catalog";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { AvailabilityPill } from "@/components/AvailabilityPill";
@@ -29,7 +30,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const event = await getEventBySlug(slug);
   if (!event) {
-    const upcoming=findUpcomingWorld(slug,"event");
+    const upcoming=await getUpcomingWorld(slug,"event");
     return upcoming ? { title:upcoming.title+" · Upcoming", description:upcoming.description, alternates:{canonical:upcomingHref(upcoming)} } : { title:"Event not found", robots:{index:false,follow:false} };
   }
   return {
@@ -57,7 +58,7 @@ export default async function EventPage({ params, searchParams }: Params) {
   if (slug === "school-hunt-dahab") redirect("/trips/school-hunt-dahab");
   const [event, copy] = await Promise.all([getEventBySlug(slug), getSiteCopy()]);
   if (!event) {
-    const upcoming=findUpcomingWorld(slug,"event");
+    const upcoming=await getUpcomingWorld(slug,"event");
     if(upcoming) return <UpcomingExperiencePage world={upcoming}/>;
     notFound();
   }
@@ -213,3 +214,4 @@ export default async function EventPage({ params, searchParams }: Params) {
     </CatalogThemeFrame>
   );
 }
+

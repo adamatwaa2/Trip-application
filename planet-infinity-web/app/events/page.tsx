@@ -1,5 +1,5 @@
-import { UpcomingWorldGrid } from "@/components/UpcomingWorlds";
-import { upcomingFor } from "@/content/upcoming-worlds";
+import { UpcomingCatalogGrid } from "@/components/UpcomingCatalogGrid";
+
 import { getPageSeoMetadata } from "@/lib/site-presentation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ButtonLink } from "@/components/Button";
@@ -67,7 +67,8 @@ export default async function EventsPage() {
           )}
         </Container>
       </Section>
-      <UpcomingWorldGrid worlds={upcomingFor("events",[...events,...sharedTrips].map(item=>item.slug))} />
+      <UpcomingCatalogGrid channel="events" publishedSlugs={[...events,...sharedTrips].map(item=>item.slug)} />
     </div>
   );
 }
+
