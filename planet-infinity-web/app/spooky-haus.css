@@ -157,9 +157,9 @@ body:has(.spooky-haus) .pi-burger { background:#1a1510; }
 
 /* Keep booking labels centred without decorative diagonal arrows. */
 .spooky-haus .sh-button { justify-content:center; text-align:center; }
-.sh-promo-row { display:flex; align-items:stretch; gap:10px; min-width:0; }
-.sh-promo-row input { flex:1; min-width:0; width:0; }
-.sh-promo-row .sh-button { flex:0 0 auto; padding:12px 20px; font-size:14px; }
+.sh-promo-row { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:stretch; gap:10px; min-width:0; }
+.spooky-haus .sh-form .sh-promo-row input { min-width:0; width:100%; margin:0; }
+.spooky-haus .sh-form .sh-promo-row .sh-button { width:auto; min-width:84px; margin:0; padding:12px 20px; font-size:14px; }
 .sh-promo-success { color:#eed6a8; font-size:14px; }
 .sh-promo-remove { color:inherit; text-decoration:underline; background:none; border:0; cursor:pointer; padding:6px; font:inherit; }
 .sh-price-breakdown { margin:20px 0; font-size:14px; }
