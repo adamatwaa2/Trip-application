@@ -50,6 +50,7 @@ export function isCareerApplication(request: {
   notes?: unknown;
   selections?: unknown;
 }): boolean {
+  if (request.external_subject_id === "school-hunt-dahab" || request.subject_slug === "school-hunt-crew") return false;
   const selections = request.selections && typeof request.selections === "object" && !Array.isArray(request.selections)
     ? request.selections as Record<string, unknown>
     : {};
