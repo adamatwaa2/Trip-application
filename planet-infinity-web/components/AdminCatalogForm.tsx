@@ -29,8 +29,7 @@ import {
   type CatalogVisualTheme,
 } from "@/lib/catalog-visual-theme";
 import type { GalleryLayout } from "@/content/trips/types";
-import { normaliseSoundtrack, type CatalogSoundtrack } from "@/lib/catalog-music";
-import { AdminSoundtrackPicker } from "@/components/AdminSoundtrackPicker";
+import { AdminAudioLibrary } from "@/components/AdminAudioLibrary";
 
 const GUIDE_SEAT = 1;
 function withGuideSeatReserved(seats: number[] | undefined) {
@@ -38,7 +37,6 @@ function withGuideSeatReserved(seats: number[] | undefined) {
 }
 
 type CatalogMedia = {
-  soundtrack?: CatalogSoundtrack;
   planningWindow?: string;
   backgroundAudio?: string;
   hero?: string;
@@ -358,9 +356,8 @@ export function AdminCatalogForm({
   const isTrip = kind === "trips";
   const label = isTrip ? "trip" : "event";
   const initialMedia = item?.media ?? {};
-  const [soundtrack, setSoundtrack] = useState<CatalogSoundtrack | null>(() => normaliseSoundtrack(initialMedia.soundtrack));
   const [planningWindow, setPlanningWindow] = useState(initialMedia.planningWindow ?? "");
-  const [musicReset, setMusicReset] = useState(0);
+
 
   const [title, setTitle] = useState(item?.title ?? "");
   const [slug, setSlug] = useState(item?.slug ?? "");
@@ -587,8 +584,7 @@ export function AdminCatalogForm({
     setInclusions("");
     setExclusions("");
     setBackgroundAudio("");
-    setSoundtrack(null);
-    setMusicReset(current => current + 1);
+
     setPlanningWindow("");
     setHero("");
     setHeroAlt("");
@@ -658,8 +654,7 @@ export function AdminCatalogForm({
             inclusions: lines(inclusions),
             exclusions: lines(exclusions),
             media: {
-              backgroundAudio: !isTrip ? backgroundAudio || undefined : initialMedia.backgroundAudio,
-              soundtrack,
+              backgroundAudio: backgroundAudio || undefined,
               planningWindow,
               hero: hero || undefined,
               heroAlt: heroAlt || undefined,
@@ -1187,7 +1182,7 @@ export function AdminCatalogForm({
         ) : null}
       </fieldset>
 
-      <AdminSoundtrackPicker key={musicReset} resetKey={String(musicReset)} value={soundtrack} onChange={setSoundtrack} />
+
       <fieldset className="pi-admin-form__section">
         <legend>Visual identity</legend>
         {initialMedia.planningWindow !== undefined ? <label>Upcoming planning window<input value={planningWindow} maxLength={120} onChange={event => setPlanningWindow(event.target.value)} /><span className="pi-admin-help">A provisional window, not a confirmed departure date. Save, then open the public concept page to see your identity changes.</span></label> : null}
@@ -1394,7 +1389,7 @@ export function AdminCatalogForm({
         </label>
       </fieldset>
 
-      {!isTrip ? <fieldset className="pi-admin-fieldset"><legend>Event background music</legend><p className="pi-admin-help">Upload MP3, M4A, WAV, OGG or WebM up to 30 MB. Starts on entering Halloween and continues through booking. Visitors can mute it. Save after uploading.</p><UploadControl kind="audio" label="Upload / replace event song" disabled={uploading} onFiles={(files)=>uploadFiles(files.slice(0,1),"audio",url=>setBackgroundAudio(url))}/>{backgroundAudio?<><audio src={backgroundAudio} controls preload="metadata"/><button type="button" onClick={()=>setBackgroundAudio("")}>Remove event song</button></>:<p className="pi-admin-help">No song selected.</p>}</fieldset>:null}
+      <fieldset className="pi-admin-form__section"><legend>Background music · small sound button</legend><p className="pi-admin-help">Visitors see only a small sound button. No player panel, track name or SoundCloud branding. Upload a song once, reuse it below, or paste a direct audio link. SoundCloud and Spotify page links cannot play in this mode.</p><AdminAudioLibrary value={backgroundAudio} onChange={setBackgroundAudio}/><UploadControl kind="audio" label="Upload / replace song" disabled={uploading} onFiles={(files)=>uploadFiles(files.slice(0,1),"audio",url=>setBackgroundAudio(url))}/>{backgroundAudio?<><audio src={backgroundAudio} controls preload="metadata"/><button type="button" onClick={()=>setBackgroundAudio("")}>Remove song</button></>:<p className="pi-admin-help">No direct audio selected.</p>}<p className="pi-admin-hint">Playback is attempted on entry and retried on the first interaction if the browser blocks sound. Save after changing the song.</p></fieldset>
       {message ? (
         <p
           className={
@@ -1415,4 +1410,5 @@ export function AdminCatalogForm({
     </form>
   );
 }
+
 

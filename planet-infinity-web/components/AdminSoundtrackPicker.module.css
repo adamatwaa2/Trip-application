@@ -1,8 +1,0 @@
-.picker{min-width:0;overflow-wrap:anywhere}
-.picker a{display:inline-block;color:#174f64;text-decoration:underline;text-underline-offset:4px;font-weight:700;max-width:100%}
-.actions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
-.actions button,.preview>button{width:auto!important;max-width:100%;min-height:44px;padding:10px 16px!important;white-space:normal;border:1px solid #acbdc3;border-radius:10px;background:#fffdf9;color:#0f1e28;font:700 13px/1.5 var(--font-jakarta),sans-serif}
-.actions button:disabled{opacity:.5}
-.preview{max-width:580px;margin-top:20px;min-width:0}
-.preview>button{margin-bottom:12px}
-@media(max-width:480px){.actions{flex-direction:column}.actions button{width:100%!important}}

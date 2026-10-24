@@ -1,7 +1,6 @@
 "use server";
 
 import { eventPriceSchedule } from "@/lib/scheduled-event-price";
-import { normaliseSoundtrack, type CatalogSoundtrack } from "@/lib/catalog-music";
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin";
@@ -77,7 +76,6 @@ export async function inviteAdmin(input: { fullName: string; email: string }): P
 }
 
 type CatalogMediaInput = {
-  soundtrack?: CatalogSoundtrack | null;
   planningWindow?: string;
   backgroundAudio?: string;
   hero?: string;
@@ -143,8 +141,6 @@ function textList(values: string[]) {
 }
 
 function normaliseMedia(media: CatalogMediaInput): CatalogMediaInput | null {
-  const soundtrack = normaliseSoundtrack(media.soundtrack);
-  if (media.soundtrack != null && !soundtrack) return null;
   const backgroundAudio = text(media.backgroundAudio ?? "",2000);
   const hero = text(media.hero ?? "", 2000);
   const video = text(media.video ?? "", 2000);
@@ -193,7 +189,6 @@ function normaliseMedia(media: CatalogMediaInput): CatalogMediaInput | null {
 
   return {
     ...(backgroundAudio ? { backgroundAudio } : {}),
-    ...(soundtrack ? { soundtrack } : {}),
     ...(media.planningWindow ? { planningWindow: text(media.planningWindow, 120) } : {}),
     ...(hero ? { hero, heroAlt: text(media.heroAlt ?? "", 240) } : {}),
     ...(gallery.length ? { gallery } : {}),
@@ -491,4 +486,5 @@ export async function updateCustomerNotes(input: { customerId: string; notes: st
   revalidatePath(`/admin/customers/${input.customerId}`);
   return { ok: true };
 }
+
 

@@ -2,10 +2,10 @@ import { createClient } from "@/lib/supabase/server";
 import { createServiceClient, isSupabaseServiceConfigured } from "@/lib/supabase/service";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { findUpcomingWorld } from "@/content/upcoming-worlds";
-import { normaliseSoundtrack } from "@/lib/catalog-music";
+import { isSafeCatalogUrl } from "@/lib/catalog-media";
 
 export async function GET(request: Request) {
-  const reply = (song: ReturnType<typeof normaliseSoundtrack>) => Response.json({song}, {headers:{"Cache-Control":"no-store"}});
+  const reply = (audioUrl: string | null) => Response.json({audioUrl}, {headers:{"Cache-Control":"no-store"}});
   const path = new URL(request.url).searchParams.get("path") ?? "";
   const match = path.match(/^\/(trips|events)\/([a-z0-9]+(?:-[a-z0-9]+)*)$/);
   if (!match || match[2].length > 160 || !isSupabaseConfigured()) return reply(null);
@@ -20,7 +20,8 @@ export async function GET(request: Request) {
       const {data: preview} = await createServiceClient().from(kind).select("media").eq("slug",slug).maybeSingle();
       if (preview?.media?.conceptPreview === true) media = preview.media;
     }
-    const song = normaliseSoundtrack(media?.soundtrack);
-    return reply(song?.enabled ? song : null);
+    const url = media?.backgroundAudio;
+    return reply(typeof url === "string" && url && isSafeCatalogUrl(url) ? url : null);
   } catch { return reply(null); }
 }
+
