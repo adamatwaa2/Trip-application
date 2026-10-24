@@ -14,7 +14,8 @@ export const metadata: Metadata = { title:"Socotra", description:"An eight-day S
 export const dynamic = "force-dynamic";
 export default async function SocotraPage() {
  const trip = (await getTripBySlug("socotra")) ?? SOCOTRA_TRIP;
- return <CatalogThemeFrame theme={trip.media.visualTheme} kind="trip">
+ // Keep the original page mark; the generated admin logo remains available in Explore.
+ return <CatalogThemeFrame theme={{ ...trip.media.visualTheme, logo: undefined, logoAlt: undefined }} kind="trip">
   <section className="pi-trip-cinema"><MediaBlock src="/socotra/white-dunes-and-sea.jpeg" alt="White dunes and the sea in Socotra, image supplied for this trip" ratio="21-9" radius="none" className="pi-trip-cinema__media" eager><Container className="pi-trip-cinema__content"><Breadcrumbs trail={[{label:"Home",href:"/"},{label:"Travel",href:"/trips"},{label:"Socotra"}]} /><Eyebrow>Socotra, Yemen</Eyebrow><h1>Socotra</h1><p>Eight days of white dunes, turquoise water and dragon blood forests. Meet the group in Jeddah and fly together to the island.</p><ButtonLink href="/trips/socotra/book">Request Booking</ButtonLink></Container></MediaBlock></section>
   <Section tone="white" className="pi-trip-document-rail"><Container><CatalogDocumentCard url="/documents/Socotra%20Trip%20Program.pdf" label="Socotra Trip Program · 8 days" kind="trip" /></Container></Section>
   <Section tone="white" className="pi-trip-story"><Container><div className="pi-trip-layout"><div className="pi-trip-main">
