@@ -1,0 +1,28 @@
+.page{--assemble-bg:#101722;--assemble-panel:#192330;--assemble-line:#354252;--assemble-red:#c4554d;--assemble-silver:#e3e8ed;--assemble-muted:#b8c3cf;background:var(--assemble-bg);color:var(--assemble-silver);font-family:var(--font-jakarta),sans-serif;overflow-x:clip}
+.wrap{width:min(1120px,calc(100% - 48px));margin-inline:auto}
+.hero{position:relative;isolation:isolate;border-bottom:1px solid var(--assemble-line);overflow:hidden;padding-block:34px 0}
+.emblem{position:absolute;right:-25px;top:80px;width:min(46vw,640px);z-index:-1;color:#889daf;opacity:.16}
+.emblem svg{width:100%;stroke:currentColor;stroke-width:2}
+.crumb{display:flex;gap:14px;font-size:12px;color:var(--assemble-muted);margin-bottom:70px}.crumb a{color:inherit;text-underline-offset:4px}
+.kicker{font:700 11px/1.8 var(--font-jakarta),sans-serif;letter-spacing:.15em;text-transform:uppercase;color:#e6a29b;margin:0 0 22px}
+.hero h1{font:700 clamp(58px,10vw,140px)/.95 var(--font-clash),sans-serif;letter-spacing:-.045em;margin:0;text-shadow:0 3px #536477}
+.hero h1 span{display:block;margin-top:24px;font-size:clamp(25px,3.3vw,44px);line-height:1.15;letter-spacing:-.025em;text-shadow:none}
+.intro{font-size:17px;line-height:1.9;color:var(--assemble-muted);margin:26px 0 32px}
+.actions{display:flex;align-items:center;gap:25px;flex-wrap:wrap}
+.primary{display:flex;justify-content:space-between;align-items:center;gap:25px;padding:18px 24px;background:var(--assemble-silver);border:1px solid var(--assemble-silver);border-radius:5px;color:#101722!important;text-decoration:none!important;font-size:14px;font-weight:700;min-height:54px;transition:background .2s}
+.primary:hover{background:white}.primary:focus-visible,.secondary:focus-visible,.crumb a:focus-visible{outline:3px solid #e6a29b;outline-offset:5px}
+.secondary{color:var(--assemble-silver);font-weight:600;font-size:13px;text-underline-offset:6px}
+.meta{margin-top:56px;padding-block:24px;display:flex;flex-wrap:wrap;gap:16px 40px;border-top:1px solid var(--assemble-line);font-size:12px;color:var(--assemble-muted)}
+.meta i{display:inline-block;width:6px;height:6px;background:#e6a29b;border-radius:50%;margin-right:8px;vertical-align:middle}
+.briefing{display:grid;grid-template-columns:1fr 1fr;gap:80px;padding-block:82px 50px;scroll-margin-top:95px}
+.page h2{font:700 clamp(30px,4vw,48px)/1.12 var(--font-clash),sans-serif;letter-spacing:-.025em;margin:0}
+.briefing p:not(.kicker){margin:0 0 18px;color:var(--assemble-muted);font-size:16px;line-height:1.9}
+.briefing small,.fine,.disclaimer{font-size:12px;line-height:1.8;color:var(--assemble-muted)}
+.chapters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;padding-block:12px 70px}
+.chapters article{border-top:2px solid var(--assemble-red);background:var(--assemble-panel);padding:26px;min-width:0}
+.number{display:block;font-size:12px;letter-spacing:.1em;color:#e6a29b;margin-bottom:30px}
+.chapters h3{font:600 25px/1.2 var(--font-clash),sans-serif;margin:0 0 14px}.chapters p{font-size:14px;line-height:1.8;color:var(--assemble-muted);margin:0}
+.callout{border:1px solid var(--assemble-line);border-left:3px solid var(--assemble-red);padding:40px;display:grid;grid-template-columns:1.1fr 1fr;gap:55px;align-items:center;background:var(--assemble-panel)}
+.callout p:not(.kicker){line-height:1.8;color:var(--assemble-muted)}.fine{margin:16px 0 0}.disclaimer{padding-block:30px 44px;margin-block:0}
+@media(max-width:700px){.wrap{width:calc(100% - 40px)}.hero{padding-top:25px}.crumb{margin-bottom:44px}.hero h1{font-size:clamp(40px,12vw,80px)}.hero h1 span{font-size:29px;max-width:290px}.emblem{width:95vw;right:-38%;top:90px;opacity:.1}.intro{font-size:15px}.actions{gap:22px}.actions .primary{width:100%}.meta{display:grid;gap:13px;margin-top:36px;padding-block:22px}.briefing{grid-template-columns:1fr;gap:26px;padding-block:46px 24px}.chapters{grid-template-columns:1fr;gap:16px;padding-bottom:40px}.chapters article{padding:24px}.number{margin-bottom:18px}.callout{grid-template-columns:1fr;gap:24px;padding:26px}.callout h2{font-size:33px}.page h2{font-size:33px}}
+@media(prefers-reduced-motion:reduce){.primary{transition:none}}

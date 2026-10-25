@@ -51,7 +51,7 @@ export const UPCOMING_WORLDS: UpcomingWorld[] = [
   },
   {
     "slug": "doomsday",
-    "title": "DOOMSDAY",
+    "title": "ASSEMBLE",
     "subtitle": "Avengers-inspired experience",
     "kind": "event",
     "channels": [
@@ -61,11 +61,11 @@ export const UPCOMING_WORLDS: UpcomingWorld[] = [
     "location": "Location to be announced",
     "window": "December 2026",
     "motif": "doom",
-    "accent": "#9dbb9c",
-    "surface": "#101a17",
-    "ink": "#e6ebe7",
-    "tagline": "Every world needs its people.",
-    "description": "A cinematic, superhero-inspired community experience. The world is being built; the final format, venue and program will be announced before booking opens.",
+    "accent": "#c4554d",
+    "surface": "#101722",
+    "ink": "#e3e8ed",
+    "tagline": "The next team is us.",
+    "description": "The old team left a legacy. Now it’s our turn. An independent Avengers-inspired community concept, with costume-led identities, cinematic atmosphere and the spirit of assembling a new team. The final format and event details are still being developed.",
     "mood": [
       "Cinematic energy",
       "A shared mission",
@@ -290,7 +290,7 @@ export const UPCOMING_WORLDS: UpcomingWorld[] = [
     ]
   }
 ];
-export function upcomingHref(world:UpcomingWorld) { return `/${world.kind==="trip"?"trips":"events"}/${world.slug}`; }
+export function upcomingHref(world:UpcomingWorld) { return world.slug==="doomsday"?"/events/assemble":`/${world.kind==="trip"?"trips":"events"}/${world.slug}`; }
 export function findUpcomingWorld(slug:string, kind:"trip"|"event") { return UPCOMING_WORLDS.find(w=>w.slug===slug && w.kind===kind); }
 export function upcomingFor(channel:CatalogChannel, publishedSlugs:string[]=[]) { const published=new Set(publishedSlugs);return UPCOMING_WORLDS.filter(w=>w.channels.includes(channel)&&!published.has(w.slug)); }
 
