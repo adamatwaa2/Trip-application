@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { upcomingHref, type UpcomingWorld } from "@/content/upcoming-worlds";
 import styles from "./UpcomingWorlds.module.css";
 import {CatalogThemeFrame} from "./CatalogThemeFrame";
+import {ExperienceIntroVideo} from "./ExperienceIntroVideo";
 
 function worldStyle(world:UpcomingWorld): CSSProperties {
  return {"--world-accent":world.accent,"--world-surface":world.surface,"--world-ink":world.ink} as CSSProperties;
@@ -34,6 +35,7 @@ export function UpcomingWorldGrid({worlds,title="Next on the horizon"}:{worlds:U
 export function UpcomingExperiencePage({world}:{world:UpcomingWorld}) {
  const back=world.kind==="trip"?"/trips":"/events";
  return <CatalogThemeFrame kind={world.kind} theme={world.theme??{primaryColor:world.accent,secondaryColor:world.surface,surface:world.ink==="#0f1e28"||world.ink==="#3e2c1b"?"light":"dark",typography:"brand",background:"clean",finish:"matte"}}><main className={styles.page} style={worldStyle(world)}>
+  {world.video?<ExperienceIntroVideo key={world.video} src={world.video} poster={world.hero} label={`${world.title} opening video`}/>:null}
   <section className={styles.hero}><WorldArtwork world={world}/><div className={styles.heroCopy}>
    <nav aria-label="Breadcrumb"><Link href="/">Home</Link><span>/</span><Link href={back}>{world.kind==="trip"?"Travel":"Events"}</Link><span>/</span><span>{world.title}</span></nav>
    <p className={styles.heroStatus}>Planet Infinity · Upcoming experience</p><h1>{world.title}</h1><p className={styles.subtitle}>{world.subtitle}</p><p className={styles.tagline}>{world.tagline}</p>

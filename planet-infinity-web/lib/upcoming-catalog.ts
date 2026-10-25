@@ -13,7 +13,7 @@ function mergeWorld(world:UpcomingWorld, media:Record<string,unknown>):UpcomingW
  const dark=raw.surface?raw.surface==="dark":world.ink.toLowerCase()==="#fdf8f1" || world.ink.toLowerCase()==="#fff5e4";
  const theme:CatalogVisualTheme={primaryColor:accent,secondaryColor:surface,surface:dark?"dark":"light",logo:url(raw.logo),logoAlt:typeof raw.logoAlt==="string"?raw.logoAlt.slice(0,240):undefined,backgroundImage:url(raw.backgroundImage),background:raw.background&&CATALOG_BACKGROUNDS.includes(raw.background)?raw.background:"clean",depth:raw.depth&&CATALOG_DEPTHS.includes(raw.depth)?raw.depth:"raised",finish:raw.finish&&CATALOG_FINISHES.includes(raw.finish)?raw.finish:"matte",typography:raw.typography&&CATALOG_TYPOGRAPHIES.includes(raw.typography)?raw.typography:"brand"};
  const channels=Array.isArray(raw.channels)?raw.channels.filter(channel=>CATALOG_CHANNELS.includes(channel)):world.channels;
- return {...world,accent,surface,ink:dark?"#fff5e4":"#0f1e28",channels:channels.length?channels:world.channels,theme,hero:url(media.hero),logo:theme.logo,window:typeof media.planningWindow === "string" && media.planningWindow.trim()?media.planningWindow.trim().slice(0,120):world.window};
+ return {...world,accent,surface,ink:dark?"#fff5e4":"#0f1e28",channels:channels.length?channels:world.channels,theme,hero:url(media.hero),video:url(media.video),logo:theme.logo,window:typeof media.planningWindow === "string" && media.planningWindow.trim()?media.planningWindow.trim().slice(0,120):world.window};
 }
 export const getUpcomingWorlds=cache(async():Promise<UpcomingWorld[]>=>{
  if(!isSupabaseServiceConfigured())return UPCOMING_WORLDS;

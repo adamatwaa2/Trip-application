@@ -1,5 +1,5 @@
 import type { CatalogChannel, CatalogVisualTheme } from "@/lib/catalog-visual-theme";
-export type UpcomingWorld = { slug:string; title:string; subtitle:string; kind:"trip"|"event"; channels:CatalogChannel[]; location:string; window:string; motif:string; accent:string; surface:string; ink:string; tagline:string; description:string; mood:string[]; theme?:CatalogVisualTheme; hero?:string; logo?:string };
+export type UpcomingWorld = { slug:string; title:string; subtitle:string; kind:"trip"|"event"; channels:CatalogChannel[]; location:string; window:string; motif:string; accent:string; surface:string; ink:string; tagline:string; description:string; mood:string[]; theme?:CatalogVisualTheme; hero?:string; video?:string; logo?:string };
 /** Public concept previews only. The operational Admin records stay unpublished until reviewed.
  * Published catalogue rows take precedence over these previews. No booking data is invented. */
 export const UPCOMING_WORLDS: UpcomingWorld[] = [
