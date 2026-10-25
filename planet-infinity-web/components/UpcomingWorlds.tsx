@@ -5,6 +5,7 @@ import styles from "./UpcomingWorlds.module.css";
 import {CatalogThemeFrame} from "./CatalogThemeFrame";
 import {ExperienceIntroVideo} from "./ExperienceIntroVideo";
 import {AssembleExperience} from "./AssembleExperience";
+import {DuneExperience} from "./DuneExperience";
 
 function worldStyle(world:UpcomingWorld): CSSProperties {
  return {"--world-accent":world.accent,"--world-surface":world.surface,"--world-ink":world.ink} as CSSProperties;
@@ -36,6 +37,7 @@ export function UpcomingWorldGrid({worlds,title="Next on the horizon"}:{worlds:U
 }
 export function UpcomingExperiencePage({world}:{world:UpcomingWorld}) {
  if(world.slug==="doomsday")return <AssembleExperience world={world}/>;
+ if(world.slug==="dune-siwa")return <DuneExperience world={world}/>;
  const back=world.kind==="trip"?"/trips":"/events";
  return <CatalogThemeFrame kind={world.kind} theme={world.theme??{primaryColor:world.accent,secondaryColor:world.surface,surface:world.ink==="#0f1e28"||world.ink==="#3e2c1b"?"light":"dark",typography:"brand",background:"clean",finish:"matte"}}><main className={styles.page} data-world={world.slug} style={worldStyle(world)}>
   {world.video?<ExperienceIntroVideo key={world.video} src={world.video} poster={world.hero} label={`${world.title} opening video`}/>:null}

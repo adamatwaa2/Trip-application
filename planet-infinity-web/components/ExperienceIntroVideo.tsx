@@ -2,7 +2,7 @@
 import {useEffect,useRef,useState} from "react";
 import styles from "./ExperienceIntroVideo.module.css";
 
-export function ExperienceIntroVideo({src,poster,label}:{src:string;poster?:string;label:string}){
+export function ExperienceIntroVideo({src,poster,label,atmosphere}:{src:string;poster?:string;label:string;atmosphere?:"desert"}){
  const knownOpening=src==="/media/doomsday/marvel-studios-intro-31s-v1.mp4";
  const mobileSrc=knownOpening?"/media/doomsday/marvel-studios-intro-31s-mobile-v1.mp4":undefined;
  const openingPoster=poster||(knownOpening?"/media/doomsday/marvel-studios-intro-v1.jpg":undefined);
@@ -19,7 +19,8 @@ export function ExperienceIntroVideo({src,poster,label}:{src:string;poster?:stri
  },[src]);
  const sound=()=>{const element=video.current;if(!element)return;const next=!element.muted;element.muted=next;setMuted(next);if(!userPaused.current&&!finished.current)void element.play().catch(()=>setPaused(true));};
  const playback=()=>{const element=video.current;if(!element)return;if(element.paused){if(element.ended){element.currentTime=0;finished.current=false;setEnded(false);}userPaused.current=false;void element.play().catch(()=>setPaused(true));}else{userPaused.current=true;element.pause();}};
- return <section className={styles.intro} aria-label={label}>
+ return <section className={styles.intro} data-atmosphere={atmosphere} aria-label={label}>
+  {atmosphere==="desert"&&openingPoster?<img className={styles.backdrop} src={openingPoster} alt="" aria-hidden="true"/>:null}
   <video ref={video} poster={openingPoster} autoPlay muted={muted} playsInline preload="auto" controls={false} aria-label={label} onPlaying={()=>{setPaused(false);setFailed(false);}} onPause={()=>setPaused(true)} onEnded={()=>{finished.current=true;setEnded(true);setPaused(true);}} onVolumeChange={()=>setMuted(video.current?.muted??true)} onError={()=>setFailed(true)}>
    {mobileSrc?<source src={mobileSrc} media="(max-width: 600px)" type="video/mp4"/>:null}
    <source src={src} type="video/mp4"/>
