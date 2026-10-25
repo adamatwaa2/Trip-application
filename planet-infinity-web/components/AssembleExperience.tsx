@@ -18,7 +18,7 @@ export function AssembleExperience({world}:{world:UpcomingWorld}) {
     <p className={styles.kicker}>Planet Infinity presents · An Avengers-inspired experience</p>
     <h1>ASSEMBLE<span>The next team is us.</span></h1>
     <p className={styles.intro}>The old team left a legacy.<br/>Now it’s our turn to come together.</p>
-    <div className={styles.actions}><Link className={styles.primary} href="/events/assemble/book">Begin your mission <span aria-hidden="true">→</span></Link><a className={styles.secondary} href="#the-mission">Read the briefing</a></div>
+    <div className={styles.actions}><Link className={styles.primary} href="/events/assemble/book">Send your interest request <span aria-hidden="true">→</span></Link><a className={styles.secondary} href="#the-mission">Discover the experience</a></div>
     <div className={styles.meta}><span><i/>Experience in development</span><span>{world.window} · Planned</span><span>Venue & tickets to be announced</span></div>
    </div>
   </section>
@@ -29,7 +29,7 @@ export function AssembleExperience({world}:{world:UpcomingWorld}) {
   <section className={`${styles.wrap} ${styles.chapters}`} aria-label="The experience concept">
    {[['01','Your identity','A familiar hero. An unexpected alter ego. A version of you nobody has met.'],['02','Your people','Bring your crew—or imagine finding your place in a new one.'],['03','One shared story','Cinematic atmosphere, music and a community brought together by the same world.']].map(([n,title,copy])=><article key={n}><span className={styles.number}>{n}</span><h3>{title}</h3><p>{copy}</p></article>)}
   </section>
-  <section className={`${styles.wrap} ${styles.callout}`}><div><p className={styles.kicker}>Your next chapter</p><h2>Every team starts<br/>with a first step.</h2><p>Explore your hero identity and squad in the interactive mission preview.</p></div><div><Link className={styles.primary} href="/events/assemble/book">Build your mission profile <span aria-hidden="true">→</span></Link><p className={styles.fine}>Preview only. No reservation, payment or personal information is submitted. Booking opens after the event details are confirmed.</p></div></section>
+  <section className={`${styles.wrap} ${styles.callout}`}><div><p className={styles.kicker}>Your next chapter</p><h2>Every team starts<br/>with a first step.</h2><p>Choose your Avengers inspiration, tell us your group size and send your details directly to our team.</p></div><div><Link className={styles.primary} href="/events/assemble/book">Send your interest request <span aria-hidden="true">→</span></Link><p className={styles.fine}>You’ll receive an on-screen request reference after submission. This is an interest request, not a confirmed ticket. No payment is taken.</p></div></section>
   <p className={`${styles.wrap} ${styles.disclaimer}`}>An independent Planet Infinity fan-inspired concept. Not affiliated with or endorsed by Marvel or Disney.</p>
  </main></CatalogThemeFrame>;
 }
