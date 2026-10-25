@@ -15,11 +15,11 @@ export function useSpookyPrice(price: number, schedule?: EventPriceSchedule) {
 }
 export function SpookyHausPrice({ price, schedule, bookingFee = 0 }: { price: number; schedule?: EventPriceSchedule; bookingFee?: number }) {
   const current = useSpookyPrice(price, schedule);
-  const early = schedule ? current === schedule.before : false;
+  const beforeIncrease = schedule ? current === schedule.before : false;
   return <div className="sh-price" aria-live="polite">
-    <span className="sh-kicker">{early ? "Early bird admission" : "Admission"}</span>
+    <span className="sh-kicker">{beforeIncrease ? "Current admission" : "Admission"}</span>
     <p className="sh-price-value">{current.toLocaleString("en-EG")} <span>EGP / guest</span></p>
     {bookingFee>0?<p className="sh-price-note">+ {bookingFee.toLocaleString("en-EG")} EGP service fee per ticket.</p>:null}
-    {schedule ? <p className="sh-price-note">{early ? `EGP ${schedule.after.toLocaleString("en-EG")} from ` : "Early bird has closed. Standard admission applies from "}<time dateTime={schedule.changesAt}>{new Intl.DateTimeFormat("en-GB", { timeZone: "Africa/Cairo", day: "numeric", month: "long", hour: "numeric", minute: "2-digit", hour12: true }).format(new Date(schedule.changesAt))} (Cairo)</time>.</p> : null}
+    {schedule && beforeIncrease ? <p className="sh-price-note">Ticket price increases to EGP {schedule.after.toLocaleString("en-EG")} from <time dateTime={schedule.changesAt}>{new Intl.DateTimeFormat("en-GB", { timeZone: "Africa/Cairo", day: "numeric", month: "long", hour: "numeric", minute: "2-digit", hour12: true }).format(new Date(schedule.changesAt))} (Cairo)</time>.</p> : null}
   </div>;
 }
