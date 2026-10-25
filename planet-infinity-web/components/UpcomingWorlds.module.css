@@ -49,4 +49,23 @@
 @media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.story{gap:36px}.hero{min-height:540px}}
 @media(max-width:600px){.wrap,.heroCopy{width:calc(100% - 40px)}.list{padding:48px 0}.listHead{display:block}.listHead>p{margin-top:18px}.grid{grid-template-columns:1fr;gap:22px}.cardBody{padding:22px}.artWord{font-size:40px}.hero{min-height:520px}.heroCopy{padding-bottom:42px}.hero nav{margin-bottom:44px}.hero h1{font-size:clamp(44px,12vw,72px)}.hero .art svg{left:20%;width:100%;opacity:.17}.heroMeta{display:grid;gap:10px;margin-top:30px}.story{grid-template-columns:1fr;gap:32px;padding-block:46px}.story h2{font-size:34px}.notice{padding:25px}.notice h2{font-size:28px}}
 @media(prefers-reduced-motion:reduce){.card{transition:none}.card:hover{transform:none}}
+.page[data-world="doomsday"]{--pi-line:#34483c;background:var(--world-surface);color:#e6ebe7}
+.page[data-world="doomsday"] .hero{min-height:590px;border-bottom:1px solid var(--pi-line);background:var(--world-surface)}
+.page[data-world="doomsday"] .heroCopy{padding-block:32px 70px}
+.page[data-world="doomsday"] .hero nav{color:#afbab2}
+.page[data-world="doomsday"] .heroStatus{color:var(--world-accent);letter-spacing:.19em}
+.page[data-world="doomsday"] .hero h1{font-size:clamp(54px,8.5vw,122px);color:#e6ebe7;letter-spacing:-.045em;text-shadow:0 3px 0 #405346}
+.page[data-world="doomsday"] .subtitle{color:#c3cec6;font-weight:500}
+.page[data-world="doomsday"] .tagline{color:#aab9af}
+.page[data-world="doomsday"] .heroMeta{border-color:var(--pi-line);color:#b6c5bb}
+.page[data-world="doomsday"] .hero .art svg{left:57%;width:48%;opacity:.22}
+.page[data-world="doomsday"] .hero .worldLogo{display:none}
+.page[data-world="doomsday"] .story{gap:70px;padding-block:80px 96px}
+.page[data-world="doomsday"] .story>div>p:not(.eyebrow){color:#b6c5bb}
+.page[data-world="doomsday"] .eyebrow{color:var(--world-accent)}
+.page[data-world="doomsday"] .mood li{background:transparent;color:#c3cec6;border-radius:4px;border-color:#405346}
+.page[data-world="doomsday"] .notice{background:#17251e;border-color:#405346;border-radius:6px;box-shadow:inset 0 3px 0 var(--world-accent)}
+.page[data-world="doomsday"] .notice>p:not(.eyebrow),.page[data-world="doomsday"] .notice dt,.page[data-world="doomsday"] .notice .small{color:#b6c5bb}
+.page[data-world="doomsday"] .contact{background:var(--world-accent);color:#101a17!important;border-radius:4px}
+@media(max-width:600px){.page[data-world="doomsday"] .hero{min-height:500px}.page[data-world="doomsday"] .heroCopy{padding-bottom:42px}.page[data-world="doomsday"] .hero h1{font-size:clamp(36px,11.8vw,70px)}.page[data-world="doomsday"] .hero .art svg{left:30%;width:100%;opacity:.1}.page[data-world="doomsday"] .story{gap:32px;padding-block:44px 56px}.page[data-world="doomsday"] .story h2{font-size:32px}}
 

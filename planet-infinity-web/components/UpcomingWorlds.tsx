@@ -13,6 +13,7 @@ function WorldArtwork({world}:{world:UpcomingWorld}) {
   {world.hero?<img className={styles.worldCover} src={world.hero} alt=""/>:null}
   {world.logo?<img className={styles.worldLogo} src={world.logo} alt=""/>:null}
   <svg viewBox="0 0 600 420" fill="none" preserveAspectRatio="xMidYMid slice">
+   {world.motif==="doom"?<><path d="M300 35L465 120V290L300 390L135 290V120Z"/><path d="M300 65L438 136V276L300 360L162 276V136ZM218 140L300 94L382 140L355 220L300 254L245 220ZM245 220L205 290L300 337L395 290L355 220M300 254V337M162 136L218 140M438 136L382 140"/><path d="M45 210H115M485 210H555M300 0V20M300 405V420"/></>:null}
    {world.motif==="mask"?<><path d="M110 140Q205 90 300 140Q395 90 490 140L460 235Q405 300 335 235L300 215L265 235Q195 300 140 235Z"/><path d="M155 170Q205 140 250 180Q205 215 155 170ZM350 180Q395 140 445 170Q395 215 350 180ZM300 140V215M130 130L95 95M470 130L505 95"/><circle cx="300" cy="90" r="12"/></>:null}
    {world.motif==="sea"?<><circle cx="445" cy="125" r="62"/><path d="M-30 290Q120 190 280 290T650 280M-30 330Q120 230 280 330T650 320M-30 370Q120 270 280 370T650 360"/></>:null}
    {world.motif==="dunes"?<><circle cx="460" cy="100" r="45"/><path d="M-50 420Q130 60 370 260T700 150M-50 460Q170 110 400 310T700 220M-50 500Q170 160 400 360T700 270"/></>:null}
@@ -34,7 +35,7 @@ export function UpcomingWorldGrid({worlds,title="Next on the horizon"}:{worlds:U
 }
 export function UpcomingExperiencePage({world}:{world:UpcomingWorld}) {
  const back=world.kind==="trip"?"/trips":"/events";
- return <CatalogThemeFrame kind={world.kind} theme={world.theme??{primaryColor:world.accent,secondaryColor:world.surface,surface:world.ink==="#0f1e28"||world.ink==="#3e2c1b"?"light":"dark",typography:"brand",background:"clean",finish:"matte"}}><main className={styles.page} style={worldStyle(world)}>
+ return <CatalogThemeFrame kind={world.kind} theme={world.theme??{primaryColor:world.accent,secondaryColor:world.surface,surface:world.ink==="#0f1e28"||world.ink==="#3e2c1b"?"light":"dark",typography:"brand",background:"clean",finish:"matte"}}><main className={styles.page} data-world={world.slug} style={worldStyle(world)}>
   {world.video?<ExperienceIntroVideo key={world.video} src={world.video} poster={world.hero} label={`${world.title} opening video`}/>:null}
   <section className={styles.hero}><WorldArtwork world={world}/><div className={styles.heroCopy}>
    <nav aria-label="Breadcrumb"><Link href="/">Home</Link><span>/</span><Link href={back}>{world.kind==="trip"?"Travel":"Events"}</Link><span>/</span><span>{world.title}</span></nav>
