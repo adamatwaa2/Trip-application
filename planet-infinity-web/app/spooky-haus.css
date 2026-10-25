@@ -167,3 +167,19 @@ body:has(.spooky-haus) .pi-burger { background:#1a1510; }
 .sh-price-breakdown dt { min-width:0; }
 .sh-price-breakdown dd { margin:0; flex-shrink:0; }
 .sh-price-breakdown .sh-discount { color:#f0d7af; }
+
+/* Venue photographs belong only to the Spooky Haus invitation page. */
+.spooky-haus .sh-venue { padding-block:40px 76px; border-top:1px solid #dfb98525; scroll-margin-top:90px; }
+.spooky-haus .sh-venue-heading { display:flex; justify-content:space-between; align-items:end; gap:24px; margin-bottom:28px; }
+.spooky-haus .sh-venue-heading h2 { margin-top:12px; }
+.spooky-haus .sh-venue-heading > p { font-size:13px; line-height:1.85; }
+.spooky-haus .sh-venue .pi-gallery--layout-grid { columns:2; column-gap:20px; }
+.spooky-haus .sh-venue .pi-gallery__item { margin-bottom:20px; border:1px solid #dfb98538; border-radius:7px; background:#100e0b; }
+.spooky-haus .sh-venue .pi-gallery__item img { object-fit:contain; }
+@media(max-width:700px) {
+ .spooky-haus .sh-venue { padding-block:30px 45px; }
+ .spooky-haus .sh-venue-heading { display:block; margin-bottom:22px; }
+ .spooky-haus .sh-venue-heading > p { margin-top:16px; }
+ .spooky-haus .sh-venue .pi-gallery--layout-grid { columns:1; }
+ .spooky-haus .sh-venue .pi-gallery__item { margin-bottom:16px; }
+}
