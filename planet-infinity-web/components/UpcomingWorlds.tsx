@@ -5,7 +5,7 @@ import styles from "./UpcomingWorlds.module.css";
 import {CatalogThemeFrame} from "./CatalogThemeFrame";
 import {ExperienceIntroVideo} from "./ExperienceIntroVideo";
 import {AssembleExperience} from "./AssembleExperience";
-import {DuneExperience} from "./DuneExperience";
+import {DuneExperience} from "./DuneWorldExperience";
 
 function worldStyle(world:UpcomingWorld): CSSProperties {
  return {"--world-accent":world.accent,"--world-surface":world.surface,"--world-ink":world.ink} as CSSProperties;
