@@ -1,5 +1,5 @@
 "use client";
-import {useRef,useState,useTransition} from "react";
+import {useEffect,useRef,useState,useTransition} from "react";
 import {submitArenaInterest} from "@/app/actions/arena-request";
 import {ARENA_ROLES,validateArenaRequest,type ArenaRequestInput} from "@/content/arena-request";
 import {PolicyAcceptance} from "./PolicyAcceptance";
@@ -8,7 +8,8 @@ const labels={participant:"Enter the cast",viewer:"Watch the story",partner:"Bui
 export function ArenaInterestForm(){
  const [values,setValues]=useState<ArenaRequestInput>({role:"participant",fullName:"",email:"",phone:"",notes:"",adult:false,consent:false,website:""});
  const [error,setError]=useState(""),[reference,setReference]=useState("");const [pending,startTransition]=useTransition();const busy=useRef(false),resultHeading=useRef<HTMLHeadingElement>(null);
- const change=<K extends keyof ArenaRequestInput>(key:K,value:ArenaRequestInput[K])=>setValues(current=>({...current,[key]:value}));
+ const change=<K extends keyof ArenaRequestInput>(key:K,value:ArenaRequestInput[K])=>{setValues(current=>({...current,[key]:value}));setError("");};
+ useEffect(()=>{if(reference){resultHeading.current?.focus();resultHeading.current?.scrollIntoView({block:"center",behavior:"instant"});}},[reference]);
  const send=()=>{if(busy.current)return;const invalid=validateArenaRequest(values);if(invalid){setError(invalid);return;}busy.current=true;setError("");startTransition(async()=>{try{const response=await submitArenaInterest(values);if(response.ok){setReference(response.requestNumber);requestAnimationFrame(()=>resultHeading.current?.focus());}else setError(response.error);}catch{setError("Your interest was not confirmed. Please try again; your details are still here.");}finally{busy.current=false;}});};
  if(reference)return <div className={styles.confirmation} role="status"><p className={styles.kicker}>Signal received</p><h3 ref={resultHeading} tabIndex={-1}>You’re on our radar.</h3><p>Your ARENA interest has reached Planet Infinity.</p><strong>{reference}</strong><p>Keep this reference. We’ll follow up using your contact details when relevant information is ready. This is not casting acceptance, a reservation or a viewing pass. No payment has been taken.</p></div>;
  return <form className={styles.form} onSubmit={event=>{event.preventDefault();send();}}><fieldset disabled={pending}><legend>Choose your place in the story</legend><div className={styles.roleChoices}>{ARENA_ROLES.map(role=><label key={role}><input type="radio" name="arena-role" value={role} checked={values.role===role} onChange={()=>change("role",role)}/><span>{labels[role]}</span></label>)}</div>
