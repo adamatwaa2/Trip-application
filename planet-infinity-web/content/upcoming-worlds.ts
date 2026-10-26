@@ -6,20 +6,20 @@ export const UPCOMING_WORLDS: UpcomingWorld[] = [
   {
     "slug": "arena",
     "title": "ARENA",
-    "subtitle": "Hunger Games-inspired experience",
+    "subtitle": "Hunger Games-inspired island reality competition",
     "kind": "event",
     "channels": [
       "events",
       "themes"
     ],
     "location": "Location to be announced",
-    "window": "November 2026",
+    "window": "Dates to be announced",
     "motif": "arena",
     "accent": "#d6b45d",
     "surface": "#173a34",
     "ink": "#fdf8f1",
-    "tagline": "Find your team. Enter the arena.",
-    "description": "A competition-led world inspired by Hunger Games: team spirit, strategy and a shared challenge. The format and activities are still being developed.",
+    "tagline": "Enter as strangers. Leave as one winner.",
+    "description": "A proposed annual island reality competition in Egypt, with an international adult cast, alliances, supervised challenges and one winner. A three-day first edition and a larger 4–5 day edition are in development. Cast, venue, prize and broadcast details are not confirmed.",
     "mood": [
       "Team spirit",
       "Strategy",
