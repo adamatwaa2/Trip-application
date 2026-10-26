@@ -1,4 +1,4 @@
-export const ARENA_ROLES=["participant","viewer","partner"] as const;
+export const ARENA_ROLES=["participant","viewer","partner","community"] as const;
 export type ArenaRole=(typeof ARENA_ROLES)[number];
 export type ArenaRequestInput={role:string;fullName:string;email:string;phone:string;notes:string;adult:boolean;consent:boolean;website:string};
 export function validateArenaRequest(input:ArenaRequestInput):string|null{
