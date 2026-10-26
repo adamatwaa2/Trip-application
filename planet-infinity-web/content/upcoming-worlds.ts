@@ -29,20 +29,20 @@ export const UPCOMING_WORLDS: UpcomingWorld[] = [
   {
     "slug": "dune-siwa",
     "title": "DUNE",
-    "subtitle": "Siwa",
+    "subtitle": "White Desert · Black Desert · Siwa",
     "kind": "trip",
     "channels": [
       "trips",
       "themes"
     ],
-    "location": "Siwa, Egypt",
+    "location": "Western Desert, Egypt · Proposed route",
     "window": "December 2026",
     "motif": "dunes",
     "accent": "#dc5e15",
     "surface": "#eee0c9",
     "ink": "#3e2c1b",
     "tagline": "A different rhythm, beyond the dunes.",
-    "description": "An oasis-inspired journey into Siwa, with an identity shaped by desert textures, warm light and time away from the city.",
+    "description": "A proposed 7-day / 6-night journey through the White Desert, Black Desert and Siwa. Two camping nights, one transfer and rest overnight, and three nights in Siwa; the route, stays and program are still being prepared.",
     "mood": [
       "Oasis atmosphere",
       "Desert textures",
