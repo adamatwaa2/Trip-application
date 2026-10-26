@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type {UpcomingWorld} from "@/content/upcoming-worlds";
 import {CatalogThemeFrame} from "./CatalogThemeFrame";
-import {ExperienceIntroVideo} from "./ExperienceIntroVideo";
 import styles from "./DuneExperience.module.css";
 
 function DuneWordmark(){
@@ -10,7 +9,7 @@ function DuneWordmark(){
 export function DuneExperience({world}:{world:UpcomingWorld}){
  const poster="/media/dune/dune-opening-v1.jpg";
  return <CatalogThemeFrame kind="trip" theme={world.theme}><main className={styles.page} data-experience="dune">
-  {world.video?<ExperienceIntroVideo src={world.video} poster={poster} label="DUNE opening video" atmosphere="desert"/>:null}
+  <section className={styles.opening} aria-label="DUNE desert atmosphere"><img className={styles.openingBlur} src={poster} alt="" aria-hidden="true"/><img className={styles.openingImage} src={poster} width={560} height={582} fetchPriority="high" alt="Dune-inspired desert artwork with sunlit sand dunes"/></section>
   <section className={styles.hero}><svg className={styles.landscape} viewBox="0 0 1400 640" fill="none" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><circle cx="1090" cy="135" r="62"/><path d="M-100 640Q270 20 720 440T1500 290M-100 700Q270 100 720 490T1500 345M-100 760Q270 180 720 540T1500 400"/></svg><div className={styles.wrap}>
    <nav className={styles.crumb} aria-label="Breadcrumb"><Link href="/trips">Travel</Link><span>/</span><span>DUNE · Siwa</span></nav>
    <p className={styles.eyebrow}>Planet Infinity / A desert world in the making</p>
