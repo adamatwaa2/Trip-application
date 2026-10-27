@@ -1,11 +1,12 @@
 .page {
-  --gold:#ecc75f;--paper:#f3ecd9;--ink:#f3ecd9;--muted:#c3c1b6;--pi-ink:#f3ecd9;
+  --gold:#ecc75f;--paper:#f3ecd9;--ink:#f3ecd9;--muted:#c3c1b6;--pi-ink:#f3ecd9;--pi-display:var(--font-arena),var(--font-jakarta),sans-serif;
   position:relative;isolation:isolate;overflow-x:clip;background:#08090a;color:var(--paper);font-family:var(--font-jakarta),sans-serif;
   background-image:radial-gradient(ellipse at 100% 8%,#571b0c55,transparent 22%),radial-gradient(ellipse at 0% 47%,#6e230d44,transparent 22%),radial-gradient(ellipse at 100% 84%,#67441228,transparent 22%);
 }
 .page > section,.page > nav,.page > footer {position:relative;z-index:2;}
 .wrap {width:min(1160px,calc(100% - 48px));margin-inline:auto;min-width:0;}
 .page h1,.page h2,.page h3 {font-family:var(--font-arena),var(--font-jakarta),sans-serif;color:var(--paper)!important;font-weight:700;letter-spacing:.035em;}
+.page.page[data-experience="arena"] :is(h1,h2,h3) {font-family:var(--font-arena),var(--font-jakarta),sans-serif!important;}
 .page h2 {font-size:clamp(30px,4.2vw,54px);line-height:1.18;text-transform:uppercase;margin:0;text-wrap:balance;}
 .page h2 em {font-style:normal;color:var(--gold);}
 .page h3 {line-height:1.4;}
