@@ -108,3 +108,64 @@
   .membershipOptions .membershipBenefits { margin-bottom: 20px; }
   .membershipOptions .membershipBenefits article { background: linear-gradient(135deg, #d8b66c0d, #00000018); }
 }
+/* Warm light moves through each surface while the reading area stays calm. */
+.page {
+  background: radial-gradient(ellipse at 100% 0%, #704122, transparent 55%), linear-gradient(145deg, #18100c, #302014 55%, #100d0a);
+}
+.communityHero {
+  background: radial-gradient(ellipse at 100% 0%, #79441f, #79441f00 62%), radial-gradient(ellipse at 0% 100%, #68401e88, transparent 64%), linear-gradient(130deg, #15100d, #382315 60%, #20150e);
+}
+.paper {
+  background: radial-gradient(ellipse at 0% 0%, #fff6e5, transparent 70%), linear-gradient(130deg, #f4e8cf 5%, #ead3ab 62%, #cfae7c 100%);
+}
+.teams, .choices {
+  background: radial-gradient(ellipse at 100% 0%, #61371e, transparent 65%), linear-gradient(135deg, #17110d, #392416 62%, #1c130d);
+}
+.broadcast, .predictions, .membershipOptions {
+  background: radial-gradient(ellipse at 100% 20%, #68401f, #68401f00 65%), radial-gradient(ellipse at 0% 100%, #3e291a, transparent 65%), linear-gradient(140deg, #17110d, #302014 60%, #130f0b);
+}
+.interest {
+  background: radial-gradient(ellipse at 0% 100%, #6b3e20, #6b3e2000 68%), linear-gradient(135deg, #18110d, #3b2617 65%, #20150e);
+}
+.shade {
+  background: linear-gradient(90deg, #100b08f5, #29180dc4 52%, #6b341b26), linear-gradient(0deg, #100c09, transparent 50%);
+}
+.teamGrid article {
+  background: radial-gradient(ellipse at 100% 0%, #96613530, transparent 75%), linear-gradient(145deg, #d8b66c0a, #00000024);
+}
+.predictionDemo {
+  background: radial-gradient(ellipse at 100% 0%, #80502b70, transparent 65%), linear-gradient(140deg, #3b281a, #1c150f);
+}
+.predictionChoices label:has(input:checked), .roleChoices label:has(input:checked) {
+  background: linear-gradient(120deg, #654524, #3c2918);
+}
+.page .button {
+  background: linear-gradient(115deg, #efd59b 0%, #d9b364 55%, #bd8c42 100%);
+  border-color: #dfbc70;
+}
+.page .darkButton {
+  background: linear-gradient(120deg, #463020, #201810);
+}
+.membershipBenefits article {
+  background: linear-gradient(130deg, #fff8e966, #e6c89533);
+}
+.membershipOptions .membershipBenefits article {
+  background: radial-gradient(ellipse at 100% 0%, #9d683a38, transparent 70%), linear-gradient(130deg, #eac98808, #00000020);
+}
+@supports (background-clip: text) {
+  .communityHero h1 {
+    background-image: linear-gradient(115deg, #fff0ce 10%, #eccd94 65%, #dba951 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent !important;
+    -webkit-text-fill-color: transparent;
+  }
+}
+@media (max-width: 700px) {
+  .shade {
+    background: radial-gradient(ellipse at 100% 0%, #c4773033, transparent 65%), linear-gradient(90deg, #0c0908e8, #0c090870), linear-gradient(0deg, #100c09, transparent 68%);
+  }
+  .teamGrid article, .teamGrid article:first-child, .teamGrid article:nth-child(3), .teamGrid article:nth-child(4), .teamGrid article:last-child {
+    background: radial-gradient(ellipse at 100% 0%, #96613545, transparent 80%), linear-gradient(145deg, #d8b66c0d, #00000024);
+  }
+}
