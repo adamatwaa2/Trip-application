@@ -7,3 +7,104 @@
 .page{background:linear-gradient(145deg,#10241e,#0b1612 65%,#25291a)}.shade{background:radial-gradient(ellipse at 85% 30%,#6d774738,transparent 60%),linear-gradient(125deg,#08150f,#172d20 62%,#22291a)}.paper{background:linear-gradient(125deg,#f2eddf,#eee8d9 55%,#e1e3d0)}.teams{background:radial-gradient(ellipse at 90% 0%,#b9974b14,transparent 65%),linear-gradient(145deg,#193726,#10241e 70%)}.choices{background:linear-gradient(130deg,#292f1d,#17251a 60%,#0d1d17)}.broadcast{background:linear-gradient(150deg,#0c1812,#142a20 70%,#1e2819)}.interest{background:radial-gradient(ellipse at 0% 100%,#b9974b14,transparent 65%),linear-gradient(135deg,#10241e,#173624 72%,#10241e)}
 .shade{background:radial-gradient(ellipse at 85% 110%,#b94c202e,transparent 58%),radial-gradient(ellipse at 85% 30%,#6d77472b,transparent 60%),linear-gradient(125deg,#08150f,#172d20 62%,#22291a)}.hero h1{text-shadow:0 5px 36px #d35f1c20}.titleRule{background:linear-gradient(90deg,#f1cf7c,#b86530 72%,#b8653000)}.teams{background:radial-gradient(ellipse at 95% 0%,#b463201c,transparent 62%),linear-gradient(145deg,#193726,#10241e 70%)}@supports(background-clip:text){.hero h1{background-image:linear-gradient(180deg,#f5e8bc 15%,#ebc578 65%,#c17a3e 100%);background-clip:text;-webkit-background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent}}
 .page{background:linear-gradient(145deg,#17110d,#0c0b09 60%,#2b1a0f)}.heroImage{left:auto;right:0;width:min(65%,900px);object-fit:cover;object-position:center;mask-image:linear-gradient(90deg,transparent,#000 32%)}.shade{background:linear-gradient(90deg,#0c0908f2 0%,#0c0908c9 42%,#0c09084a 85%),linear-gradient(0deg,#100c09,transparent 38%)}.hero h1{font-size:clamp(80px,11.6vw,164px);font-weight:600;letter-spacing:.045em;text-shadow:0 2px 1px #8a391d45,0 8px 42px #dd672b2b;-webkit-text-stroke:.35px #d99449}.heroSubtitle{font-size:clamp(20px,2.2vw,29px);letter-spacing:.035em;text-transform:uppercase}.page h2{letter-spacing:.035em;text-transform:uppercase;font-weight:600}.paper{background:linear-gradient(125deg,#f4ead4,#eee1c6 58%,#ddc5a0)}.paper h2 em{color:#905d30}.teams{background:radial-gradient(ellipse at 95% 0%,#c8682524,transparent 62%),linear-gradient(145deg,#2b1b11,#15110d 70%)}.choices{background:linear-gradient(130deg,#332115,#1d1510 60%,#100d0a)}.broadcast{background:linear-gradient(150deg,#110e0b,#24170f 70%,#332014)}.broadcastPreview{background:repeating-linear-gradient(0deg,#21180f 0px,#21180f 1px,#17110d 1px,#17110d 5px)}.interest{background:radial-gradient(ellipse at 0% 100%,#c46f2421,transparent 65%),linear-gradient(135deg,#1b140e,#2a1c11 72%,#17100c)}.fields input,.fields textarea{background:#130f0b}.roleChoices label:has(input:checked){background:#41301c}.page .policies :global(.agree-row){background:#21170f!important}.chapterNav{background:#1c160ff5}.endNote{background:#100c09}.darkButton{background:#2d2117;border-color:#2d2117}@media(max-width:700px){.heroImage{width:100%;mask-image:none;object-position:center}.shade{background:linear-gradient(90deg,#0c0908dc,#0c09089e),linear-gradient(0deg,#100c09,transparent 65%)}.hero h1{font-size:clamp(68px,18.8vw,130px);letter-spacing:.045em}.heroSubtitle{font-size:23px;line-height:1.55}.page h2{font-size:31px;letter-spacing:.035em}}
+/* Shared mobile layout for ARENA and community; desktop keeps its editorial layout. */
+@media (max-width: 700px) {
+  .wrap { width: calc(100% - 40px); }
+  .page h2 { font-size: clamp(25px, 7.2vw, 31px); line-height: 1.25; letter-spacing: .025em; word-spacing: .08em; text-wrap: balance; }
+  .page h3 { letter-spacing: .01em; word-spacing: .08em; line-height: 1.35; }
+  .kicker { font-size: 10px; line-height: 1.7; letter-spacing: .1em; margin-bottom: 18px; }
+  .page .note { font-size: 12px !important; line-height: 1.75 !important; opacity: 1; }
+  .page .button, .page .darkButton { min-height: 52px; padding: 14px 18px; font-size: 14px; line-height: 1.6; gap: 16px; }
+  .page .textLink { display: inline-block; font-size: 14px; line-height: 1.8; padding-block: 8px; }
+  .hero { min-height: 0; }
+  .heroContent { min-height: 620px; padding-block: 24px 28px; }
+  .crumb { font-size: 12px; margin-bottom: 34px; }
+  .hero .kicker { max-width: 28ch; }
+  .hero h1 { font-size: clamp(64px, 20vw, 96px); margin-bottom: 22px; }
+  .titleRule { margin-top: 18px; }
+  .heroSubtitle { font-size: clamp(20px, 5.7vw, 25px); line-height: 1.5; letter-spacing: .025em; }
+  .heroLine { font-size: 15px; line-height: 1.75; margin-block: 20px 24px; }
+  .heroActions { gap: 12px; }
+  .heroFoot { margin-top: 28px; padding-top: 22px; gap: 7px; font-size: 10px; letter-spacing: .07em; border-top: 1px solid #d8b66c40; }
+  .heroImage { object-position: 58% center; }
+  .shade { background: linear-gradient(90deg, #0c0908e8, #0c090880), linear-gradient(0deg, #100c09, transparent 68%); }
+  .chapterNav { position: static; }
+  .chapterNav > .wrap { display: grid; grid-template-columns: 1fr 1fr; padding-block: 12px; gap: 4px 16px; }
+  .chapterNav a { display: flex; align-items: center; min-height: 44px; font-size: 11px; line-height: 1.5; letter-spacing: .03em; }
+  .paper, .teams, .choices, .broadcast, .predictions, .interest, .communityHero, .membershipOptions { padding-block: 42px; scroll-margin-top: 85px; }
+  .editorial, .sectionHead, .interestLayout { gap: 24px; }
+  .prose, .sectionHead > p, .sectionIntro { font-size: 15px; line-height: 1.85; }
+  .sectionHead > p { margin: 0; }
+  .prose p { margin-bottom: 18px; }
+  .facts { grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 26px; }
+  .facts > div { border: 1px solid #a5ab95; padding: 16px; min-width: 0; }
+  .facts > div:last-child { grid-column: 1 / -1; }
+  .facts span { font-size: 10px; line-height: 1.7; letter-spacing: .07em; }
+  .facts strong { font-size: 25px; line-height: 1.3; margin-block: 10px; }
+  .facts p { font-size: 13px; line-height: 1.75; }
+  .teamGrid { gap: 12px; border: 0; }
+  .teamGrid article, .teamGrid article:first-child, .teamGrid article:nth-child(3), .teamGrid article:nth-child(4), .teamGrid article:last-child { padding: 18px 14px; border: 1px solid #88734d80; background: linear-gradient(145deg, #d8b66c0d, #00000014); }
+  .teamNumber { font-size: 28px; }
+  .teamGrid h3 { font-size: 21px; margin-block: 12px; }
+  .teamGrid p { font-size: 13px; line-height: 1.75; margin-bottom: 0; }
+  .teamGrid p:first-of-type { font-size: 10px; letter-spacing: .08em; margin-top: 16px; }
+  .paper .sectionIntro { margin-block: 20px 28px; }
+  .days { gap: 26px; }
+  .days li { padding-top: 18px; }
+  .days span { font-size: 11px; }
+  .days h3 { font-size: 24px; margin-block: 12px; }
+  .days p, .expansion { font-size: 14px; line-height: 1.85; }
+  .expansion { margin-top: 24px; padding-block: 18px; }
+  .expansion summary { min-height: 44px; align-content: center; }
+  .broadcastTop, .broadcastBottom { padding: 14px; font-size: 10px; line-height: 1.7; letter-spacing: .02em; flex-wrap: wrap; gap: 8px 14px; }
+  .broadcastPreview { min-height: 190px; padding: 24px 16px; }
+  .broadcastPreview > span { font-size: clamp(20px, 5.8vw, 25px); line-height: 1.5; letter-spacing: .035em; }
+  .broadcastPreview p { font-size: 12px; }
+  .broadcastInfo { gap: 10px; margin-top: 20px; }
+  .broadcastInfo p, .partners p:not(.kicker) { font-size: 14px; line-height: 1.85; }
+  .predictionGrid { margin-top: 26px; gap: 28px; }
+  .predictionDemo { padding: 22px 18px; }
+  .predictionDemo legend { font-size: 16px; line-height: 1.5; margin-bottom: 16px; }
+  .predictionChoices { gap: 10px; }
+  .page .predictionChoices label { padding: 14px 10px; margin: 0; min-height: 56px; gap: 10px; font-size: 14px; line-height: 1.6; }
+  .predictionChoices input { width: 18px; height: 18px; flex-shrink: 0; }
+  .predictionDemo .button { margin-top: 20px; }
+  .demoPick, .demoResult p { font-size: 14px; line-height: 1.8; }
+  .demoControls { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .demoControls button { min-height: 48px; font-size: 13px; line-height: 1.6; padding: 12px; }
+  .demoResult { margin-block: 20px; padding-block: 16px; }
+  .demoResult > strong { font-size: 26px; line-height: 1.4; word-spacing: .08em; }
+  .textButton { min-height: 44px; font-size: 13px; }
+  .predictionRules { border-top: 1px solid #88734d80; padding-top: 26px; }
+  .predictionRules h3 { font-size: 25px; margin-bottom: 24px; }
+  .predictionRules li { font-size: 15px; line-height: 1.8; padding-left: 6px; margin-bottom: 20px; }
+  .predictionRules li span { font-size: 14px; line-height: 1.8; margin-top: 5px; }
+  .interest .sectionIntro { margin-top: 20px; }
+  .form { padding-top: 22px; }
+  .form legend { font-size: 15px; line-height: 1.7; margin-bottom: 16px; }
+  .roleChoices { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .page .roleChoices label { min-height: 68px; align-items: center; padding: 12px; margin: 0; gap: 10px; font-size: 13px; line-height: 1.6; }
+  .roleChoices input { width: 18px; height: 18px; margin: 0; }
+  .formNote { font-size: 13px; line-height: 1.8; margin-block: 18px 22px; }
+  .fields { gap: 20px; }
+  .page .fields label { margin: 0; font-size: 14px; line-height: 1.6; }
+  .fields input, .fields textarea { margin-top: 8px; padding: 14px; font-size: 16px; line-height: 1.6; }
+  .page .check, .page .policies label, .page .policies a, .page .policies span { font-size: 13px !important; line-height: 1.85; }
+  .page .policies :global(.agree-row) { padding: 16px; }
+  .confirmation h3 { font-size: 27px; }
+  .confirmation p { font-size: 14px; line-height: 1.85; }
+  .confirmation strong { font-size: 28px; }
+  .endNote > .wrap { font-size: 12px; line-height: 1.8; gap: 14px; }
+  .communityHero { padding-block: 36px 40px; }
+  .communityHero .kicker { max-width: 29ch; }
+  .communityHero h1 { font-size: clamp(29px, 8.7vw, 38px); line-height: 1.22; letter-spacing: .005em; word-spacing: .08em; margin-bottom: 24px; }
+  .communityHero p:not(.kicker) { font-size: 15px; line-height: 1.85; margin-block: 0; }
+  .communityHero .button { margin-top: 26px; }
+  .communityHero .note { margin-top: 20px !important; }
+  .membershipBenefits { margin-top: 26px; gap: 14px; }
+  .membershipBenefits article { padding: 20px 18px; border: 1px solid #9d886270; background: #ffffff20; }
+  .membershipBenefits h3 { font-size: 23px; line-height: 1.4; margin-bottom: 12px; }
+  .membershipBenefits p { font-size: 14px; line-height: 1.85; margin: 0; }
+  .membershipOptions .membershipBenefits { margin-bottom: 20px; }
+  .membershipOptions .membershipBenefits article { background: linear-gradient(135deg, #d8b66c0d, #00000018); }
+}
