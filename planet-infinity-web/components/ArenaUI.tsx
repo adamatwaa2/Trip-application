@@ -10,5 +10,5 @@ export function ArenaSelectionMark() {
 }
 
 export function ArenaAtmosphere() {
-  return <div className={styles.atmosphere} aria-hidden="true">{Array.from({length:18},(_,index)=><span className={styles.spark} key={index} style={{"--x":`${(index*31+7)%100}%`,"--y":`${(index*17+3)%100}%`,"--delay":`${-index*1.7}s`,"--duration":`${9+index%5}s`} as CSSProperties}/>)}</div>;
+  return <div className={styles.atmosphere} aria-hidden="true">{Array.from({length:24},(_,index)=><span className={styles.spark} key={index} style={{"--x":`${(index*31+7)%100}%`,"--y":`${(index*17+3)%100}%`,"--delay":`${-index*1.7}s`,"--duration":`${9+index%5}s`} as CSSProperties}/>)}</div>;
 }

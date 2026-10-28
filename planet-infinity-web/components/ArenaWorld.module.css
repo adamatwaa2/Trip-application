@@ -126,7 +126,7 @@
 .atmosphere {position:fixed;inset:76px 0 0;z-index:1;pointer-events:none;overflow:hidden;}
 .spark {position:absolute;left:var(--x);bottom:var(--y);width:2px;height:4px;border-radius:50%;background:#ffc44f;box-shadow:0 0 7px 2px #f15a193f,0 0 18px #fc4e17;opacity:0;animation:emberDrift var(--duration) linear var(--delay) infinite;}
 .spark:nth-child(3n) {width:1px;height:2px;background:#ff6934;}.spark:nth-child(4n) {height:6px;}
-@keyframes emberDrift {0%{opacity:0;transform:translate3d(-8px,18vh,0) rotate(-20deg)}20%{opacity:.65}70%{opacity:.4}100%{opacity:0;transform:translate3d(24px,-28vh,0) rotate(30deg)}}
+@keyframes emberDrift {0%{opacity:0;transform:translate3d(-8px,18vh,0) rotate(-20deg)}20%{opacity:.75}70%{opacity:.45}100%{opacity:0;transform:translate3d(24px,-28vh,0) rotate(30deg)}}
 @supports (background-clip:text) {.hero h1 {background-image:linear-gradient(180deg,#fff0b0 4%,#eec95a 42%,#99701e 53%,#f2d47a 62%,#bb852b 100%);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;}}
 @media(max-width:900px) {.teamGrid {grid-template-columns:1fr 1fr;}.interestLayout {gap:35px;}.editorial {gap:40px;}.predictionGrid {gap:30px;}}
 @media(max-width:700px) {
@@ -149,6 +149,6 @@
   .predictionGrid {margin-top:28px;gap:30px;}.predictionDemo {padding:22px 18px;}.predictionChoices {gap:10px;}.page .predictionChoices label {padding:16px 12px;min-height:112px;}.choiceName {font-size:21px;}.choiceIndex {font-size:10px;letter-spacing:.08em;}.selectionMark {top:13px;right:11px;width:18px;height:18px;}
   .demoControls {grid-template-columns:1fr;}.demoControls button {font-size:13px;}.demoResult > strong {font-size:25px;}.predictionRules {border-top:1px solid #5e543b;padding-top:26px;}.predictionRules h3 {font-size:25px;}.predictionRules li {padding-left:6px;}.predictionRules li span {font-size:14px;}
   .partners .darkButton {width:100%;}.interest .sectionIntro,.interest .note {max-width:none;}.interest .sectionIntro {margin-top:20px;}.form {padding-top:22px;}.form legend {font-size:15px;}.page .roleChoices label {padding:16px 12px;min-height:110px;}.roleChoices .choiceName {font-size:14px;line-height:1.6;max-width:100%;}.roleChoices {gap:10px;}.fields {gap:20px;}.formNote {font-size:13px;}.page .policies :global(.agree-row) {padding:16px;}.confirmation h3 {font-size:26px;}.confirmation strong {font-size:27px;}
-  .endNote > .wrap {grid-template-columns:1fr;gap:16px;font-size:12px;}.atmosphere {top:65px;}.spark:nth-child(n+13) {display:none;}
+  .endNote > .wrap {grid-template-columns:1fr;gap:16px;font-size:12px;}.atmosphere {top:65px;}.spark:nth-child(n+17) {display:none;}
 }
 @media(prefers-reduced-motion:reduce) {.spark {animation:none;opacity:.3;}.page * {scroll-behavior:auto!important;transition:none!important;}}
