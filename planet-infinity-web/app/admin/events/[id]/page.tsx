@@ -6,6 +6,7 @@ import { getProduct, getBookingsForProduct } from "@/lib/admin-operations";
 import { HalloweenAdminOverview } from "@/components/HalloweenAdminOverview";
 import { HALLOWEEN_SLUG } from "@/content/events/halloween";
 import { requireAdmin } from "@/lib/admin";
+import { InternalEventDocuments } from "@/components/InternalEventDocuments";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -30,6 +31,7 @@ export default async function AdminEventEditPage({ params }: Props) {
       </header>
 
       {bookings ? <HalloweenAdminOverview bookings={bookings.items} eventId={id} error={bookings.error} /> : null}
+      <InternalEventDocuments eventId={id} />
       <section className="pi-admin-section">
         <AdminCatalogForm kind="events" item={item} />
       </section>

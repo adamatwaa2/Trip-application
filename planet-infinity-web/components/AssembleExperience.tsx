@@ -15,16 +15,16 @@ export function AssembleExperience({world}:{world:UpcomingWorld}) {
    <div className={styles.emblem}><AssembleMark/></div>
    <div className={styles.wrap}>
     <nav className={styles.crumb} aria-label="Breadcrumb"><Link href="/events">Events</Link><span>/</span><span>ASSEMBLE</span></nav>
-    <p className={styles.kicker}>Planet Infinity presents · An Avengers-inspired experience</p>
-    <h1>ASSEMBLE<span>The next team is us.</span></h1>
-    <p className={styles.intro}>The old team left a legacy.<br/>Now it’s our turn to come together.</p>
+    <p className={styles.kicker}>Planet Infinity presents · Avengers: Doomsday-inspired</p>
+    <h1>ASSEMBLE<span>Before Doomsday, we assemble.</span></h1>
+    <p className={styles.intro}>The Avengers spirit. A new chapter.<br/>Our community becomes the next team.</p>
     <div className={styles.actions}><Link className={styles.primary} href="/events/assemble/book">Send your interest request <span aria-hidden="true">→</span></Link><a className={styles.secondary} href="#the-mission">Discover the experience</a></div>
     <div className={styles.meta}><span><i/>Experience in development</span><span>{world.window} · Planned</span><span>Venue & tickets to be announced</span></div>
    </div>
   </section>
   <section className={`${styles.wrap} ${styles.briefing}`} id="the-mission">
    <div><p className={styles.kicker}>01 / The initiative</p><h2>Not another audience.<br/>A new team.</h2></div>
-   <div><p>You know the feeling: different heroes, different stories, one moment that brings them together. ASSEMBLE takes that Avengers spirit and puts our community at the centre of it.</p><p>Come as the hero you love. Or imagine one of your own. The idea is a costume-led, cinematic gathering where you’re part of the story—not just watching it.</p><small>Concept direction. The final format, activities and costume guidelines are still being developed.</small></div>
+   <div><p>Inspired by the world of Avengers: Doomsday, ASSEMBLE brings the feeling of heroes coming together into a cinematic community experience.</p><p>Come as the Avenger you love. Or imagine a hero of your own. Costumes, music and a shared mission put you inside our own story.</p><small>A fan-inspired concept, not a film screening. The final format, activities and costume guidelines are still being developed.</small></div>
   </section>
   <section className={`${styles.wrap} ${styles.chapters}`} aria-label="The experience concept">
    {[['01','Your identity','A familiar hero. An unexpected alter ego. A version of you nobody has met.'],['02','Your people','Bring your crew—or imagine finding your place in a new one.'],['03','One shared story','Cinematic atmosphere, music and a community brought together by the same world.']].map(([n,title,copy])=><article key={n}><span className={styles.number}>{n}</span><h3>{title}</h3><p>{copy}</p></article>)}

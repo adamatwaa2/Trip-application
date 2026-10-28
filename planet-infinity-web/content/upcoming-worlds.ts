@@ -52,7 +52,7 @@ export const UPCOMING_WORLDS: UpcomingWorld[] = [
   {
     "slug": "doomsday",
     "title": "ASSEMBLE",
-    "subtitle": "Avengers-inspired experience",
+    "subtitle": "Avengers: Doomsday-inspired experience",
     "kind": "event",
     "channels": [
       "events",
@@ -64,8 +64,8 @@ export const UPCOMING_WORLDS: UpcomingWorld[] = [
     "accent": "#c4554d",
     "surface": "#101722",
     "ink": "#e3e8ed",
-    "tagline": "The next team is us.",
-    "description": "The old team left a legacy. Now it’s our turn. An independent Avengers-inspired community concept, with costume-led identities, cinematic atmosphere and the spirit of assembling a new team. The final format and event details are still being developed.",
+    "tagline": "Before Doomsday, we assemble.",
+    "description": "Inspired by the world of Avengers: Doomsday. A costume-led community concept with cinematic atmosphere, music and the spirit of assembling a new team. The final format and event details are still being developed.",
     "mood": [
       "Cinematic energy",
       "A shared mission",
