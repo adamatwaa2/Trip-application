@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./InternalEventDocuments.module.css";
 
-export function InternalEventDocumentUpload({ eventId }: { eventId: string }) {
+export function InternalEventDocumentUpload({ eventId, kind = "events" }: { eventId: string; kind?: "events" | "trips" }) {
   const router = useRouter();
   const busy = useRef(false);
   const [pending, setPending] = useState(false);
@@ -18,7 +18,7 @@ export function InternalEventDocumentUpload({ eventId }: { eventId: string }) {
     busy.current = true;
     setPending(true); setError(""); setMessage("");
     try {
-      const response = await fetch(`/api/admin/events/${eventId}/internal-documents`, { method: "POST", body: new FormData(form) });
+      const response = await fetch(`/api/admin/${kind}/${eventId}/internal-documents`, { method: "POST", body: new FormData(form) });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Upload failed. Please try again.");
       form.reset();

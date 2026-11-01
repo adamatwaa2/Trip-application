@@ -6,6 +6,8 @@ export const isEventId = (value: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4
 export const isDocumentFilename = (value: string) => /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,179}\.pdf$/i.test(value) && !value.includes("..");
 
 export function documentTitle(filename: string) {
+  if (filename === "SENIORS-HUNT-Master-Plan-AR.pdf") return "SENIORS HUNT — Internal master plan · العربية";
+  if (filename === "SENIORS-HUNT-School-Proposal-EN.pdf") return "SENIORS HUNT — School proposal · English";
   if (filename === "ARENA-Project-AR.pdf") return "ARENA — Project Bible · العربية";
   if (filename === "ARENA-Project-EN.pdf") return "ARENA — Project Bible · English";
   return filename.replace(/^[0-9a-f-]{36}-/i, "");

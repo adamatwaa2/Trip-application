@@ -4,6 +4,7 @@ import { AdminCatalogForm } from "@/components/AdminCatalogForm";
 import { AdminShell } from "@/components/AdminShell";
 import { getProduct } from "@/lib/admin-operations";
 import { requireAdmin } from "@/lib/admin";
+import { InternalEventDocuments } from "@/components/InternalEventDocuments";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -26,6 +27,7 @@ export default async function AdminTripEditPage({ params }: Props) {
         <Link href="/admin/trips">Back to trips</Link>
       </header>
 
+      <InternalEventDocuments eventId={id} kind="trips" />
       <section className="pi-admin-section">
         <AdminCatalogForm kind="trips" item={item} />
       </section>
