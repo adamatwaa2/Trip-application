@@ -282,7 +282,7 @@ export const UPCOMING_WORLDS: UpcomingWorld[] = [
     "surface": "#0f1e28",
     "ink": "#fdf8f1",
     "tagline": "Leave the ordinary on shore.",
-    "description": "A pirate-inspired Red Sea world, built around discovery, a shared story and the spirit of a crew.",
+    "description": "A pirate-inspired boat-adventure concept on Egypt’s Red Sea: a fictional treasure hunt, cryptic clues and a shared story that turns strangers into a crew. Sailing arrangements and the final programme are in development.",
     "mood": [
       "Open water",
       "A crew of your own",

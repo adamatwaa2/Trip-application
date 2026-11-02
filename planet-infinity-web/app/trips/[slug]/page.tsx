@@ -28,6 +28,12 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const trip = await getTripBySlug(slug);
   if (!trip) {
     const upcoming=await getUpcomingWorld(slug,"trip");
+    if (upcoming && slug === "pirates-red-sea") return {
+      title: "Pirates of the Red Sea · A Planet Infinity voyage",
+      description: upcoming.description,
+      alternates: { canonical: "/trips/pirates-red-sea" },
+      openGraph: { title: "Pirates of the Red Sea", description: upcoming.description, url: "/trips/pirates-red-sea", images: [{ url: "/media/pirates/sailing-poster.jpg", width: 1280, height: 720, alt: "A wooden ship at sea — atmosphere footage for the Pirates of the Red Sea concept" }] },
+    };
     return upcoming ? { title:upcoming.title+" · Upcoming", description:upcoming.description, alternates:{canonical:upcomingHref(upcoming)} } : { title:"Trip not found", robots:{index:false,follow:false} };
   }
   return {

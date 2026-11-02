@@ -7,11 +7,13 @@ import {ExperienceIntroVideo} from "./ExperienceIntroVideo";
 import {AssembleExperience} from "./AssembleExperience";
 import {DuneExperience} from "./DuneWorldExperience";
 import {ArenaExperience} from "./ArenaExperience";
+import {PiratesExperience} from "./PiratesExperience";
 
 function worldStyle(world:UpcomingWorld): CSSProperties {
  return {"--world-accent":world.accent,"--world-surface":world.surface,"--world-ink":world.ink} as CSSProperties;
 }
 function WorldArtwork({world}:{world:UpcomingWorld}) {
+ if(world.slug==="pirates-red-sea")return <div className={`${styles.art} ${styles.piratesPreview}`} aria-hidden="true"><img src="/media/pirates/pirates-original-parchment-logo.webp" alt="" width={738} height={150}/><span>A boat. A crew. A story worth chasing.</span></div>;
  return <div className={styles.art} data-motif={world.motif} aria-hidden="true">
   {world.hero?<img className={styles.worldCover} src={world.hero} alt=""/>:null}
   {world.logo?<img className={styles.worldLogo} src={world.logo} alt=""/>:null}
@@ -37,6 +39,7 @@ export function UpcomingWorldGrid({worlds,title="Next on the horizon"}:{worlds:U
  </div></section>;
 }
 export function UpcomingExperiencePage({world}:{world:UpcomingWorld}) {
+ if(world.slug==="pirates-red-sea")return <PiratesExperience world={world}/>;
  if(world.slug==="doomsday")return <AssembleExperience world={world}/>;
  if(world.slug==="dune-siwa")return <DuneExperience world={world}/>;
  if(world.slug==="arena")return <ArenaExperience world={world}/>;
