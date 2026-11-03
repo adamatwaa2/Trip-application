@@ -3,6 +3,75 @@ export type UpcomingWorld = { slug:string; title:string; subtitle:string; kind:"
 /** Public concept previews only. The operational Admin records stay unpublished until reviewed.
  * Published catalogue rows take precedence over these previews. No booking data is invented. */
 export const UPCOMING_WORLDS: UpcomingWorld[] = [
+
+  {
+    "kind": "event",
+    "channels": [
+      "events"
+    ],
+    "location": "Venue to be announced",
+    "window": "Dates to be announced",
+    "ink": "#fff5e4",
+    "slug": "noche-de-flores",
+    "title": "Noche de Flores",
+    "subtitle": "Mexican Night",
+    "motif": "flowers",
+    "accent": "#ff963b",
+    "surface": "#541738",
+    "tagline": "Marigolds by dusk. Latin beats after dark.",
+    "description": "A Mexican-inspired night with orange marigolds, red and ivory papel picado and violet light. Choose an original floral, half-face or calavera design at the face-paint station. The DJ moves from Mexican favourites to Spanish-language dance tracks and a marigold disco finale. An Early Bird release is planned.",
+    "mood": [
+      "Choose your face paint",
+      "Mexican & Spanish-language DJ set",
+      "Marigold disco",
+      "Early Bird planned"
+    ]
+  },
+  {
+    "kind": "event",
+    "channels": [
+      "events"
+    ],
+    "location": "Venue to be announced",
+    "window": "Dates to be announced",
+    "ink": "#fff5e4",
+    "slug": "cowboy-night",
+    "title": "Cowboy Night",
+    "subtitle": "Western Party",
+    "motif": "western",
+    "accent": "#ffc585",
+    "surface": "#432719",
+    "tagline": "Boots on. Meet us out west.",
+    "description": "A Western gathering with ranch-style décor, a cowboy dress code and a dance floor after sundown. Horse riding is planned as a supervised activity, subject to venue and operator confirmation.",
+    "mood": [
+      "Horse riding",
+      "Western décor",
+      "Cowboy dress code",
+      "After-dark party"
+    ]
+  },
+  {
+    "kind": "event",
+    "channels": [
+      "events"
+    ],
+    "location": "Venue to be announced",
+    "window": "Dates to be announced",
+    "ink": "#fff5e4",
+    "slug": "super-party",
+    "title": "Super Party",
+    "subtitle": "High-energy dance night",
+    "motif": "orbit",
+    "accent": "#adf773",
+    "surface": "#25164a",
+    "tagline": "Turn the whole room up.",
+    "description": "A high-energy Planet Infinity party concept with a neon-lit dance floor, DJ sets and short crowd games between sets. The programme and location are in development.",
+    "mood": [
+      "DJ sets",
+      "Neon lighting",
+      "Crowd games"
+    ]
+  },
   {
     "slug": "arena",
     "title": "ARENA",
@@ -263,8 +332,8 @@ export const UPCOMING_WORLDS: UpcomingWorld[] = [
     "surface": "#251b30",
     "ink": "#fff5e4",
     "tagline": "Behind the mask. Into the night.",
-    "description": "A masked-party concept with a world of velvet tones, gold details and a little mystery. The venue, date, music and full experience are still being prepared.",
-    "mood": ["Masks & mystery", "Velvet & gold", "A night to discover"]
+    "description": "A masked night with velvet, warm gold, a 360-degree video booth and a masked dance floor. Bring a mask and dress for an evening in black and gold.",
+    "mood": ["Masks & eveningwear","360-degree video booth","Masked dance floor"]
   },
   {
     "slug": "pirates-red-sea",

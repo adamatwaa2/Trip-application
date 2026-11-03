@@ -19,6 +19,8 @@ function WorldArtwork({world}:{world:UpcomingWorld}) {
   {world.logo?<img className={styles.worldLogo} src={world.logo} alt=""/>:null}
   <svg viewBox="0 0 600 420" fill="none" preserveAspectRatio="xMidYMid slice">
    {world.motif==="doom"?<><circle cx="300" cy="210" r="156"/><circle cx="300" cy="210" r="140" strokeDasharray="245 45 96 28"/><path d="M208 300L295 102H337L378 300H335L324 246H268L246 300ZM282 211H318L305 151ZM260 246H402L378 221M402 246L378 271"/></>:null}
+   {world.motif==="flowers"?<>{[160,300,440].map(x=><g key={x} transform={"translate("+x+" 195)"}><circle r="24"/>{Array.from({length:10},(_,i)=><ellipse key={i} cy="-52" rx="16" ry="26" transform={"rotate("+i*36+")"}/>)}</g>)}</>:null}
+   {world.motif==="western"?<><circle cx="440" cy="105" r="53"/><path d="M70 315h460M95 286l82-89 67 51 79-92 115 130M185 280q-35-35-35-100h30q0 75 50 75t50-75h30q0 100-80 100z"/></>:null}
    {world.motif==="mask"?<><path d="M110 140Q205 90 300 140Q395 90 490 140L460 235Q405 300 335 235L300 215L265 235Q195 300 140 235Z"/><path d="M155 170Q205 140 250 180Q205 215 155 170ZM350 180Q395 140 445 170Q395 215 350 180ZM300 140V215M130 130L95 95M470 130L505 95"/><circle cx="300" cy="90" r="12"/></>:null}
    {world.motif==="sea"?<><circle cx="445" cy="125" r="62"/><path d="M-30 290Q120 190 280 290T650 280M-30 330Q120 230 280 330T650 320M-30 370Q120 270 280 370T650 360"/></>:null}
    {world.motif==="dunes"?<><circle cx="460" cy="100" r="45"/><path d="M-50 420Q130 60 370 260T700 150M-50 460Q170 110 400 310T700 220M-50 500Q170 160 400 360T700 270"/></>:null}
@@ -33,7 +35,7 @@ export function UpcomingWorldGrid({worlds,title="Next on the horizon"}:{worlds:U
  if(!worlds.length)return null;
  return <section className={styles.list} aria-label="Upcoming experiences"><div className={styles.wrap}>
   <header className={styles.listHead}><div><p className={styles.eyebrow}>Upcoming · In development</p><h2>{title}</h2></div><p>Explore the next worlds. Bookings are not open yet.</p></header>
-  <div className={styles.grid}>{worlds.map(world=><Link className={styles.card} style={worldStyle(world)} href={upcomingHref(world)} key={world.slug}>
+  <div className={title === "Upcoming Events" ? styles.eventList : styles.grid}>{worlds.map(world=><Link className={title === "Upcoming Events" ? styles.eventRow : styles.card} style={worldStyle(world)} href={upcomingHref(world)} key={world.slug}>
    <WorldArtwork world={world}/><div className={styles.cardBody}><p className={styles.cardWindow}>{world.window}{world.window!=="Dates to be announced"?" · Planned":null}</p><h3>{world.title}</h3><p>{world.subtitle}</p><span className={styles.channels}>{world.channels.map(c=>c==="trips"?"Trip":c==="events"?"Event":"Theme").join(" · ")}</span><strong>Explore the concept <span aria-hidden="true">→</span></strong></div>
   </Link>)}</div>
  </div></section>;
@@ -52,7 +54,7 @@ export function UpcomingExperiencePage({world}:{world:UpcomingWorld}) {
    <div className={styles.heroMeta}><span>{world.location}</span><span>{world.window}{world.window!=="Dates to be announced"?" · Planned window":null}</span></div>
   </div></section>
   <section className={`${styles.wrap} ${styles.story}`}><div><p className={styles.eyebrow}>A world in the making</p><h2>{world.tagline}</h2><p>{world.description}</p><ul className={styles.mood}>{world.mood.map(item=><li key={item}>{item}</li>)}</ul></div>
-   <aside className={styles.notice}><p className={styles.eyebrow}>Not open for booking</p><h2>The story comes first.<br/>The details come next.</h2><p>This is a preview of a future Planet Infinity experience, not a confirmed departure or a ticket on sale.</p><dl><div><dt>When</dt><dd>{world.window}{world.window!=="Dates to be announced"?" · provisional":null}</dd></div><div><dt>Price & program</dt><dd>To be announced</dd></div><div><dt>Experience</dt><dd>{world.channels.map(c=>c==="trips"?"Trip":c==="events"?"Event":"Theme").join(" · ")}</dd></div></dl><Link className={styles.contact} href="/contact">Ask about this experience</Link><p className={styles.small}>Final dates, inclusions, arrangements and any participation requirements will be shared before registration opens.</p></aside>
+   <aside className={styles.notice}><p className={styles.eyebrow}>Not open for booking</p><h2>The story comes first.<br/>The details come next.</h2><p>This is a preview of a future Planet Infinity experience, not a confirmed departure or a ticket on sale.</p><dl><div><dt>When</dt><dd>{world.window}{world.window!=="Dates to be announced"?" · provisional":null}</dd></div><div><dt>Price & program</dt><dd>To be announced</dd></div><div><dt>Experience</dt><dd>{world.channels.map(c=>c==="trips"?"Trip":c==="events"?"Event":"Theme").join(" · ")}</dd></div></dl>{world.slug==="noche-de-flores" ? <p><a href="/events/Noche-de-Flores.pdf">Download the event PDF</a></p> : null}<Link className={styles.contact} href="/contact">Ask about this experience</Link><p className={styles.small}>Final dates, inclusions, arrangements and any participation requirements will be shared before registration opens.</p></aside>
   </section>
  </main></CatalogThemeFrame>;
 }

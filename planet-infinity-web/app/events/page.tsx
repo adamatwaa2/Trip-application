@@ -67,7 +67,7 @@ export default async function EventsPage() {
           )}
         </Container>
       </Section>
-      <UpcomingCatalogGrid channel="events" publishedSlugs={[...events,...sharedTrips].map(item=>item.slug)} />
+      <UpcomingCatalogGrid channel="events" title="Upcoming Events" publishedSlugs={[...events,...sharedTrips].map(item=>item.slug)} />
     </div>
   );
 }

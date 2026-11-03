@@ -70,3 +70,27 @@
 @media(max-width:600px){.page[data-world="doomsday"] .hero{min-height:500px}.page[data-world="doomsday"] .heroCopy{padding-bottom:42px}.page[data-world="doomsday"] .hero h1{font-size:clamp(36px,11.8vw,70px)}.page[data-world="doomsday"] .hero .art svg{left:30%;width:100%;opacity:.1}.page[data-world="doomsday"] .story{gap:32px;padding-block:44px 56px}.page[data-world="doomsday"] .story h2{font-size:32px}}
 
 .piratesPreview{background:#cfb78d!important;display:flex!important;flex-direction:column;justify-content:center;gap:24px;padding:28px}.piratesPreview>img{position:static!important;width:100%;height:auto!important;object-fit:contain;mix-blend-mode:multiply}.piratesPreview>span{position:static;font:italic 14px Georgia,serif;color:#742d26;text-align:center}
+
+.eventList {
+  border-top: 1px solid #b7a996;
+}
+.eventRow {
+  display: grid;
+  grid-template-columns: clamp(6rem, 25vw, 17rem) minmax(0, 1fr);
+  align-items: center;
+  min-height: 8rem;
+  border-bottom: 1px solid #b7a996;
+  color: inherit;
+  text-decoration: none;
+}
+.eventRow .art {
+  height: 100%;
+  min-height: 8rem;
+}
+.eventRow .artWord {
+  display: none;
+}
+.eventRow:hover h3,
+.eventRow:focus-visible h3 {
+  text-decoration: underline;
+}
