@@ -78,7 +78,7 @@
 .eventRow {
   display: grid;
   grid-template-columns: minmax(0, min(31%, 18rem)) minmax(0, 1fr);
-  align-items: center;
+  align-items: stretch;
   min-height: 8rem;
   border: 1px solid #d7cbbc;
   border-radius: 12px;
