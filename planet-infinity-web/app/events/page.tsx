@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { splitEvents } from "@/lib/event-archive";
 import { UpcomingCatalogGrid } from "@/components/UpcomingCatalogGrid";
 
 import { getPageSeoMetadata } from "@/lib/site-presentation";
@@ -18,7 +20,8 @@ export function generateMetadata() { return getPageSeoMetadata("/events", "Event
 
 export default async function EventsPage() {
   const [{ events, usingDemoData }, sharedTrips, copy] = await Promise.all([getListedEvents(), getCrossListedTrips("events"), getSiteCopy()]);
-  const hasItems = events.length + sharedTrips.length > 0;
+  const { upcoming, past } = splitEvents(events);
+  const hasItems = upcoming.length + sharedTrips.length > 0;
 
   return (
     <div className="pi-world-events">
@@ -50,7 +53,7 @@ export default async function EventsPage() {
               {sharedTrips.map((trip) => (
                 <TripCard key={`trip-${trip.id}`} trip={trip} />
               ))}
-              {events.map((event) => (
+              {upcoming.map((event) => (
                 <EventCard key={event.id} event={event} />
               ))}
             </Grid>
@@ -68,6 +71,23 @@ export default async function EventsPage() {
         </Container>
       </Section>
       <UpcomingCatalogGrid channel="events" title="Upcoming Events" publishedSlugs={[...events,...sharedTrips].map(item=>item.slug)} />
+      {past.length ? (
+        <Section tone="ivory">
+          <Container>
+            <details>
+              <summary><strong>Past Events ({past.length})</strong></summary>
+              <ul>
+                {past.map(event => (
+                  <li key={event.id}>
+                    <Link href={"/events/" + event.slug}>{event.title}</Link>
+                    {event.eventDate ? <span> · {event.eventDate}</span> : null}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          </Container>
+        </Section>
+      ) : null}
     </div>
   );
 }

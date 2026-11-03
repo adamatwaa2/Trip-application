@@ -1,3 +1,4 @@
+import { splitEvents } from "@/lib/event-archive";
 import { UpcomingCatalogGrid } from "@/components/UpcomingCatalogGrid";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -36,7 +37,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [trips, events, copy, presentation] = await Promise.all([getTrips(), getEvents(), getSiteCopy(), getSitePresentation()]);
+  const [trips, allEvents, copy, presentation] = await Promise.all([getTrips(), getEvents(), getSiteCopy(), getSitePresentation()]);
+  const { upcoming: events } = splitEvents(allEvents);
   return (
     <>
       <section className="pi-home-hero">
@@ -79,7 +81,7 @@ export default async function HomePage() {
           {events.length > 0 ? <Grid columns={3}>{events.map((event) => <EventCard key={event.id} event={event} />)}</Grid> : <EmptyState title={copy.home_events_empty_title} body={copy.home_events_empty_body} />}
         </Container>
       </Section>
-      <UpcomingCatalogGrid channel="events" title="Upcoming Events" publishedSlugs={[...events, ...trips].map(item => item.slug)} />
+      <UpcomingCatalogGrid channel="events" title="Upcoming Events" publishedSlugs={[...allEvents, ...trips].map(item => item.slug)} />
       {presentation.showHomePlan ? <HomePlanSection copy={copy} /> : null}
     </>
   );

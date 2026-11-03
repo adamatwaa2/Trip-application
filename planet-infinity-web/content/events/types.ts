@@ -76,6 +76,8 @@ export type PlanetEvent = {
   venue?: string;
   /** Written exactly as supplied — never formatted from a Date object. */
   eventDate?: string;
+  startsAt?: string;
+  endsAt?: string;
   startTime?: string;
   endTime?: string;
 
