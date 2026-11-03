@@ -60,6 +60,7 @@ export default async function EventPage({ params, searchParams }: Params) {
   if (!event) {
     const upcoming=await getUpcomingWorld(slug,"event");
     if(upcoming) return <UpcomingExperiencePage world={upcoming}/>;
+    if (slug === HALLOWEEN_SLUG) redirect("/events");
     notFound();
   }
   if (event.media.linkedTripSlug) redirect(`/trips/${event.media.linkedTripSlug}`);
