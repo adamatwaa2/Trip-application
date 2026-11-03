@@ -1,3 +1,4 @@
+import { UpcomingCatalogGrid } from "@/components/UpcomingCatalogGrid";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { HomePlanSection } from "@/components/HomePlanSection";
@@ -78,6 +79,7 @@ export default async function HomePage() {
           {events.length > 0 ? <Grid columns={3}>{events.map((event) => <EventCard key={event.id} event={event} />)}</Grid> : <EmptyState title={copy.home_events_empty_title} body={copy.home_events_empty_body} />}
         </Container>
       </Section>
+      <UpcomingCatalogGrid channel="events" title="Upcoming Events" publishedSlugs={[...events, ...trips].map(item => item.slug)} />
       {presentation.showHomePlan ? <HomePlanSection copy={copy} /> : null}
     </>
   );

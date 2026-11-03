@@ -18,6 +18,7 @@ function WorldArtwork({world}:{world:UpcomingWorld}) {
   {world.hero?<img className={styles.worldCover} src={world.hero} alt=""/>:null}
   {world.logo?<img className={styles.worldLogo} src={world.logo} alt=""/>:null}
   <svg viewBox="0 0 600 420" fill="none" preserveAspectRatio="xMidYMid slice">
+   {world.motif==="sober"?<><path stroke="#ff753b" strokeWidth="10" d="M0 170h90l35-55 48 110 56-140 57 185 57-125 39 61 49-36h169"/><path stroke="#ff82bc" d="M0 275h600M0 289h600M0 309h600"/><circle cx="420" cy="175" r="115" strokeDasharray="5 9"/><circle cx="420" cy="175" r="135"/></>:null}
    {world.motif==="doom"?<><circle cx="300" cy="210" r="156"/><circle cx="300" cy="210" r="140" strokeDasharray="245 45 96 28"/><path d="M208 300L295 102H337L378 300H335L324 246H268L246 300ZM282 211H318L305 151ZM260 246H402L378 221M402 246L378 271"/></>:null}
    {world.motif==="flowers"?<>{[160,300,440].map(x=><g key={x} transform={"translate("+x+" 195)"}><circle r="24"/>{Array.from({length:10},(_,i)=><ellipse key={i} cy="-52" rx="16" ry="26" transform={"rotate("+i*36+")"}/>)}</g>)}</>:null}
    {world.motif==="western"?<><circle cx="440" cy="105" r="53"/><path d="M70 315h460M95 286l82-89 67 51 79-92 115 130M185 280q-35-35-35-100h30q0 75 50 75t50-75h30q0 100-80 100z"/></>:null}

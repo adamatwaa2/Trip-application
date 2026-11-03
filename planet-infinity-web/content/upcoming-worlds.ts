@@ -19,12 +19,11 @@ export const UPCOMING_WORLDS: UpcomingWorld[] = [
     "accent": "#ff963b",
     "surface": "#541738",
     "tagline": "Marigolds by dusk. Latin beats after dark.",
-    "description": "A Mexican-inspired night with orange marigolds, red and ivory papel picado and violet light. Choose an original floral, half-face or calavera design at the face-paint station. The DJ moves from Mexican favourites to Spanish-language dance tracks and a marigold disco finale. An Early Bird release is planned.",
+    "description": "A Mexican-inspired night with orange marigolds, red and ivory papel picado and violet light. Choose an original floral, half-face or calavera design at the face-paint station. The DJ moves from Mexican favourites to Spanish-language dance tracks and a marigold disco finale.",
     "mood": [
       "Choose your face paint",
       "Mexican & Spanish-language DJ set",
-      "Marigold disco",
-      "Early Bird planned"
+      "Marigold disco"
     ]
   },
   {
@@ -59,17 +58,18 @@ export const UPCOMING_WORLDS: UpcomingWorld[] = [
     "window": "Dates to be announced",
     "ink": "#fff5e4",
     "slug": "super-party",
-    "title": "Super Party",
-    "subtitle": "High-energy dance night",
-    "motif": "orbit",
-    "accent": "#adf773",
-    "surface": "#25164a",
-    "tagline": "Turn the whole room up.",
-    "description": "A high-energy Planet Infinity party concept with a neon-lit dance floor, DJ sets and short crowd games between sets. The programme and location are in development.",
+    "title": "SOBER PARTY",
+    "subtitle": "HOUSE 001 · Cairo",
+    "motif": "sober",
+    "accent": "#d5ff3f",
+    "surface": "#241338",
+    "tagline": "No substances. All senses.",
+    "description": "An alcohol- and drug-free house party built around sound, projection and play. The Frequency brings house, UK garage and baile funk to the dance floor. Explore The Portal, add to a UV mural in The Playground, or take a break at the alcohol-free bar. The Switch brings sound and visuals together in one coordinated takeover.",
     "mood": [
-      "DJ sets",
-      "Neon lighting",
-      "Crowd games"
+      "The Frequency · DJ floor",
+      "The Portal · projection room",
+      "The Playground · UV art",
+      "The Switch · audiovisual takeover"
     ]
   },
   {
