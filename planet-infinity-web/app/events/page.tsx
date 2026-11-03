@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { HALLOWEEN_ARCHIVE } from "@/content/events/halloween-archive";
 import { splitEvents } from "@/lib/event-archive";
 import { UpcomingCatalogGrid } from "@/components/UpcomingCatalogGrid";
 
@@ -21,6 +21,7 @@ export function generateMetadata() { return getPageSeoMetadata("/events", "Event
 export default async function EventsPage() {
   const [{ events, usingDemoData }, sharedTrips, copy] = await Promise.all([getListedEvents(), getCrossListedTrips("events"), getSiteCopy()]);
   const { upcoming, past } = splitEvents(events);
+  const archive = [...past, ...HALLOWEEN_ARCHIVE.filter(entry => !events.some(event => event.slug === entry.slug))];
   const hasItems = upcoming.length + sharedTrips.length > 0;
 
   return (
@@ -74,17 +75,10 @@ export default async function EventsPage() {
       <Section tone="ivory" id="past-events">
         <Container>
           <details>
-            <summary><strong>Past Events ({past.length})</strong></summary>
-            {past.length ? (
-              <ul>
-                {past.map(event => (
-                  <li key={event.id}>
-                    <Link href={"/events/" + event.slug}>{event.title}</Link>
-                    {event.eventDate ? <span> · {event.eventDate}</span> : null}
-                  </li>
-                ))}
-              </ul>
-            ) : <p>No past events to show yet.</p>}
+            <summary><strong>Past Events ({archive.length})</strong></summary>
+            <Grid columns={3}>
+              {archive.map(event => <EventCard key={event.id} event={event} ended />)}
+            </Grid>
           </details>
         </Container>
       </Section>

@@ -11,16 +11,16 @@ import { Price } from "./Price";
  * never feels they changed websites — but its own component, reading the
  * event model.
  *
- * The card ALWAYS routes to the event detail page and never to a booking
+ * Active cards route to the event detail page and never to a booking
  * flow. It cannot know which ticketing model an event uses, so it never shows
  * a ticket control and never implies one.
  */
-export function EventCard({ event }: { event: PlanetEvent }) {
+export function EventCard({ event, ended = false }: { event: PlanetEvent; ended?: boolean }) {
   const href = event.media.linkedTripSlug
     ? `/trips/${event.media.linkedTripSlug}`
     : `/events/${event.slug}`;
   return (
-    <Card href={href} className="pi-eventcard pi-world-events">
+    <Card href={ended ? undefined : href} className="pi-eventcard pi-world-events">
       <MediaBlock
         src={event.media.hero}
         alt={event.media.heroAlt ?? ""}
@@ -46,14 +46,14 @@ export function EventCard({ event }: { event: PlanetEvent }) {
           </p>
         ) : null}
 
-        <div className="pi-card__foot">
+        {ended ? <p className="pi-card__flags"><strong>✓ Ended</strong></p> : (<div className="pi-card__foot">
           <Price
             egp={event.priceEgp}
             unit={event.priceUnit ?? "per ticket"}
             placeholderId="ticketPrice"
           />
           <AvailabilityPill state={event.availability} />
-        </div>
+        </div>)}
       </div>
     </Card>
   );
