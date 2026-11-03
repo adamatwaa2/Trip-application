@@ -94,3 +94,54 @@
 .eventRow:focus-visible h3 {
   text-decoration: underline;
 }
+
+.eventRow:is([data-world="noche-de-flores"],[data-world="masquerade-party"],[data-world="cowboy-night"],[data-world="super-party"]) {
+  background: var(--world-surface);
+  color: var(--world-ink);
+  grid-template-columns: clamp(7rem, 36vw, 23rem) minmax(0, 1fr);
+}
+.eventRow:is([data-world="noche-de-flores"],[data-world="masquerade-party"],[data-world="cowboy-night"],[data-world="super-party"]) :is(.cardWindow,.channels,.cardBody strong) {
+  color: var(--world-accent);
+}
+.art[data-motif="flowers"] { background: radial-gradient(ellipse at 75% 58%, #9b3146, transparent 59%), #38142f; }
+.art[data-motif="mask"] { background: radial-gradient(ellipse at 65% 48%, #664258, transparent 58%), #1c1326; }
+.art[data-motif="western"] { background: linear-gradient(170deg, #482717 16%, #8f492b 64%, #3c2218 65%); }
+.art[data-motif="sober"] { background: repeating-linear-gradient(0deg, transparent 0 5px, #ff94cb15 6px 7px), radial-gradient(ellipse at 68% 55%, #5b2479, #171027 76%); }
+.eventRow .art[data-motif] svg { opacity: .9; }
+.page:is([data-world="noche-de-flores"],[data-world="masquerade-party"],[data-world="cowboy-night"],[data-world="super-party"]) .hero > .art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #160d19ed, #160d19b0 34%, transparent 73%);
+}
+.page:is([data-world="noche-de-flores"],[data-world="masquerade-party"],[data-world="cowboy-night"],[data-world="super-party"]) .hero .art svg {
+  opacity: .94;
+  left: 43%;
+  width: 57%;
+}
+.page:is([data-world="noche-de-flores"],[data-world="masquerade-party"],[data-world="cowboy-night"]) .hero h1 {
+  font-family: Georgia, serif;
+  max-width: 8ch;
+}
+.page[data-world="super-party"] .hero h1 {
+  max-width: 7ch;
+  color: var(--world-accent);
+}
+.program { list-style: none; padding: 0; margin: 32px 0 0; border-top: 1px solid #c4b8ab; }
+.program li { padding: 15px 0; border-bottom: 1px solid #c4b8ab; font-weight: 700; display: flex; align-items: baseline; gap: 16px; }
+.program li span { background: var(--world-surface); color: var(--world-ink); padding: 5px 8px; font-size: 11px; }
+@media (max-width: 600px) {
+  .page:is([data-world="noche-de-flores"],[data-world="masquerade-party"],[data-world="cowboy-night"],[data-world="super-party"]) .hero .art svg {
+    left: 27%;
+    width: 96%;
+    top: -14%;
+    opacity: .49;
+  }
+  .eventRow .cardBody { padding: 16px; }
+  .eventRow .cardBody h3 { font-size: clamp(18px, 6vw, 26px); overflow-wrap: anywhere; }
+}
+
+.page[data-world="masquerade-party"] .hero h1 {
+  max-width: none;
+  font-size: clamp(32px, 7.5vw, 100px);
+}
