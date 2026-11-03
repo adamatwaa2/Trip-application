@@ -123,8 +123,8 @@ async function databaseEvents(): Promise<PlanetEvent[] | null> {
   let eventQuery = supabase.from("events").select("id, slug, title, short_description, description, category, venue, starts_at, ends_at, important_information, price_egp, booking_fee_egp, ticket_label, capacity, booking_mode, application_required, document_url, document_label, is_featured, media, ticket_options, inclusions, exclusions").order("starts_at", { ascending: true, nullsFirst: false });
   if (process.env.NODE_ENV !== "development") eventQuery = eventQuery.eq("is_published", true);
   const { data, error } = await eventQuery;
-  // See databaseTrips: an empty table must not blank out the public listing.
-  if (error || !data?.length) return null;
+  // The configured catalogue controls visibility even when it has no published events.
+  if (error || !data?.length) return [];
   const events=(data as unknown as DatabaseEvent[]).map(mapEvent);
   if(isSupabaseServiceConfigured()){
     await Promise.all(events.filter(e=>e.slug==="halloween-party-2026").map(async event=>{
