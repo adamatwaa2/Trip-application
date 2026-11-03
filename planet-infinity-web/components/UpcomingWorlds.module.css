@@ -72,20 +72,32 @@
 .piratesPreview{background:#cfb78d!important;display:flex!important;flex-direction:column;justify-content:center;gap:24px;padding:28px}.piratesPreview>img{position:static!important;width:100%;height:auto!important;object-fit:contain;mix-blend-mode:multiply}.piratesPreview>span{position:static;font:italic 14px Georgia,serif;color:#742d26;text-align:center}
 
 .eventList {
-  border-top: 1px solid #b7a996;
+  display: grid;
+  gap: 12px;
 }
 .eventRow {
   display: grid;
-  grid-template-columns: clamp(6rem, 25vw, 17rem) minmax(0, 1fr);
+  grid-template-columns: minmax(0, min(31%, 18rem)) minmax(0, 1fr);
   align-items: center;
   min-height: 8rem;
-  border-bottom: 1px solid #b7a996;
+  border: 1px solid #d7cbbc;
+  border-radius: 12px;
+  overflow: hidden;
   color: inherit;
   text-decoration: none;
 }
 .eventRow .art {
-  height: 100%;
-  min-height: 8rem;
+  width: 100%;
+  min-width: 0;
+  aspect-ratio: auto;
+}
+.eventRow .cardBody {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.eventRow:focus-visible {
+  outline: 3px solid var(--pi-ember, #dc5e15);
+  outline-offset: 3px;
 }
 .eventRow .artWord {
   display: none;
@@ -98,7 +110,6 @@
 .eventRow:is([data-world="noche-de-flores"],[data-world="masquerade-party"],[data-world="cowboy-night"],[data-world="super-party"]) {
   background: var(--world-surface);
   color: var(--world-ink);
-  grid-template-columns: clamp(7rem, 36vw, 23rem) minmax(0, 1fr);
 }
 .eventRow:is([data-world="noche-de-flores"],[data-world="masquerade-party"],[data-world="cowboy-night"],[data-world="super-party"]) :is(.cardWindow,.channels,.cardBody strong) {
   color: var(--world-accent);
