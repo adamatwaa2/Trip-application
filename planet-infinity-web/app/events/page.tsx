@@ -71,11 +71,11 @@ export default async function EventsPage() {
         </Container>
       </Section>
       <UpcomingCatalogGrid channel="events" title="Upcoming Events" publishedSlugs={[...events,...sharedTrips].map(item=>item.slug)} />
-      {past.length ? (
-        <Section tone="ivory">
-          <Container>
-            <details>
-              <summary><strong>Past Events ({past.length})</strong></summary>
+      <Section tone="ivory" id="past-events">
+        <Container>
+          <details>
+            <summary><strong>Past Events ({past.length})</strong></summary>
+            {past.length ? (
               <ul>
                 {past.map(event => (
                   <li key={event.id}>
@@ -84,10 +84,10 @@ export default async function EventsPage() {
                   </li>
                 ))}
               </ul>
-            </details>
-          </Container>
-        </Section>
-      ) : null}
+            ) : <p>No past events to show yet.</p>}
+          </details>
+        </Container>
+      </Section>
     </div>
   );
 }
